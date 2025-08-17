@@ -1,0 +1,95 @@
+{
+  "bsonType": "object",
+  "required": ["user_id", "stress_score", "label", "face_feature", "voice_feature", "comment", "create_date"],
+  "permission": {
+    "read": true,
+    "create": true,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": {
+      "description": "ID，系统自动生成"
+    },
+    "user_id": {
+      "bsonType": "string",
+      "description": "用户ID"
+    },
+    "stress_score": {
+      "bsonType": "int",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "压力分数，范围0-100"
+    },
+    "label": {
+      "bsonType": "string",
+      "description": "压力标签，如'暴躁鬼'、'紧张宝'等"
+    },
+    "face_feature": {
+      "bsonType": "string",
+      "description": "面部特征描述"
+    },
+    "voice_feature": {
+      "bsonType": "string",
+      "description": "语音特征描述"
+    },
+    "comment": {
+      "bsonType": "string",
+      "description": "分析评价"
+    },
+    "portrait_url": {
+      "bsonType": "string",
+      "description": "压力脸谱头像URL",
+      "nullable": true
+    },
+    "poster_url": {
+      "bsonType": "string",
+      "description": "压力脸谱海报URL",
+      "nullable": true
+    },
+    "create_date": {
+      "bsonType": "timestamp",
+      "description": "创建时间"
+    },
+    "facial_data": {
+      "bsonType": "object",
+      "description": "面部特征数据",
+      "properties": {
+        "frown": {
+          "bsonType": "int",
+          "description": "皱眉指数"
+        },
+        "mouth_down": {
+          "bsonType": "int",
+          "description": "嘴角下垂指数"
+        },
+        "jaw_tense": {
+          "bsonType": "int",
+          "description": "下巴紧绷指数"
+        },
+        "eyebrow_raised": {
+          "bsonType": "int",
+          "description": "眉毛抬高指数"
+        }
+      }
+    },
+    "voice_data": {
+      "bsonType": "object",
+      "description": "语音特征数据",
+      "properties": {
+        "pitch": {
+          "bsonType": "int",
+          "description": "音高指数"
+        },
+        "jitter": {
+          "bsonType": "int",
+          "description": "抖动指数"
+        },
+        "energy": {
+          "bsonType": "int",
+          "description": "能量指数"
+        }
+      }
+    }
+  }
+} 

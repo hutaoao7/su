@@ -1,0 +1,15 @@
+{
+  "name": "stress-chat",
+  "version": "1.0.0",
+  "description": "心理压力聊天云函数，使用ChatGPT进行认知行为疗法对话",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "openai": "^3.2.1"
+  }
+} 

@@ -1,0 +1,9 @@
+{
+  "name": "cdk-verify",
+  "version": "1.0.0",
+  "description": "兑换码验证",
+  "main": "index.js",
+  "dependencies": {
+    "jsonwebtoken": "^8.5.1"
+  }
+}

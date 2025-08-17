@@ -1,0 +1,37 @@
+{
+  "h5": {
+    "devServer": {
+      "proxy": {
+        "/api": {
+          "target": "https://your-unicloud-domain.com",
+          "changeOrigin": true,
+          "secure": true
+        }
+      }
+    }
+  },
+  "mp-weixin": {
+    "networkTimeout": {
+      "request": 10000,
+      "downloadFile": 30000
+    },
+    "requiredBackgroundModes": ["audio"],
+    "permission": {
+      "scope.userLocation": {
+        "desc": "用于获取位置信息"
+      }
+    }
+  },
+  "mp-alipay": {
+    "networkTimeout": {
+      "request": 10000,
+      "downloadFile": 30000
+    }
+  },
+  "mp-toutiao": {
+    "networkTimeout": {
+      "request": 10000,
+      "downloadFile": 30000
+    }
+  }
+}

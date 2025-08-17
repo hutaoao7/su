@@ -1,0 +1,9 @@
+{
+  "name": "events-track",
+  "version": "1.0.0",
+  "description": "事件追踪",
+  "main": "index.js",
+  "dependencies": {
+    "jsonwebtoken": "^8.5.1"
+  }
+}

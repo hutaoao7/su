@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>创建社区图标</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .icon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #6A5ACD;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #5A4ABD;
+        }
+        .instructions {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: left;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>翎心社区图标生成器</h1>
+    
+    <div class="container">
+        <div class="icon-container">
+            <h3>普通图标</h3>
+            <canvas id="normalIcon" width="81" height="81"></canvas>
+            <button id="downloadNormal">下载 community.png</button>
+        </div>
+        
+        <div class="icon-container">
+            <h3>激活图标</h3>
+            <canvas id="activeIcon" width="81" height="81"></canvas>
+            <button id="downloadActive">下载 community-active.png</button>
+        </div>
+    </div>
+    
+    <button id="downloadBoth">一键下载两个图标</button>
+    
+    <div class="instructions">
+        <h3>使用说明：</h3>
+        <ol>
+            <li>点击上方按钮下载图标</li>
+            <li>将下载的图标放置在项目的 <code>static/images/</code> 目录下</li>
+            <li>确保文件名分别为 <code>community.png</code> 和 <code>community-active.png</code></li>
+            <li>刷新小程序模拟器，查看效果</li>
+        </ol>
+    </div>
+    
+    <script>
+        // 绘制普通图标
+        function drawNormalIcon() {
+            const canvas = document.getElementById('normalIcon');
+            const ctx = canvas.getContext('2d');
+            
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制圆形背景
+            ctx.beginPath();
+            ctx.arc(40.5, 40.5, 35, 0, Math.PI * 2);
+            ctx.fillStyle = '#7A7E83'; // 灰色
+            ctx.fill();
+            
+            // 绘制文字
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 32px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('社', 40.5, 40.5);
+        }
+        
+        // 绘制激活图标
+        function drawActiveIcon() {
+            const canvas = document.getElementById('activeIcon');
+            const ctx = canvas.getContext('2d');
+            
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制圆形背景
+            ctx.beginPath();
+            ctx.arc(40.5, 40.5, 35, 0, Math.PI * 2);
+            ctx.fillStyle = '#6A5ACD'; // 紫蓝色
+            ctx.fill();
+            
+            // 绘制文字
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 32px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('社', 40.5, 40.5);
+        }
+        
+        // 下载图标函数
+        function downloadIcon(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // 初始化
+        window.onload = function() {
+            // 绘制图标
+            drawNormalIcon();
+            drawActiveIcon();
+            
+            // 绑定下载按钮事件
+            document.getElementById('downloadNormal').addEventListener('click', function() {
+                downloadIcon('normalIcon', 'community.png');
+            });
+            
+            document.getElementById('downloadActive').addEventListener('click', function() {
+                downloadIcon('activeIcon', 'community-active.png');
+            });
+            
+            document.getElementById('downloadBoth').addEventListener('click', function() {
+                downloadIcon('normalIcon', 'community.png');
+                setTimeout(() => downloadIcon('activeIcon', 'community-active.png'), 100);
+            });
+        };
+    </script>
+</body>
+</html> 

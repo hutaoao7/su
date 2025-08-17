@@ -1,0 +1,80 @@
+{
+  "relax": [
+    {
+      "id": "relax_1",
+      "title": "森林晨曦",
+      "category": "relax",
+      "durationMs": 300000,
+      "coverUrl": "/static/images/music/relax1.jpg",
+      "srcUrl": "/static/audio/relax1.mp3"
+    },
+    {
+      "id": "relax_2",
+      "title": "海浪轻抚",
+      "category": "relax",
+      "durationMs": 420000,
+      "coverUrl": "/static/images/music/relax2.jpg",
+      "srcUrl": "/static/audio/relax2.mp3"
+    },
+    {
+      "id": "relax_3",
+      "title": "山间溪流",
+      "category": "relax",
+      "durationMs": 360000,
+      "coverUrl": "/static/images/music/relax3.jpg",
+      "srcUrl": "/static/audio/relax3.mp3"
+    }
+  ],
+  "focus": [
+    {
+      "id": "focus_1",
+      "title": "专注冥想",
+      "category": "focus",
+      "durationMs": 600000,
+      "coverUrl": "/static/images/music/focus1.jpg",
+      "srcUrl": "/static/audio/focus1.mp3"
+    },
+    {
+      "id": "focus_2",
+      "title": "白噪音",
+      "category": "focus",
+      "durationMs": 1800000,
+      "coverUrl": "/static/images/music/focus2.jpg",
+      "srcUrl": "/static/audio/focus2.mp3"
+    },
+    {
+      "id": "focus_3",
+      "title": "雨声专注",
+      "category": "focus",
+      "durationMs": 900000,
+      "coverUrl": "/static/images/music/focus3.jpg",
+      "srcUrl": "/static/audio/focus3.mp3"
+    }
+  ],
+  "sleep": [
+    {
+      "id": "sleep_1",
+      "title": "夜雨声",
+      "category": "sleep",
+      "durationMs": 3600000,
+      "coverUrl": "/static/images/music/sleep1.jpg",
+      "srcUrl": "/static/audio/sleep1.mp3"
+    },
+    {
+      "id": "sleep_2",
+      "title": "摇篮曲",
+      "category": "sleep",
+      "durationMs": 480000,
+      "coverUrl": "/static/images/music/sleep2.jpg",
+      "srcUrl": "/static/audio/sleep2.mp3"
+    },
+    {
+      "id": "sleep_3",
+      "title": "深度睡眠",
+      "category": "sleep",
+      "durationMs": 2400000,
+      "coverUrl": "/static/images/music/sleep3.jpg",
+      "srcUrl": "/static/audio/sleep3.mp3"
+    }
+  ]
+}

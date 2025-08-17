@@ -1,0 +1,22 @@
+
+page, page, #app, page { 
+  background: #fff !important; 
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* 确保页面内容可见 */
+#app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 移除可能的隐藏样式 */
+
+/* 确保没有全屏遮罩 */
+.mask, .overlay, .loading-mask {
+  display: none !important;
+}
+

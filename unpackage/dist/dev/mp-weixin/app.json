@@ -1,0 +1,59 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/user/home",
+    "pages/index/index",
+    "pages/auth/login",
+    "pages/auth/register",
+    "pages/auth/role",
+    "pages/features/features",
+    "pages/settings/settings",
+    "pages/community/index",
+    "pages/community/detail",
+    "pages/stress/index",
+    "pages/stress/detect",
+    "pages/stress/history",
+    "pages/stress/record",
+    "pages/stress/intervention",
+    "pages/intervene/intervene",
+    "pages/intervene/chat",
+    "pages/intervene/meditation",
+    "pages/intervene/nature",
+    "pages/music/index",
+    "pages/music/player",
+    "pages/user/profile",
+    "pages/user/login",
+    "pages/admin/metrics",
+    "pages/cdk/redeem",
+    "pages/cdk/admin-batch",
+    "pages/test/index"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "翎心",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F0F0F5"
+  },
+  "tabBar": {
+    "color": "#8E8E93",
+    "selectedColor": "#007AFF",
+    "borderStyle": "white",
+    "backgroundColor": "rgba(255,255,255,0.8)",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/features/features",
+        "text": "功能"
+      },
+      {
+        "pagePath": "pages/settings/settings",
+        "text": "设置"
+      }
+    ]
+  },
+  "usingComponents": {}
+}

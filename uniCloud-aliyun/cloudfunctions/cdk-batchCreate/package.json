@@ -1,0 +1,9 @@
+{
+  "name": "cdk-batchCreate",
+  "version": "1.0.0",
+  "description": "批量创建兑换码",
+  "main": "index.js",
+  "dependencies": {
+    "jsonwebtoken": "^8.5.1"
+  }
+}

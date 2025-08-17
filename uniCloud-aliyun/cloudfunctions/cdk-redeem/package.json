@@ -1,0 +1,9 @@
+{
+  "name": "cdk-redeem",
+  "version": "1.0.0",
+  "description": "兑换码兑换",
+  "main": "index.js",
+  "dependencies": {
+    "jsonwebtoken": "^8.5.1"
+  }
+}

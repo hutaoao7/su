@@ -1,0 +1,45 @@
+{
+  "pages": [
+    {
+      "path": "pages/cdk/redeem",
+      "style": {
+        "navigationBarTitleText": "兑换码兑换",
+        "navigationBarBackgroundColor": "#f8f9fa",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/cdk/admin-batch",
+      "style": {
+        "navigationBarTitleText": "批量生成兑换码",
+        "navigationBarBackgroundColor": "#f8f9fa",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/music/index",
+      "style": {
+        "navigationBarTitleText": "冥想音乐",
+        "navigationBarBackgroundColor": "#f8f9fa",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/music/player",
+      "style": {
+        "navigationBarTitleText": "音乐播放",
+        "navigationBarBackgroundColor": "transparent",
+        "navigationBarTextStyle": "white",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/admin/metrics",
+      "style": {
+        "navigationBarTitleText": "数据统计",
+        "navigationBarBackgroundColor": "#f8f9fa",
+        "navigationBarTextStyle": "black"
+      }
+    }
+  ]
+}
