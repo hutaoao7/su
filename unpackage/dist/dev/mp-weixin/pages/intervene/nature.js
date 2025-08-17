@@ -101,27 +101,9 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  var g0 =
-    _vm.result && !(typeof _vm.result === "string")
-      ? JSON.stringify(_vm.result, null, 2)
-      : null
-  var g1 =
-    _vm.data && !(typeof _vm.data === "string")
-      ? JSON.stringify(_vm.data, null, 2)
-      : null
-  var g2 = _vm.list && _vm.list.length
-  var g3 = g2 ? _vm.list.length : null
-  var l0 = g2
-    ? _vm.__map(_vm.list, function (it, idx) {
-        var $orig = _vm.__get_orig(it)
-        var g4 = typeof it === "object" ? JSON.stringify(it) : null
-        return {
-          $orig: $orig,
-          g4: g4,
-        }
-      })
-    : null
-  var g5 = !_vm.result && !_vm.data && (!_vm.list || !_vm.list.length)
+  var g0 = _vm.list && _vm.list.length
+  var g1 = g0 ? _vm.list.length : null
+  var g2 = !_vm.result && !_vm.data && (!_vm.list || !_vm.list.length)
   _vm.$mp.data = Object.assign(
     {},
     {
@@ -129,9 +111,6 @@ var render = function () {
         g0: g0,
         g1: g1,
         g2: g2,
-        g3: g3,
-        l0: l0,
-        g5: g5,
       },
     }
   )
@@ -217,6 +196,40 @@ var _default = {
     },
     hasRedeem: function hasRedeem() {
       return typeof this.redeem === 'function';
+    },
+    resultText: function resultText() {
+      var v = this.result;
+      if (v == null) return '';
+      return typeof v === 'string' ? v : function () {
+        try {
+          return JSON.stringify(v, null, 2);
+        } catch (e) {
+          return String(v);
+        }
+      }();
+    },
+    dataText: function dataText() {
+      var v = this.data;
+      if (v == null) return '';
+      return typeof v === 'string' ? v : function () {
+        try {
+          return JSON.stringify(v, null, 2);
+        } catch (e) {
+          return String(v);
+        }
+      }();
+    },
+    listText: function listText() {
+      var arr = Array.isArray(this.list) ? this.list : [];
+      return arr.map(function (it) {
+        return typeof it === 'string' ? it : function () {
+          try {
+            return JSON.stringify(it);
+          } catch (e) {
+            return String(it);
+          }
+        }();
+      });
     }
   }
 };

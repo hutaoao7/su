@@ -101,27 +101,9 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  var g0 =
-    _vm.result && !(typeof _vm.result === "string")
-      ? JSON.stringify(_vm.result, null, 2)
-      : null
-  var g1 =
-    _vm.data && !(typeof _vm.data === "string")
-      ? JSON.stringify(_vm.data, null, 2)
-      : null
-  var g2 = _vm.list && _vm.list.length
-  var g3 = g2 ? _vm.list.length : null
-  var l0 = g2
-    ? _vm.__map(_vm.list, function (it, idx) {
-        var $orig = _vm.__get_orig(it)
-        var g4 = typeof it === "object" ? JSON.stringify(it) : null
-        return {
-          $orig: $orig,
-          g4: g4,
-        }
-      })
-    : null
-  var g5 = !_vm.result && !_vm.data && (!_vm.list || !_vm.list.length)
+  var g0 = _vm.list && _vm.list.length
+  var g1 = g0 ? _vm.list.length : null
+  var g2 = !_vm.result && !_vm.data && (!_vm.list || !_vm.list.length)
   _vm.$mp.data = Object.assign(
     {},
     {
@@ -129,9 +111,6 @@ var render = function () {
         g0: g0,
         g1: g1,
         g2: g2,
-        g3: g3,
-        l0: l0,
-        g5: g5,
       },
     }
   )
@@ -170,10 +149,12 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 
 
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
 //
 //
 //
@@ -198,7 +179,40 @@ exports.default = void 0;
 //
 //
 var _default = {
+  data: function data() {
+    return {
+      list: [],
+      result: null,
+      data: null
+    };
+  },
   computed: {
+    resultText: function resultText() {
+      if (!this.result) return '';
+      try {
+        return typeof this.result === 'string' ? this.result : JSON.stringify(this.result, null, 2);
+      } catch (e) {
+        return String(this.result);
+      }
+    },
+    dataText: function dataText() {
+      if (!this.data) return '';
+      try {
+        return typeof this.data === 'string' ? this.data : JSON.stringify(this.data, null, 2);
+      } catch (e) {
+        return String(this.data);
+      }
+    },
+    listText: function listText() {
+      if (!this.list || !Array.isArray(this.list)) return [];
+      return this.list.map(function (item) {
+        try {
+          return (0, _typeof2.default)(item) === 'object' ? JSON.stringify(item) : String(item);
+        } catch (e) {
+          return String(item);
+        }
+      });
+    },
     hasFetch: function hasFetch() {
       return typeof this.fetch === 'function';
     },
@@ -216,6 +230,26 @@ var _default = {
     },
     hasRedeem: function hasRedeem() {
       return typeof this.redeem === 'function';
+    }
+  },
+  methods: {
+    fetch: function fetch() {
+      console.log('fetch method called');
+    },
+    start: function start() {
+      console.log('start method called');
+    },
+    play: function play() {
+      console.log('play method called');
+    },
+    detect: function detect() {
+      console.log('detect method called');
+    },
+    chat: function chat() {
+      console.log('chat method called');
+    },
+    redeem: function redeem() {
+      console.log('redeem method called');
     }
   }
 };

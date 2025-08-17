@@ -29,7 +29,21 @@ export default {
 	  hasPlay  ()  { return typeof this.play   === 'function' },
 	  hasDetect()  { return typeof this.detect === 'function' },
 	  hasChat  ()  { return typeof this.chat   === 'function' },
-	  hasRedeem()  { return typeof this.redeem === 'function' }
+	  hasRedeem()  { return typeof this.redeem === 'function' },
+	  resultText() {
+	    const v = this.result;
+	    if (v == null) return '';
+	    return typeof v === 'string' ? v : (() => { try { return JSON.stringify(v, null, 2) } catch (e) { return String(v) } })();
+	  },
+	  dataText() {
+	    const v = this.data;
+	    if (v == null) return '';
+	    return typeof v === 'string' ? v : (() => { try { return JSON.stringify(v, null, 2) } catch (e) { return String(v) } })();
+	  },
+	  listText() {
+	    const arr = Array.isArray(this.list) ? this.list : [];
+	    return arr.map(it => (typeof it === 'string') ? it : (() => { try { return JSON.stringify(it) } catch (e) { return String(it) } })());
+	  }
 	}
 }
 </script>

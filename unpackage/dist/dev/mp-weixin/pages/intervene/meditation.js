@@ -195,6 +195,40 @@ var _default = {
     },
     hasRedeem: function hasRedeem() {
       return typeof this.redeem === 'function';
+    },
+    resultText: function resultText() {
+      var v = this.result;
+      if (v == null) return '';
+      return typeof v === 'string' ? v : function () {
+        try {
+          return JSON.stringify(v, null, 2);
+        } catch (e) {
+          return String(v);
+        }
+      }();
+    },
+    dataText: function dataText() {
+      var v = this.data;
+      if (v == null) return '';
+      return typeof v === 'string' ? v : function () {
+        try {
+          return JSON.stringify(v, null, 2);
+        } catch (e) {
+          return String(v);
+        }
+      }();
+    },
+    listText: function listText() {
+      var arr = Array.isArray(this.list) ? this.list : [];
+      return arr.map(function (it) {
+        return typeof it === 'string' ? it : function () {
+          try {
+            return JSON.stringify(it);
+          } catch (e) {
+            return String(it);
+          }
+        }();
+      });
     }
   }
 };

@@ -10,12 +10,12 @@
       <button v-if="hasChat"  class="btn-primary" @click="chat">对话</button>
       <button v-if="hasRedeem"class="btn-primary" @click="redeem">兑换</button>
     </view>
-    <view v-if="result" class="card" style="margin-top:16rpx"><text :selectable="true">{{ typeof result==='string'?result:JSON.stringify(result,null,2) }}</text></view>
-    <view v-if="data"   class="card" style="margin-top:16rpx"><text :selectable="true">{{ typeof data==='string'?data:JSON.stringify(data,null,2) }}</text></view>
+    <view v-if="result" class="card" style="margin-top:16rpx"><text :selectable="true">{{ resultText }}</text></view>
+    <view v-if="data"   class="card" style="margin-top:16rpx"><text :selectable="true">{{ dataText }}</text></view>
     <view v-if="list && list.length" class="card" style="margin-top:16rpx">
       <text class="text-muted">列表（{{list.length}}）</text>
-      <view v-for="(it,idx) in list" :key="idx" style="margin-top:8rpx">
-        <text>{{ typeof it==='object' ? JSON.stringify(it) : it }}</text>
+      <view v-for="(txt,idx) in listText" :key="idx" style="margin-top:8rpx">
+        <text>{{ txt }}</text>
       </view>
     </view>
     <view v-if="(!result && !data && (!list || !list.length))" class="empty">暂无数据</view>
@@ -24,13 +24,54 @@
 
 <script>
 export default {
+  data() {
+    return {
+      list: [],
+      result: null,
+      data: null
+    }
+  },
   computed: {
+    resultText() {
+      if (!this.result) return '';
+      try {
+        return typeof this.result === 'string' ? this.result : JSON.stringify(this.result, null, 2);
+      } catch (e) {
+        return String(this.result);
+      }
+    },
+    dataText() {
+      if (!this.data) return '';
+      try {
+        return typeof this.data === 'string' ? this.data : JSON.stringify(this.data, null, 2);
+      } catch (e) {
+        return String(this.data);
+      }
+    },
+    listText() {
+      if (!this.list || !Array.isArray(this.list)) return [];
+      return this.list.map(item => {
+        try {
+          return typeof item === 'object' ? JSON.stringify(item) : String(item);
+        } catch (e) {
+          return String(item);
+        }
+      });
+    },
     hasFetch() { return typeof this.fetch === 'function'; },
     hasStart() { return typeof this.start === 'function'; },
     hasPlay() { return typeof this.play === 'function'; },
     hasDetect() { return typeof this.detect === 'function'; },
     hasChat() { return typeof this.chat === 'function'; },
     hasRedeem() { return typeof this.redeem === 'function'; },
+  },
+  methods: {
+    fetch() { console.log('fetch method called'); },
+    start() { console.log('start method called'); },
+    play() { console.log('play method called'); },
+    detect() { console.log('detect method called'); },
+    chat() { console.log('chat method called'); },
+    redeem() { console.log('redeem method called'); }
   }
 }
 </script>

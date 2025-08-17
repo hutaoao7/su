@@ -10,12 +10,12 @@
       <button v-if="hasChat"  class="btn-primary" @click="chat">对话</button>
       <button v-if="hasRedeem"class="btn-primary" @click="redeem">兑换</button>
     </view>
-    <view v-if="result" class="card" style="margin-top:16rpx"><text :selectable="true">{{ typeof result==='string'?result:JSON.stringify(result,null,2) }}</text></view>
-    <view v-if="data"   class="card" style="margin-top:16rpx"><text :selectable="true">{{ typeof data==='string'?data:JSON.stringify(data,null,2) }}</text></view>
+    <view v-if="result" class="card" style="margin-top:16rpx"><text :selectable="true">{{ resultText }}</text></view>
+    <view v-if="data"   class="card" style="margin-top:16rpx"><text :selectable="true">{{ dataText }}</text></view>
     <view v-if="list && list.length" class="card" style="margin-top:16rpx">
       <text class="text-muted">列表（{{list.length}}）</text>
-      <view v-for="(it,idx) in list" :key="idx" style="margin-top:8rpx">
-        <text>{{ typeof it==='object' ? JSON.stringify(it) : it }}</text>
+      <view v-for="(txt,idx) in listText" :key="idx" style="margin-top:8rpx">
+        <text>{{ txt }}</text>
       </view>
     </view>
     <view v-if="(!result && !data && (!list || !list.length))" class="empty">暂无数据</view>
@@ -31,6 +31,20 @@ export default {
     hasDetect() { return typeof this.detect === 'function'; },
     hasChat() { return typeof this.chat === 'function'; },
     hasRedeem() { return typeof this.redeem === 'function'; },
+    resultText() {
+      const v = this.result;
+      if (v == null) return '';
+      return typeof v === 'string' ? v : (() => { try { return JSON.stringify(v, null, 2) } catch (e) { return String(v) } })();
+    },
+    dataText() {
+      const v = this.data;
+      if (v == null) return '';
+      return typeof v === 'string' ? v : (() => { try { return JSON.stringify(v, null, 2) } catch (e) { return String(v) } })();
+    },
+    listText() {
+      const arr = Array.isArray(this.list) ? this.list : [];
+      return arr.map(it => (typeof it === 'string') ? it : (() => { try { return JSON.stringify(it) } catch (e) { return String(it) } })());
+    }
   }
 }
 </script>
