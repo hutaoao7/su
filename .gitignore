@@ -1,1 +1,4 @@
-node_modules/、unpackage/、dist/、.hbuilderx/
+node_modules/、unpackage/、dist/、.hbuilderx/node_modules/
+unpackage/
+dist/
+.hbuilderx/
