@@ -10101,7 +10101,7 @@ var b = "development" === "development",
   k = "true" === undefined || !0 === undefined,
   A = T([]),
   P = "h5" === E ? "web" : "app-plus" === E || "app-harmony" === E ? "app" : E,
-  C = T({"address":["127.0.0.1","172.18.0.1","26.92.214.110","192.168.137.1","192.168.116.202"],"servePort":7000,"debugPort":9000,"initialLaunchType":"local","skipFiles":["<node_internals>/**","D:/HBuilderX.4.65.2025051206/HBuilderX/plugins/unicloud/**/*.js"]}),
+  C = T({"address":["127.0.0.1","26.92.214.110","192.168.116.202"],"servePort":7000,"debugPort":9000,"initialLaunchType":"local","skipFiles":["<node_internals>/**","D:/HBuilderX.4.65.2025051206/HBuilderX/plugins/unicloud/**/*.js"]}),
   O = T([{"provider":"aliyun","spaceName":"test","spaceId":"mp-de9ea68f-5feb-48aa-9773-a231ce66de43","clientSecret":"xpaGJYnowjIcXQDW91/9pQ==","endpoint":"https://api.next.bspapp.com"}]) || [],
   x = true;
 var N = "";
@@ -18541,13 +18541,13 @@ var _default = {
     "path": "pages/features/features",
     "style": {
       "navigationStyle": "default",
-      "navigationBarTitleText": "功能"
+      "navigationBarTitleText": "探索"
     }
   }, {
     "path": "pages/settings/settings",
     "style": {
       "navigationStyle": "default",
-      "navigationBarTitleText": "设置"
+      "navigationBarTitleText": "我的"
     }
   }, {
     "path": "pages/community/index",
@@ -18680,10 +18680,10 @@ var _default = {
       "text": "首页"
     }, {
       "pagePath": "pages/features/features",
-      "text": "功能"
+      "text": "探索"
     }, {
-      "pagePath": "pages/settings/settings",
-      "text": "设置"
+      "pagePath": "pages/user/home",
+      "text": "我的"
     }]
   }
 };

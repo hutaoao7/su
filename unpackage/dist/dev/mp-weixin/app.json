@@ -47,11 +47,11 @@
       },
       {
         "pagePath": "pages/features/features",
-        "text": "功能"
+        "text": "探索"
       },
       {
-        "pagePath": "pages/settings/settings",
-        "text": "设置"
+        "pagePath": "pages/user/home",
+        "text": "我的"
       }
     ]
   },

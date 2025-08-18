@@ -1,4 +1,4 @@
-# 确保static/images目录存在
+cd D:\HBuilderX.4.65.2025051206\翎心 git init# 确保static/images目录存在
 $imagesDir = "static\images"
 if (-not (Test-Path $imagesDir)) {
     New-Item -ItemType Directory -Path $imagesDir -Force | Out-Null

@@ -21,24 +21,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 // @ts-ignore
 wx.__webpack_require_UNI_MP_PLUGIN__ = __webpack_require__;
 _vue.default.config.productionTip = false;
-if (true) {
-  var show = function show(l, e) {
-    try {
-      var el = document.createElement('div');
-      el.style.cssText = 'position:fixed;left:0;right:0;top:0;z-index:99999;background:#ff4d4f;color:#fff;padding:8px 12px;font-size:12px';
-      el.textContent = "[".concat(l, "] ") + (e && (e.stack || e.message || e));
-      document.body.appendChild(el);
-    } catch (_) {
-      console.error(l, e);
-    }
-  };
-  window.addEventListener('error', function (e) {
-    return show('onerror', e.error || e.message);
-  });
-  window.addEventListener('unhandledrejection', function (e) {
-    return show('unhandledrejection', e.reason || e);
-  });
-}
 _App.default.mpType = 'app';
 createApp(new _vue.default(_objectSpread({}, _App.default))).$mount();
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["createApp"]))
