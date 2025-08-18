@@ -46,11 +46,11 @@
             "sdkConfigs" : {}
         }
     },
-    /* 快应用特有相关 */
+    /* 快应用特有相兄1�7*/
     "quickapp" : {},
-    /* 小程序特有相关 */
+    /* 小程序特有相兄1�7*/
     "mp-weixin" : {
-        "appid" : "",
+        "appid" : "wx5a3c2fd2f74332b9",
         "setting" : {
             "urlCheck" : false
         },

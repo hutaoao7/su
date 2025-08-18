@@ -4,6 +4,7 @@
     "pages/user/home",
     "pages/index/index",
     "pages/auth/login",
+    "pages/auth/wechat-login",
     "pages/auth/register",
     "pages/auth/role",
     "pages/features/features",
@@ -25,7 +26,6 @@
     "pages/user/login",
     "pages/admin/metrics",
     "pages/cdk/redeem",
-    "pages/cdk/admin-batch",
     "pages/test/index"
   ],
   "subPackages": [],

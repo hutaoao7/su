@@ -143,12 +143,15 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {
 
-
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 28));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 31));
 //
 //
 //
@@ -163,10 +166,67 @@ var _default = {
   computed: {
     hasWxLogin: function hasWxLogin() {
       return typeof this.wxLogin === 'function';
+    },
+    user: function user() {
+      // 假设用户信息存储在全局或Vuex
+      return this.$store && this.$store.state.user;
+    }
+  },
+  methods: {
+    handleWxLogin: function handleWxLogin() {
+      var _this = this;
+      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
+        var res;
+        return _regenerator.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (!(typeof _this.wxLogin !== 'function')) {
+                  _context.next = 3;
+                  break;
+                }
+                uni.showToast({
+                  title: '登录功能暂未实现',
+                  icon: 'none'
+                });
+                return _context.abrupt("return");
+              case 3:
+                _context.prev = 3;
+                _context.next = 6;
+                return _this.wxLogin();
+              case 6:
+                res = _context.sent;
+                uni.showToast({
+                  title: '登录成功',
+                  icon: 'success'
+                });
+
+                // 登录成功后，返回个人中心
+                uni.switchTab({
+                  url: '/pages/user/home'
+                });
+                _context.next = 15;
+                break;
+              case 11:
+                _context.prev = 11;
+                _context.t0 = _context["catch"](3);
+                console.error('wxLogin error', _context.t0);
+                uni.showToast({
+                  title: _context.t0 && _context.t0.message || '登录失败',
+                  icon: 'none'
+                });
+              case 15:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[3, 11]]);
+      }))();
     }
   }
 };
 exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ })
 

@@ -4,7 +4,7 @@
     <view class="card user-card">
       <view class="user-header">
         <view class="avatar-container">
-          <image v-if="userInfo && userInfo.avatar" :src="userInfo.avatar" class="avatar" mode="aspectFill" />
+          <image v-if="user && user.avatarUrl" :src="user.avatarUrl" class="avatar" mode="aspectFill" />
           <view v-else class="avatar-placeholder">
             <text class="avatar-text">👤</text>
           </view>
@@ -114,32 +114,33 @@ export default {
 		return {
 			title: 'Hello',
 			userInfo: null,
-			result: null
+			result: null,
+			user: null
 		}
 	},
 	computed: {
 		isLoggedIn() {
-			// 基于现有数据判断登录状态
-			return this.userInfo && (this.userInfo.id || this.userInfo.openid);
+			// 基于token和用户信息判断登录状态
+			return this.user && this.user.uid;
 		},
 		userName() {
-			if (!this.userInfo) return '游客';
-			return this.userInfo.nickname || this.userInfo.name || '用户';
+			if (!this.user) return '游客';
+			return this.user.nickname || '用户';
 		},
 		userStatusText() {
 			if (!this.isLoggedIn) return '点击登录获取完整服务';
-			return this.userInfo.role === 'vip' ? 'VIP 会员' : '普通用户';
+			return this.user && this.user.role === 'vip' ? 'VIP 会员' : '普通用户';
 		},
 		canAdmin() {
 			// 基于现有数据判断管理员权限
-			return this.userInfo && (this.userInfo.role === 'admin' || this.userInfo.isAdmin);
+			return this.user && (this.user.role === 'admin' || this.user.isAdmin);
 		},
 		hasSettings() {
 			// 检查是否有设置页面
 			return true; // 根据 pages.json 存在 settings 页面
 		},
 		hasLogout() {
-			return this.isLoggedIn && typeof this.logout === 'function';
+			return this.isLoggedIn;
 		},
 		resultText() {
 			if (!this.result) return '';
@@ -151,25 +152,35 @@ export default {
 		}
 	},
 	onLoad() {
-
+		this.checkLoginStatus();
+	},
+	onShow() {
+		this.checkLoginStatus();
 	},
 	methods: {
-		// 既有方法占位符
-		login() { console.log('login method called'); },
-		logout() { console.log('logout method called'); },
+		// 检查登录状态
+		checkLoginStatus() {
+			this.user = uni.getStorageSync('user') || null;
+		},
 
 		// 事件处理方法
+		goLogin() {
+			uni.navigateTo({ url: '/pages/auth/wechat-login' });
+		},
 		handleLogin() {
-			if (typeof this.login === 'function') {
-				this.login();
-			} else {
-				uni.navigateTo({ url: '/pages/auth/login' });
-			}
+			this.goLogin();
 		},
 		handleLogout() {
-			if (typeof this.logout === 'function') {
-				this.logout();
-			}
+			uni.removeStorageSync('token');
+			uni.removeStorageSync('user');
+			uni.showToast({
+				title: '已退出',
+				icon: 'success'
+			});
+			this.user = null;
+		},
+		logout() {
+			this.handleLogout();
 		},
 		handleEditProfile() {
 			uni.navigateTo({ url: '/pages/user/profile' });

@@ -257,13 +257,14 @@ var _default = {
     return {
       title: 'Hello',
       userInfo: null,
-      result: null
+      result: null,
+      user: null
     };
   },
   computed: {
     isLoggedIn: function isLoggedIn() {
-      // 基于现有数据判断登录状态
-      return this.userInfo && (this.userInfo.id || this.userInfo.openid);
+      // 基于token和用户信息判断登录状态
+      return this.user && this.user.uid;
     },
     userName: function userName() {
       if (!this.userInfo) return '游客';
@@ -295,27 +296,24 @@ var _default = {
   },
   onLoad: function onLoad() {},
   methods: {
-    // 既有方法占位符
-    login: function login() {
-      console.log('login method called');
-    },
-    logout: function logout() {
-      console.log('logout method called');
+    // 检查登录状态
+    checkLoginStatus: function checkLoginStatus() {
+      this.user = uni.getStorageSync('user') || null;
     },
     // 事件处理方法
+    goLogin: function goLogin() {
+      uni.navigateTo({
+        url: '/pages/auth/wechat-login'
+      });
+    },
     handleLogin: function handleLogin() {
-      if (typeof this.login === 'function') {
-        this.login();
-      } else {
-        uni.navigateTo({
-          url: '/pages/auth/login'
-        });
-      }
+      this.goLogin();
     },
     handleLogout: function handleLogout() {
-      if (typeof this.logout === 'function') {
-        this.logout();
-      }
+      uni.removeStorageSync('token');
+      uni.removeStorageSync('user');
+      this.$u.toast('已退出');
+      this.user = null;
     },
     handleEditProfile: function handleEditProfile() {
       uni.navigateTo({

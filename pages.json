@@ -5,6 +5,7 @@
     { "path": "pages/index/index",         "style": { "navigationStyle": "default", "navigationBarTitleText": "翎心" } },
 
     { "path": "pages/auth/login",          "style": { "navigationStyle": "default", "navigationBarTitleText": "登录/注册" } },
+    { "path": "pages/auth/wechat-login",   "style": { "navigationStyle": "default", "navigationBarTitleText": "登录" } },
     { "path": "pages/auth/register",       "style": { "navigationStyle": "default", "navigationBarTitleText": "注册" } },
     { "path": "pages/auth/role",           "style": { "navigationStyle": "default", "navigationBarTitleText": "角色选择" } },
 
@@ -34,8 +35,7 @@
     { "path": "pages/admin/metrics",       "style": { "navigationStyle": "default", "navigationBarTitleText": "数据指标" } },
 
     { "path": "pages/cdk/redeem",          "style": { "navigationStyle": "default", "navigationBarTitleText": "CDK 兑换" } },
-    { "path": "pages/cdk/admin-batch",     "style": { "navigationStyle": "default", "navigationBarTitleText": "CDK 管理" } },
-    
+  
     { "path": "pages/test/index",          "style": { "navigationStyle": "default", "navigationBarTitleText": "测试页面" } }
   ],
   "globalStyle": {
