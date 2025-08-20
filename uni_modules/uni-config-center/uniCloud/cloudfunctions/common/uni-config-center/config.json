@@ -1,0 +1,28 @@
+{
+  "dcloudAppid": "__UNI__YOUR_APPID",
+  "passwordSecret": "passwordSecret-demo",
+  "tokenSecret": "tokenSecret-demo",
+  "tokenExpiresIn": 2592000,
+  "tokenExpiresThreshold": 600000,
+  "passwordErrorLimit": 6,
+  "passwordErrorRetryTime": 3600,
+  "autoSetDcloudAppid": true,
+  "tokenMaxQuantity": 10,
+  "removePermissionAndRoleFromToken": false,
+  "bindTokenToDevice": false,
+  "passwordStrength": "medium",
+  "app": {
+    "oauth": {
+      "weixin": {
+        "appid": "wx5a3c2fd2f74332b9",
+        "appsecret": "33ab41087a867e6686c1b39af34f3854
+"
+      }
+    }
+  },
+  "mp-weixin": {
+    "appid": "wx5a3c2fd2f74332b9", 
+    "secret": "33ab41087a867e6686c1b39af34f3854
+"
+  }
+}

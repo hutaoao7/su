@@ -1,0 +1,9 @@
+{
+  "name": "auth-wechat-oneTap",
+  "version": "1.0.0",
+  "description": "微信一键登录云函数",
+  "main": "index.js",
+  "dependencies": {
+    "uni-config-center": "file:../common/uni-config-center"
+  }
+}
