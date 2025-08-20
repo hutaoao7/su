@@ -10101,7 +10101,7 @@ var b = "development" === "development",
   k = "true" === undefined || !0 === undefined,
   A = T([]),
   P = "h5" === E ? "web" : "app-plus" === E || "app-harmony" === E ? "app" : E,
-  C = T({"address":["127.0.0.1","172.18.0.1","26.92.214.110","192.168.116.202"],"servePort":7001,"debugPort":9001,"initialLaunchType":"local","skipFiles":["<node_internals>/**","D:/HBuilderX.4.65.2025051206/HBuilderX/plugins/unicloud/**/*.js"]}),
+  C = T({"address":["127.0.0.1","172.18.0.1","26.92.214.110","192.168.116.202"],"servePort":7000,"debugPort":9000,"initialLaunchType":"remote","skipFiles":["<node_internals>/**","D:/HBuilderX.4.65.2025051206/HBuilderX/plugins/unicloud/**/*.js"]}),
   O = T([{"provider":"aliyun","spaceName":"test","spaceId":"mp-de9ea68f-5feb-48aa-9773-a231ce66de43","clientSecret":"xpaGJYnowjIcXQDW91/9pQ==","endpoint":"https://api.next.bspapp.com"}]) || [],
   x = true;
 var N = "";

@@ -267,23 +267,23 @@ var _default = {
       return this.user && this.user.uid;
     },
     userName: function userName() {
-      if (!this.userInfo) return '游客';
-      return this.userInfo.nickname || this.userInfo.name || '用户';
+      if (!this.user) return '游客';
+      return this.user.nickname || '用户';
     },
     userStatusText: function userStatusText() {
       if (!this.isLoggedIn) return '点击登录获取完整服务';
-      return this.userInfo.role === 'vip' ? 'VIP 会员' : '普通用户';
+      return this.user && this.user.role === 'vip' ? 'VIP 会员' : '普通用户';
     },
     canAdmin: function canAdmin() {
       // 基于现有数据判断管理员权限
-      return this.userInfo && (this.userInfo.role === 'admin' || this.userInfo.isAdmin);
+      return this.user && (this.user.role === 'admin' || this.user.isAdmin);
     },
     hasSettings: function hasSettings() {
       // 检查是否有设置页面
       return true; // 根据 pages.json 存在 settings 页面
     },
     hasLogout: function hasLogout() {
-      return this.isLoggedIn && typeof this.logout === 'function';
+      return this.isLoggedIn;
     },
     resultText: function resultText() {
       if (!this.result) return '';
@@ -294,7 +294,12 @@ var _default = {
       }
     }
   },
-  onLoad: function onLoad() {},
+  onLoad: function onLoad() {
+    this.checkLoginStatus();
+  },
+  onShow: function onShow() {
+    this.checkLoginStatus();
+  },
   methods: {
     // 检查登录状态
     checkLoginStatus: function checkLoginStatus() {
@@ -312,8 +317,14 @@ var _default = {
     handleLogout: function handleLogout() {
       uni.removeStorageSync('token');
       uni.removeStorageSync('user');
-      this.$u.toast('已退出');
+      uni.showToast({
+        title: '已退出',
+        icon: 'success'
+      });
       this.user = null;
+    },
+    logout: function logout() {
+      this.handleLogout();
     },
     handleEditProfile: function handleEditProfile() {
       uni.navigateTo({

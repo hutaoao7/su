@@ -1,26 +1,31 @@
-// main.js  —— 适配 H5 / 小程序，H5 才挂错误监听（方案 A）
 import Vue from 'vue'
 import App from './App'
+
+// ✅ 引入 uView（如果你用的是 uview-plus，把这一行改掉）
+import uView from '@/uni_modules/uview-ui'
+
+// 全局注册 uView
+Vue.use(uView)
+
+// 确保 this.$u 可用（部分版本需要手动挂载）
+Vue.prototype.$u = uni.$u
 
 Vue.config.productionTip = false
 
 // #ifdef H5
 if (process.env.NODE_ENV !== 'production') {
-  const show = (label, err) => {
-    try {
-      const el = document.createElement('div')
-      el.style.cssText =
-        'position:fixed;left:0;right:0;top:0;z-index:99999;background:#ff4d4f;color:#fff;padding:8px 12px;font-size:12px'
-      el.textContent = `[${label}] ` + (err && (err.stack || err.message || err))
-      document.body.appendChild(el)
-    } catch (e) {
-      console.error(label, err)
+  window.addEventListener('error', function (event) {
+    if (event.message && event.message.includes('ResizeObserver loop limit exceeded')) {
+      // 忽略 ResizeObserver 错误
+      event.stopImmediatePropagation()
     }
-  }
-  window.addEventListener('error', e => show('onerror', e.error || e.message))
-  window.addEventListener('unhandledrejection', e => show('unhandledrejection', e.reason || e))
+  })
 }
 // #endif
 
 App.mpType = 'app'
-new Vue({ ...App }).$mount()
+
+const app = new Vue({
+  ...App
+})
+app.$mount()
