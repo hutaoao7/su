@@ -19,6 +19,10 @@
       <view class="card-header">
         <text class="card-title">📊 维度分析</text>
       </view>
+      <!-- 如果Canvas 2D滚动问题无法解决，取消注释下面旧版API -->
+      <!-- <canvas canvas-id="radarChart" class="chart-canvas" @touchstart="handleChartTouch"></canvas> -->
+      
+      <!-- Canvas 2D API（性能更好，但滚动可能有问题） -->
       <canvas 
         id="radarChart"
         type="2d" 
@@ -43,6 +47,10 @@
         <text class="card-title">📈 历史趋势</text>
         <text class="chart-subtitle">最近{{ historyData.length }}次</text>
       </view>
+      <!-- 如果Canvas 2D滚动问题无法解决，取消注释下面旧版API -->
+      <!-- <canvas canvas-id="barChart" class="chart-canvas"></canvas> -->
+      
+      <!-- Canvas 2D API（性能更好，但滚动可能有问题） -->
       <canvas 
         id="barChart"
         type="2d" 
@@ -184,6 +192,9 @@ export default {
       // 滚动修复定时器
       scrollTimer: null,
       
+      // RAF节流标志
+      rafPending: false,
+      
       // Canvas尺寸缓存
       radarCanvasSize: null,
       barCanvasSize: null,
@@ -260,9 +271,10 @@ export default {
   
   onPageScroll(e) {
     // 修复Canvas 2D滚动时位置异常的问题
-    // 通过强制重绘来同步Canvas位置
+    // 实时重绘Canvas（无延迟）
     if (this.radarCtx || this.barCtx) {
-      this.fixCanvasPosition();
+      // 取消使用节流，改为requestAnimationFrame实时重绘
+      this.fixCanvasPositionImmediate();
     }
   },
   
@@ -907,7 +919,7 @@ export default {
     },
     
     /**
-     * 修复Canvas滚动时位置异常
+     * 修复Canvas滚动时位置异常（节流版本 - 备用）
      * Canvas 2D同层渲染在滚动时可能出现位置偏移
      * 通过节流重绘来修复此问题
      */
@@ -940,6 +952,53 @@ export default {
           console.error('[RESULT] Canvas重绘失败:', error);
         }
       }, 100); // 100ms节流，平衡性能和流畅度
+    },
+    
+    /**
+     * 实时修复Canvas位置（无节流）
+     * 使用requestAnimationFrame确保每帧都重绘
+     * 适用于滚动时Canvas严重错位的情况
+     */
+    fixCanvasPositionImmediate() {
+      // 使用RAF节流，确保不会在同一帧重复绘制
+      if (this.rafPending) {
+        return;
+      }
+      
+      this.rafPending = true;
+      
+      // 使用requestAnimationFrame，在下一个渲染帧重绘
+      // 小程序不支持RAF，降级使用setTimeout(0)
+      const raf = typeof requestAnimationFrame !== 'undefined' 
+        ? requestAnimationFrame 
+        : (callback) => setTimeout(callback, 16);
+      
+      raf(() => {
+        try {
+          this.rafPending = false;
+          
+          // 重绘雷达图
+          if (this.radarCtx && this.radarCanvasSize) {
+            this.drawRadarChart(
+              this.radarCtx,
+              this.radarCanvasSize.width,
+              this.radarCanvasSize.height
+            );
+          }
+          
+          // 重绘柱状图
+          if (this.barCtx && this.barCanvasSize) {
+            this.drawBarChart(
+              this.barCtx,
+              this.barCanvasSize.width,
+              this.barCanvasSize.height
+            );
+          }
+        } catch (error) {
+          console.error('[RESULT] Canvas实时重绘失败:', error);
+          this.rafPending = false;
+        }
+      });
     }
   }
 };
