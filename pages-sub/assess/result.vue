@@ -20,7 +20,8 @@
         <text class="card-title">📊 维度分析</text>
       </view>
       <canvas 
-        canvas-id="radarChart" 
+        id="radarChart"
+        type="2d" 
         class="chart-canvas"
         @touchstart="handleChartTouch"
       ></canvas>
@@ -43,7 +44,8 @@
         <text class="chart-subtitle">最近{{ historyData.length }}次</text>
       </view>
       <canvas 
-        canvas-id="barChart" 
+        id="barChart"
+        type="2d" 
         class="chart-canvas"
       ></canvas>
     </view>
@@ -325,190 +327,293 @@ export default {
      * 初始化雷达图
      */
     initRadarChart() {
-      const query = uni.createSelectorQuery().in(this);
-      query.select('#radarChart').fields({ node: true, size: true }).exec((res) => {
-        if (res && res[0]) {
-          const canvas = res[0].node;
-          const ctx = canvas.getContext('2d');
+      try {
+        const query = uni.createSelectorQuery().in(this);
+        query.select('#radarChart').fields({ node: true, size: true }).exec((res) => {
+          if (!res || !res[0]) {
+            console.error('[RESULT] 雷达图Canvas查询失败', res);
+            this.showRadarChart = false;
+            uni.showToast({
+              title: '图表初始化失败',
+              icon: 'none',
+              duration: 2000
+            });
+            return;
+          }
           
-          const dpr = uni.getSystemInfoSync().pixelRatio;
+          const canvas = res[0].node;
+          if (!canvas) {
+            console.error('[RESULT] 雷达图Canvas节点获取失败');
+            this.showRadarChart = false;
+            return;
+          }
+          
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            console.error('[RESULT] 雷达图Canvas上下文获取失败');
+            this.showRadarChart = false;
+            return;
+          }
+          
+          // 获取设备像素比（高清屏适配）
+          const systemInfo = uni.getSystemInfoSync();
+          const dpr = systemInfo.pixelRatio || 2;
+          
+          // 设置Canvas实际渲染尺寸（物理像素）
           canvas.width = res[0].width * dpr;
           canvas.height = res[0].height * dpr;
+          
+          // 缩放画布坐标系（保持逻辑像素一致）
           ctx.scale(dpr, dpr);
+          
+          console.log('[RESULT] 雷达图Canvas初始化成功', {
+            width: res[0].width,
+            height: res[0].height,
+            dpr: dpr
+          });
           
           this.radarCtx = ctx;
           this.drawRadarChart(ctx, res[0].width, res[0].height);
-        }
-      });
+        });
+      } catch (error) {
+        console.error('[RESULT] 雷达图初始化异常:', error);
+        this.showRadarChart = false;
+        uni.showToast({
+          title: '图表加载失败',
+          icon: 'none'
+        });
+      }
     },
     
     /**
      * 绘制雷达图
      */
     drawRadarChart(ctx, width, height) {
-      const centerX = width / 2;
-      const centerY = height / 2;
-      const radius = Math.min(width, height) / 2 - 40;
-      const levels = 5; // 5个等级线
-      const angleStep = (Math.PI * 2) / this.dimensions.length;
-      
-      // 清空画布
-      ctx.clearRect(0, 0, width, height);
-      
-      // 绘制背景网格
-      ctx.strokeStyle = '#E5E5EA';
-      ctx.lineWidth = 1;
-      
-      for (let i = 1; i <= levels; i++) {
-        const r = (radius / levels) * i;
+      try {
+        if (!ctx || !this.dimensions || this.dimensions.length === 0) {
+          console.error('[RESULT] 雷达图绘制条件不满足', {
+            ctx: !!ctx,
+            dimensions: this.dimensions?.length
+          });
+          return;
+        }
+        
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const radius = Math.min(width, height) / 2 - 40;
+        const levels = 5; // 5个等级线
+        const angleStep = (Math.PI * 2) / this.dimensions.length;
+        
+        // 清空画布
+        ctx.clearRect(0, 0, width, height);
+        
+        // 绘制背景网格
+        ctx.strokeStyle = '#E5E5EA';
+        ctx.lineWidth = 1;
+        
+        for (let i = 1; i <= levels; i++) {
+          const r = (radius / levels) * i;
+          ctx.beginPath();
+          
+          for (let j = 0; j <= this.dimensions.length; j++) {
+            const angle = angleStep * j - Math.PI / 2;
+            const x = centerX + r * Math.cos(angle);
+            const y = centerY + r * Math.sin(angle);
+            
+            if (j === 0) {
+              ctx.moveTo(x, y);
+            } else {
+              ctx.lineTo(x, y);
+            }
+          }
+          
+          ctx.closePath();
+          ctx.stroke();
+        }
+        
+        // 绘制坐标轴线
+        ctx.strokeStyle = '#C7C7CC';
+        ctx.lineWidth = 1;
+        
+        this.dimensions.forEach((dim, index) => {
+          const angle = angleStep * index - Math.PI / 2;
+          const x = centerX + radius * Math.cos(angle);
+          const y = centerY + radius * Math.sin(angle);
+          
+          ctx.beginPath();
+          ctx.moveTo(centerX, centerY);
+          ctx.lineTo(x, y);
+          ctx.stroke();
+          
+          // 绘制标签
+          ctx.fillStyle = '#1D1D1F';
+          ctx.font = '12px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          
+          const labelX = centerX + (radius + 20) * Math.cos(angle);
+          const labelY = centerY + (radius + 20) * Math.sin(angle);
+          ctx.fillText(dim.label, labelX, labelY);
+        });
+        
+        // 绘制数据区域
+        ctx.fillStyle = 'rgba(102, 126, 234, 0.2)';
+        ctx.strokeStyle = '#667eea';
+        ctx.lineWidth = 2;
         ctx.beginPath();
         
-        for (let j = 0; j <= this.dimensions.length; j++) {
-          const angle = angleStep * j - Math.PI / 2;
+        this.dimensions.forEach((dim, index) => {
+          const angle = angleStep * index - Math.PI / 2;
+          const value = dim.value / dim.max; // 归一化
+          const r = radius * value;
           const x = centerX + r * Math.cos(angle);
           const y = centerY + r * Math.sin(angle);
           
-          if (j === 0) {
+          if (index === 0) {
             ctx.moveTo(x, y);
           } else {
             ctx.lineTo(x, y);
           }
-        }
+          
+          // 绘制数据点
+          ctx.save();
+          ctx.fillStyle = dim.color;
+          ctx.beginPath();
+          ctx.arc(x, y, 4, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        });
         
         ctx.closePath();
-        ctx.stroke();
-      }
-      
-      // 绘制坐标轴线
-      ctx.strokeStyle = '#C7C7CC';
-      ctx.lineWidth = 1;
-      
-      this.dimensions.forEach((dim, index) => {
-        const angle = angleStep * index - Math.PI / 2;
-        const x = centerX + radius * Math.cos(angle);
-        const y = centerY + radius * Math.sin(angle);
-        
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        
-        // 绘制标签
-        ctx.fillStyle = '#1D1D1F';
-        ctx.font = '12px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        
-        const labelX = centerX + (radius + 20) * Math.cos(angle);
-        const labelY = centerY + (radius + 20) * Math.sin(angle);
-        ctx.fillText(dim.label, labelX, labelY);
-      });
-      
-      // 绘制数据区域
-      ctx.fillStyle = 'rgba(102, 126, 234, 0.2)';
-      ctx.strokeStyle = '#667eea';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      
-      this.dimensions.forEach((dim, index) => {
-        const angle = angleStep * index - Math.PI / 2;
-        const value = dim.value / dim.max; // 归一化
-        const r = radius * value;
-        const x = centerX + r * Math.cos(angle);
-        const y = centerY + r * Math.sin(angle);
-        
-        if (index === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
-        }
-        
-        // 绘制数据点
-        ctx.save();
-        ctx.fillStyle = dim.color;
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
-      });
-      
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-      
-      console.log('[RESULT] 雷达图绘制完成');
+        ctx.stroke();
+        
+        console.log('[RESULT] 雷达图绘制完成');
+      } catch (error) {
+        console.error('[RESULT] 雷达图绘制异常:', error);
+        this.showRadarChart = false;
+      }
     },
     
     /**
      * 初始化柱状图
      */
     initBarChart() {
-      const query = uni.createSelectorQuery().in(this);
-      query.select('#barChart').fields({ node: true, size: true }).exec((res) => {
-        if (res && res[0]) {
-          const canvas = res[0].node;
-          const ctx = canvas.getContext('2d');
+      try {
+        const query = uni.createSelectorQuery().in(this);
+        query.select('#barChart').fields({ node: true, size: true }).exec((res) => {
+          if (!res || !res[0]) {
+            console.error('[RESULT] 柱状图Canvas查询失败', res);
+            uni.showToast({
+              title: '历史图表初始化失败',
+              icon: 'none',
+              duration: 2000
+            });
+            return;
+          }
           
-          const dpr = uni.getSystemInfoSync().pixelRatio;
+          const canvas = res[0].node;
+          if (!canvas) {
+            console.error('[RESULT] 柱状图Canvas节点获取失败');
+            return;
+          }
+          
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            console.error('[RESULT] 柱状图Canvas上下文获取失败');
+            return;
+          }
+          
+          // 获取设备像素比（高清屏适配）
+          const systemInfo = uni.getSystemInfoSync();
+          const dpr = systemInfo.pixelRatio || 2;
+          
+          // 设置Canvas实际渲染尺寸（物理像素）
           canvas.width = res[0].width * dpr;
           canvas.height = res[0].height * dpr;
+          
+          // 缩放画布坐标系（保持逻辑像素一致）
           ctx.scale(dpr, dpr);
+          
+          console.log('[RESULT] 柱状图Canvas初始化成功', {
+            width: res[0].width,
+            height: res[0].height,
+            dpr: dpr
+          });
           
           this.barCtx = ctx;
           this.drawBarChart(ctx, res[0].width, res[0].height);
-        }
-      });
+        });
+      } catch (error) {
+        console.error('[RESULT] 柱状图初始化异常:', error);
+        uni.showToast({
+          title: '历史图表加载失败',
+          icon: 'none'
+        });
+      }
     },
     
     /**
      * 绘制柱状图
      */
     drawBarChart(ctx, width, height) {
-      const padding = 40;
-      const barWidth = (width - padding * 2) / this.historyData.length - 10;
-      const maxScore = Math.max(...this.historyData.map(d => d.score), this.maxScore);
-      const chartHeight = height - padding * 2;
-      
-      // 清空画布
-      ctx.clearRect(0, 0, width, height);
-      
-      // 绘制Y轴线
-      ctx.strokeStyle = '#E5E5EA';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(padding, padding);
-      ctx.lineTo(padding, height - padding);
-      ctx.lineTo(width - padding, height - padding);
-      ctx.stroke();
-      
-      // 绘制柱子
-      this.historyData.forEach((data, index) => {
-        const x = padding + index * (barWidth + 10) + 5;
-        const barHeight = (data.score / maxScore) * chartHeight;
-        const y = height - padding - barHeight;
+      try {
+        if (!ctx || !this.historyData || this.historyData.length === 0) {
+          console.error('[RESULT] 柱状图绘制条件不满足', {
+            ctx: !!ctx,
+            historyData: this.historyData?.length
+          });
+          return;
+        }
         
-        // 柱子渐变
-        const gradient = ctx.createLinearGradient(0, y, 0, height - padding);
-        gradient.addColorStop(0, index === this.historyData.length - 1 ? '#667eea' : '#C7C7CC');
-        gradient.addColorStop(1, index === this.historyData.length - 1 ? '#764ba2' : '#E5E5EA');
+        const padding = 40;
+        const barWidth = (width - padding * 2) / this.historyData.length - 10;
+        const maxScore = Math.max(...this.historyData.map(d => d.score), this.maxScore);
+        const chartHeight = height - padding * 2;
         
-        ctx.fillStyle = gradient;
-        ctx.fillRect(x, y, barWidth, barHeight);
+        // 清空画布
+        ctx.clearRect(0, 0, width, height);
         
-        // 分数标签
-        ctx.fillStyle = '#1D1D1F';
-        ctx.font = '10px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(data.score, x + barWidth / 2, y - 5);
+        // 绘制Y轴线
+        ctx.strokeStyle = '#E5E5EA';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(padding, padding);
+        ctx.lineTo(padding, height - padding);
+        ctx.lineTo(width - padding, height - padding);
+        ctx.stroke();
         
-        // 日期标签
-        ctx.fillStyle = '#86868B';
-        ctx.font = '9px sans-serif';
-        const dateText = this.formatDate(data.timestamp);
-        ctx.fillText(dateText, x + barWidth / 2, height - padding + 15);
-      });
-      
-      console.log('[RESULT] 柱状图绘制完成');
+        // 绘制柱子
+        this.historyData.forEach((data, index) => {
+          const x = padding + index * (barWidth + 10) + 5;
+          const barHeight = (data.score / maxScore) * chartHeight;
+          const y = height - padding - barHeight;
+          
+          // 柱子渐变
+          const gradient = ctx.createLinearGradient(0, y, 0, height - padding);
+          gradient.addColorStop(0, index === this.historyData.length - 1 ? '#667eea' : '#C7C7CC');
+          gradient.addColorStop(1, index === this.historyData.length - 1 ? '#764ba2' : '#E5E5EA');
+          
+          ctx.fillStyle = gradient;
+          ctx.fillRect(x, y, barWidth, barHeight);
+          
+          // 分数标签
+          ctx.fillStyle = '#1D1D1F';
+          ctx.font = '10px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(data.score, x + barWidth / 2, y - 5);
+          
+          // 日期标签
+          ctx.fillStyle = '#86868B';
+          ctx.font = '9px sans-serif';
+          const dateText = this.formatDate(data.timestamp);
+          ctx.fillText(dateText, x + barWidth / 2, height - padding + 15);
+        });
+        
+        console.log('[RESULT] 柱状图绘制完成');
+      } catch (error) {
+        console.error('[RESULT] 柱状图绘制异常:', error);
+      }
     },
     
     /**
@@ -678,7 +783,7 @@ export default {
           // #endif
           
           // #ifdef H5
-          uni.showToast({
+      uni.showToast({
             title: '图片已生成',
             icon: 'success'
           });
@@ -688,7 +793,7 @@ export default {
         console.error('[RESULT] 分享失败:', error);
         uni.showToast({
           title: '分享失败',
-          icon: 'none'
+        icon: 'none'
         });
       }
       
