@@ -180,6 +180,13 @@ export default {
       
       // 图表显示标志
       showRadarChart: false,
+      
+      // 滚动修复定时器
+      scrollTimer: null,
+      
+      // Canvas尺寸缓存
+      radarCanvasSize: null,
+      barCanvasSize: null,
     };
   },
   
@@ -249,6 +256,22 @@ export default {
       level: this.level,
       score: this.score
     });
+  },
+  
+  onPageScroll(e) {
+    // 修复Canvas 2D滚动时位置异常的问题
+    // 通过强制重绘来同步Canvas位置
+    if (this.radarCtx || this.barCtx) {
+      this.fixCanvasPosition();
+    }
+  },
+  
+  onHide() {
+    // 页面隐藏时清理定时器
+    if (this.scrollTimer) {
+      clearTimeout(this.scrollTimer);
+      this.scrollTimer = null;
+    }
   },
   
   methods: {
@@ -372,7 +395,13 @@ export default {
             dpr: dpr
           });
           
+          // 保存Canvas上下文和尺寸
           this.radarCtx = ctx;
+          this.radarCanvasSize = {
+            width: res[0].width,
+            height: res[0].height
+          };
+          
           this.drawRadarChart(ctx, res[0].width, res[0].height);
         });
       } catch (error) {
@@ -541,7 +570,13 @@ export default {
             dpr: dpr
           });
           
+          // 保存Canvas上下文和尺寸
           this.barCtx = ctx;
+          this.barCanvasSize = {
+            width: res[0].width,
+            height: res[0].height
+          };
+          
           this.drawBarChart(ctx, res[0].width, res[0].height);
         });
       } catch (error) {
@@ -869,6 +904,42 @@ export default {
     handleChartTouch() {
       // 可以添加图表交互功能
       console.log('[RESULT] 图表触摸');
+    },
+    
+    /**
+     * 修复Canvas滚动时位置异常
+     * Canvas 2D同层渲染在滚动时可能出现位置偏移
+     * 通过节流重绘来修复此问题
+     */
+    fixCanvasPosition() {
+      // 使用节流避免频繁重绘
+      if (this.scrollTimer) {
+        clearTimeout(this.scrollTimer);
+      }
+      
+      this.scrollTimer = setTimeout(() => {
+        try {
+          // 重绘雷达图
+          if (this.radarCtx && this.radarCanvasSize) {
+            this.drawRadarChart(
+              this.radarCtx,
+              this.radarCanvasSize.width,
+              this.radarCanvasSize.height
+            );
+          }
+          
+          // 重绘柱状图
+          if (this.barCtx && this.barCanvasSize) {
+            this.drawBarChart(
+              this.barCtx,
+              this.barCanvasSize.width,
+              this.barCanvasSize.height
+            );
+          }
+        } catch (error) {
+          console.error('[RESULT] Canvas重绘失败:', error);
+        }
+      }, 100); // 100ms节流，平衡性能和流畅度
     }
   }
 };
