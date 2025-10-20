@@ -1,0 +1,20 @@
+4851b9b test: 添加综合测试运行器和测试套件
+ebc3997 docs: 添加项目完成检查清单
+879c1d8 docs: 添加项目完成最终报告
+67ee202 docs: 添加Git提交总结文档
+a25e757 feat(M2-security): 实现撤回同意与账号注销功能
+a5c3162 feat: 完成M2-数据导出模块（12个任务）
+01b64bf feat(security): 实现用户数据导出功能 - M2安全模块第二批
+70fa45d docs(security): 添加本地存储加密集成指南
+1075dec feat(security): 实现本地存储加密功能 - M2安全模块首个完成
+e3bd0e9 feat: 实现协议内容搜索、高亮和PDF导出功能
+On branch dev
+Your branch is ahead of 'origin/dev' by 4 commits.
+  (use "git push" to publish your local commits)
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	GIT-PUSH-STATUS-2025-10-20.md
+	git-log.txt
+
+nothing added to commit but untracked files present (use "git add" to track)
