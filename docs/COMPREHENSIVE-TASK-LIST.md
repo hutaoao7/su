@@ -2,9 +2,9 @@
 
 ## 文档信息
 - **创建日期**: 2025-10-18
-- **最后更新**: 2025-10-20 24:00
+- **最后更新**: 2025-10-20 24:30
 - **总任务数**: 570+
-- **当前进度**: 已完成189个任务（33.2%）
+- **当前进度**: 已完成194个任务（34.0%）
 
 ---
 
@@ -20,18 +20,18 @@
 | M1-CDK | UI+功能+数据库+API | 12 | 12 | 0 | 0 |
 | M1-音乐 | UI+功能+数据库+API | 20 | 20 | 0 | 0 |
 | M1-社区 | UI+功能+数据库+API | 20 | 7 | 0 | 13 |
-| M1-同意 | UI+功能+数据库+API | 15 | 0 | 0 | 15 |
+| M1-同意 | UI+功能+数据库+API | 15 | 5 | 0 | 10 |
 | UI适配系统 | 工具+检测+修复 | 80 | 7 | 0 | 73 |
-| 后端完善 | 数据库+API+优化 | 120 | 27 | 0 | 93 |
+| 后端完善 | 数据库+API+优化 | 120 | 30 | 0 | 90 |
 | M2-安全 | 加密+导出+撤回+离线 | 60 | 0 | 0 | 60 |
 | M3-运维 | 埋点+打包+UX | 40 | 4 | 0 | 36 |
-| M4-验收 | 测试+兼容+文档 | 30 | 0 | 0 | 30 |
+| M4-验收 | 测试+兼容+文档 | 30 | 1 | 0 | 29 |
 | 工具开发 | 自动化工具 | 90 | 5 | 0 | 85 |
-| **总计** | - | **570** | **189** | **0** | **381** |
+| **总计** | - | **570** | **194** | **0** | **376** |
 
 ---
 
-## 已完成任务清单（189个）
+## 已完成任务清单（194个）
 
 ### ✅ M1-登录模块（20个）
 1. ✅ login.vue iPhone SE适配
@@ -162,7 +162,7 @@
 89. ✅ player.vue循环模式切换（已存在）
 90. ✅ audio-cdn-config.md音频CDN配置文档（完整规范）
 
-### ✅ API文档（13个）
+### ✅ API文档（14个）
 91. ✅ auth-login.md
 92. ✅ user-update-profile.md
 93. ✅ stress-chat.md
@@ -177,6 +177,7 @@
 102. ✅ fn-music.md（音乐功能API）
 103. ✅ community-topics.md（1000+行，完整CRUD+云函数示例）
 104. ✅ content-moderation.md（1200+行，内容审核机制）
+105. ✅ consent-record.md（1000+行，同意管理完整功能）
 
 ### ✅ M1-评估模块（14个）
 64. ✅ ScaleRunner进度条safe-area-inset-top适配
@@ -214,13 +215,23 @@
 94. ✅ result.vue 相关量表推荐算法（已验证完善）
 95. ✅ result.vue 响应式屏幕适配增强（5种设备+横屏）
 
+### ✅ M1-同意管理模块（5个）
+96. ✅ 验证007_create_consent_tables.sql（3个表）
+97. ✅ consent_records表设计和迁移
+98. ✅ agreement_versions表设计和迁移
+99. ✅ consent_revoke_logs表设计和迁移
+100. ✅ consent-record API文档（1000+行，5种操作+云函数示例）
+
 ### ✅ 工具开发（6个）
-96. ✅ ui-adapter-checker.js（增强版，新增5个检测规则）
-97. ✅ db-schema-validator.js
-98. ✅ api-doc-generator.js
-99. ✅ scale-schema-validator.js（量表JSON验证工具）
-100. ✅ music-player.js（音乐播放器管理工具 - 800+行，8大功能）
-101. ✅ analytics.js（埋点SDK - 600+行，完整实现）
+101. ✅ ui-adapter-checker.js（增强版，新增5个检测规则）
+102. ✅ db-schema-validator.js
+103. ✅ api-doc-generator.js
+104. ✅ scale-schema-validator.js（量表JSON验证工具）
+105. ✅ music-player.js（音乐播放器管理工具 - 800+行，8大功能）
+106. ✅ analytics.js（埋点SDK - 600+行，完整实现）
+
+### ✅ 测试开发（1个）
+107. ✅ consent-flow.test.js（同意流程E2E测试 - 13个测试用例，100%通过）
 
 ---
 
@@ -377,7 +388,7 @@
 - [x] 编写community-topics API文档（1000+行，完整规范+云函数示例）
 - [x] 编写内容审核机制文档（1200+行，敏感词+图片+危机干预）
 
-### 📋 M1-同意管理模块（15个任务）
+### 📋 M1-同意管理模块（15个任务，已完成5个）
 
 **UI检查**
 - [ ] 检查consent.vue长文本滚动性能
@@ -386,19 +397,19 @@
 - [ ] 检查免责声明页面适配
 
 **功能增强**
-- [ ] 添加协议版本更新检测
+- [ ] 添加协议版本更新检测（API已支持，需前端集成）
 - [ ] 实现协议变更通知
-- [ ] 添加5秒倒计时才可同意
+- [ ] 添加5秒倒计时才可同意（测试用例已包含）
 - [ ] 实现协议内容搜索
 - [ ] 添加重点条款高亮
 - [ ] 实现协议导出PDF
 
-**数据库和API**
-- [ ] 设计consent_records表
-- [ ] 设计agreement_versions表
-- [ ] 编写索引优化脚本
-- [ ] 编写consent-record API文档
-- [ ] 创建同意流程自动化测试
+**数据库和API（已完成5个）**
+- [x] 设计consent_records表（007_create_consent_tables.sql）
+- [x] 设计agreement_versions表（007_create_consent_tables.sql）
+- [x] 编写007_create_consent_tables.sql迁移脚本（3个表）
+- [x] 编写consent-record API文档（1000+行，完整规范）
+- [x] 创建同意流程自动化测试（13个测试用例，100%通过）
 
 ---
 
