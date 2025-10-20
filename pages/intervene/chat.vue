@@ -10,6 +10,9 @@
         </view>
       </view>
       <view class="action-buttons">
+        <view class="action-btn personality-btn" @tap="showPersonalitySelector">
+          <text class="personality-icon">{{ getPersonalityConfig(currentPersonality).icon }}</text>
+        </view>
         <view class="action-btn" @tap="handleNewSession">
           <u-icon name="plus" size="18" color="#8E8E93"></u-icon>
         </view>
@@ -18,6 +21,48 @@
         </view>
       </view>
     </view>
+    
+    <!-- AI人格选择弹窗 -->
+    <u-popup v-model="showPersonalityPopup" mode="bottom" :safe-area-inset-bottom="true">
+      <view class="personality-popup">
+        <view class="popup-header">
+          <text class="popup-title">选择AI人格</text>
+          <view class="popup-close" @tap="showPersonalityPopup = false">
+            <u-icon name="close" size="18" color="#1D1D1F"></u-icon>
+          </view>
+        </view>
+        
+        <view class="personality-list">
+          <view 
+            v-for="personality in personalities" 
+            :key="personality.id"
+            class="personality-item"
+            :class="{ 'active': personality.id === currentPersonality }"
+            @tap="selectPersonality(personality.id)"
+          >
+            <view class="personality-icon-large">{{ personality.icon }}</view>
+            <view class="personality-info">
+              <text class="personality-name">{{ personality.name }}</text>
+              <text class="personality-desc">{{ personality.description }}</text>
+            </view>
+            <view v-if="personality.id === currentPersonality" class="personality-check">
+              <u-icon name="checkmark" size="20" color="#0A84FF"></u-icon>
+            </view>
+          </view>
+        </view>
+        
+        <view class="personality-examples">
+          <text class="examples-title">示例回复风格：</text>
+          <view 
+            v-for="(example, index) in getPersonalityConfig(currentPersonality).examples" 
+            :key="index"
+            class="example-item"
+          >
+            <text class="example-text">{{ example }}</text>
+          </view>
+        </view>
+      </view>
+    </u-popup>
     
     <!-- 会话列表弹窗 -->
     <u-popup v-model="showSessionPopup" mode="bottom" :safe-area-inset-bottom="true">
@@ -68,8 +113,13 @@
       </view>
       
       <view v-for="(msg, index) in messages" :key="index" :id="getMsgId(index)" class="message-item">
+        <!-- 系统消息 -->
+        <view v-if="msg.isSystem" class="system-message">
+          <text>{{ msg.content }}</text>
+        </view>
+        
         <!-- 用户消息 -->
-        <view v-if="msg.role === 'user'" class="message user-message">
+        <view v-else-if="msg.role === 'user'" class="message user-message">
           <view class="message-content-wrapper">
             <view class="message-content" @longpress="handleLongPress(msg, index)">
               <text>{{ msg.content }}</text>
@@ -197,6 +247,13 @@
 import tabBarManager from '@/utils/tabbar-manager.js';
 import chatStorage from '@/utils/chat-storage.js';
 import { checkSensitiveWords, getCrisisWarning, getSensitiveWarning } from '@/utils/sensitive-words.js';
+import { 
+  PersonalityType, 
+  getAllPersonalities, 
+  getPersonalityConfig,
+  savePersonalityPreference,
+  getPersonalityPreference 
+} from '@/utils/ai-personality.js';
 
 export default {
   data() {
@@ -214,6 +271,10 @@ export default {
       isLoadingHistory: false,
       favoriteMessages: [],  // 收藏的消息
       showEmojiPicker: false,  // 是否显示表情选择器
+      // AI人格相关
+      currentPersonality: PersonalityType.GENTLE, // 当前AI人格
+      showPersonalityPopup: false, // 显示人格选择弹窗
+      personalities: getAllPersonalities(), // 所有人格配置
       emojiList: [
         '😊', '😃', '😄', '😁', '😆', '😅', '🤣', '😂',
         '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩',
@@ -234,6 +295,10 @@ export default {
     // 初始化存储
     await chatStorage.init();
     
+    // 加载用户的AI人格偏好
+    this.currentPersonality = getPersonalityPreference();
+    console.log('[CHAT] 当前AI人格:', this.currentPersonality);
+    
     // 加载会话列表
     await this.loadSessions();
     
@@ -245,7 +310,8 @@ export default {
     
     // 如果没有历史消息，添加欢迎消息
     if (this.messages.length === 0) {
-      this.addAIMessage('您好！我是您的心理支持AI。无论您遇到什么困扰，都可以和我倾诉。我会认真倾听，并尽我所能给予支持和建议。');
+      const personalityConfig = getPersonalityConfig(this.currentPersonality);
+      this.addAIMessage(`您好！我是您的心理支持AI（${personalityConfig.name}）。无论您遇到什么困扰，都可以和我倾诉。我会认真倾听，并尽我所能给予支持和建议。`);
     }
     
     // 清理过期数据（后台执行）
@@ -833,6 +899,54 @@ export default {
     },
     
     /**
+     * 显示人格选择器
+     */
+    showPersonalitySelector() {
+      this.showPersonalityPopup = true;
+    },
+    
+    /**
+     * 选择AI人格
+     */
+    selectPersonality(personalityId) {
+      if (personalityId === this.currentPersonality) {
+        this.showPersonalityPopup = false;
+        return;
+      }
+      
+      const oldPersonality = getPersonalityConfig(this.currentPersonality);
+      const newPersonality = getPersonalityConfig(personalityId);
+      
+      // 更新人格
+      this.currentPersonality = personalityId;
+      
+      // 保存偏好
+      savePersonalityPreference(personalityId);
+      
+      // 关闭弹窗
+      this.showPersonalityPopup = false;
+      
+      // 提示用户
+      uni.showToast({
+        title: `已切换至${newPersonality.name}`,
+        icon: 'success',
+        duration: 1500
+      });
+      
+      // 添加系统提示
+      const systemMessage = {
+        role: 'system',
+        content: `（您已切换AI人格：${oldPersonality.name} → ${newPersonality.name}）`,
+        timestamp: Date.now(),
+        isSystem: true
+      };
+      this.messages.push(systemMessage);
+      this.scrollToBottom();
+      
+      console.log('[CHAT] 切换AI人格:', oldPersonality.name, '→', newPersonality.name);
+    },
+    
+    /**
      * 发送消息到AI并处理回复
      */
     async sendToAI(messageIndex) {
@@ -843,7 +957,7 @@ export default {
       try {
         // 准备发送的消息列表（只包含已成功的消息）
         const messagesToSend = this.messages
-          .filter(msg => msg.sendStatus !== 'failed' && msg.sendStatus !== 'sending')
+          .filter(msg => msg.sendStatus !== 'failed' && msg.sendStatus !== 'sending' && !msg.isSystem)
           .concat([this.messages[messageIndex]]);
         
         // 调用云函数获取AI回复
@@ -854,6 +968,7 @@ export default {
               role: m.role,
               content: m.content
             })),
+            personality: this.currentPersonality, // 传入当前人格
             stream: false
           }
         });
@@ -1793,5 +1908,123 @@ export default {
 .action-icon:active {
   transform: scale(0.9);
   background: #E5E5EA;
+}
+
+/* AI人格选择器 */
+.personality-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.personality-icon {
+  font-size: 20px;
+}
+
+.personality-popup {
+  background: #FFFFFF;
+  border-radius: 24rpx 24rpx 0 0;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.personality-list {
+  flex: 1;
+  padding: 16rpx 0;
+  max-height: 400rpx;
+  overflow-y: auto;
+}
+
+.personality-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  transition: background 0.2s ease;
+  gap: 20rpx;
+}
+
+.personality-item:active {
+  background: #F5F5F7;
+}
+
+.personality-item.active {
+  background: #F0F9FF;
+  border-left: 4rpx solid #0A84FF;
+}
+
+.personality-icon-large {
+  font-size: 48rpx;
+  min-width: 60rpx;
+  text-align: center;
+}
+
+.personality-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.personality-name {
+  font-size: 30rpx;
+  color: #1D1D1F;
+  font-weight: 600;
+}
+
+.personality-desc {
+  font-size: 24rpx;
+  color: #8E8E93;
+  line-height: 1.4;
+}
+
+.personality-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.personality-examples {
+  padding: 24rpx 32rpx;
+  background: #F9FAFB;
+  border-top: 1rpx solid #E5E5EA;
+  max-height: 300rpx;
+  overflow-y: auto;
+}
+
+.examples-title {
+  font-size: 26rpx;
+  color: #6B7280;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 16rpx;
+}
+
+.example-item {
+  padding: 16rpx 20rpx;
+  background: #FFFFFF;
+  border-radius: 12rpx;
+  margin-bottom: 12rpx;
+  border-left: 3rpx solid #667eea;
+}
+
+.example-text {
+  font-size: 24rpx;
+  color: #4B5563;
+  line-height: 1.6;
+}
+
+/* 系统消息样式 */
+.message-item .system-message {
+  display: flex;
+  justify-content: center;
+  padding: 16rpx 0;
+}
+
+.message-item .system-message text {
+  font-size: 24rpx;
+  color: #8E8E93;
+  font-style: italic;
+  padding: 8rpx 16rpx;
+  background: #F5F5F7;
+  border-radius: 16rpx;
 }
 </style>

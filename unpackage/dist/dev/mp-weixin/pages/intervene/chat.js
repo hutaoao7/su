@@ -129,29 +129,37 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
+  var m0 = _vm.getPersonalityConfig(_vm.currentPersonality)
+  var m1 = _vm.getPersonalityConfig(_vm.currentPersonality)
   var l0 = _vm.__map(_vm.sessions, function (session, index) {
     var $orig = _vm.__get_orig(session)
-    var m0 = _vm.formatSessionTime(session.lastMessageAt)
+    var m2 = _vm.formatSessionTime(session.lastMessageAt)
     return {
       $orig: $orig,
-      m0: m0,
+      m2: m2,
     }
   })
   var g0 = _vm.messages.length
   var l1 = _vm.__map(_vm.messages, function (msg, index) {
     var $orig = _vm.__get_orig(msg)
-    var m1 = _vm.getMsgId(index)
-    var m2 = msg.role === "user" ? _vm.canRevoke(msg) && !msg.isRevoked : null
+    var m3 = _vm.getMsgId(index)
+    var m4 =
+      !msg.isSystem && msg.role === "user"
+        ? _vm.canRevoke(msg) && !msg.isRevoked
+        : null
     return {
       $orig: $orig,
-      m1: m1,
-      m2: m2,
+      m3: m3,
+      m4: m4,
     }
   })
   var g1 = _vm.inputText.length
   var g2 = !_vm.inputText.trim() || _vm.isSending
   if (!_vm._isMounted) {
     _vm.e0 = function ($event) {
+      _vm.showPersonalityPopup = false
+    }
+    _vm.e1 = function ($event) {
       _vm.showSessionPopup = false
     }
   }
@@ -159,6 +167,8 @@ var render = function () {
     {},
     {
       $root: {
+        m0: m0,
+        m1: m1,
         l0: l0,
         g0: g0,
         l1: l1,
@@ -212,6 +222,57 @@ var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/r
 var _tabbarManager = _interopRequireDefault(__webpack_require__(/*! @/utils/tabbar-manager.js */ 180));
 var _chatStorage = _interopRequireDefault(__webpack_require__(/*! @/utils/chat-storage.js */ 581));
 var _sensitiveWords = __webpack_require__(/*! @/utils/sensitive-words.js */ 617);
+var _aiPersonality = __webpack_require__(/*! @/utils/ai-personality.js */ 618);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -429,12 +490,20 @@ var _default = {
       // 收藏的消息
       showEmojiPicker: false,
       // 是否显示表情选择器
+      // AI人格相关
+      currentPersonality: _aiPersonality.PersonalityType.GENTLE,
+      // 当前AI人格
+      showPersonalityPopup: false,
+      // 显示人格选择弹窗
+      personalities: (0, _aiPersonality.getAllPersonalities)(),
+      // 所有人格配置
       emojiList: ['😊', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚', '😙', '🥲', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶', '😶‍🌫️', '😵', '🤯', '🤠', '🥳', '🥴', '😎', '🤓', '🧐', '👍', '👎', '👏', '🙏', '💪', '❤️', '💔', '💯']
     };
   },
   onLoad: function onLoad() {
     var _this = this;
     return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
+      var personalityConfig;
       return _regenerator.default.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -445,25 +514,31 @@ var _default = {
               _context.next = 3;
               return _chatStorage.default.init();
             case 3:
-              _context.next = 5;
-              return _this.loadSessions();
-            case 5:
+              // 加载用户的AI人格偏好
+              _this.currentPersonality = (0, _aiPersonality.getPersonalityPreference)();
+              console.log('[CHAT] 当前AI人格:', _this.currentPersonality);
+
+              // 加载会话列表
               _context.next = 7;
-              return _this.loadHistoryMessages();
+              return _this.loadSessions();
             case 7:
+              _context.next = 9;
+              return _this.loadHistoryMessages();
+            case 9:
               // 加载收藏列表
               _this.loadFavorites();
 
               // 如果没有历史消息，添加欢迎消息
               if (_this.messages.length === 0) {
-                _this.addAIMessage('您好！我是您的心理支持AI。无论您遇到什么困扰，都可以和我倾诉。我会认真倾听，并尽我所能给予支持和建议。');
+                personalityConfig = (0, _aiPersonality.getPersonalityConfig)(_this.currentPersonality);
+                _this.addAIMessage("\u60A8\u597D\uFF01\u6211\u662F\u60A8\u7684\u5FC3\u7406\u652F\u6301AI\uFF08".concat(personalityConfig.name, "\uFF09\u3002\u65E0\u8BBA\u60A8\u9047\u5230\u4EC0\u4E48\u56F0\u6270\uFF0C\u90FD\u53EF\u4EE5\u548C\u6211\u503E\u8BC9\u3002\u6211\u4F1A\u8BA4\u771F\u503E\u542C\uFF0C\u5E76\u5C3D\u6211\u6240\u80FD\u7ED9\u4E88\u652F\u6301\u548C\u5EFA\u8BAE\u3002"));
               }
 
               // 清理过期数据（后台执行）
               _chatStorage.default.cleanExpiredData().catch(function (err) {
                 console.warn('[CHAT] 清理过期数据失败:', err);
               });
-            case 10:
+            case 12:
             case "end":
               return _context.stop();
           }
@@ -1199,6 +1274,50 @@ var _default = {
       }))();
     },
     /**
+     * 显示人格选择器
+     */
+    showPersonalitySelector: function showPersonalitySelector() {
+      this.showPersonalityPopup = true;
+    },
+    /**
+     * 选择AI人格
+     */
+    selectPersonality: function selectPersonality(personalityId) {
+      if (personalityId === this.currentPersonality) {
+        this.showPersonalityPopup = false;
+        return;
+      }
+      var oldPersonality = (0, _aiPersonality.getPersonalityConfig)(this.currentPersonality);
+      var newPersonality = (0, _aiPersonality.getPersonalityConfig)(personalityId);
+
+      // 更新人格
+      this.currentPersonality = personalityId;
+
+      // 保存偏好
+      (0, _aiPersonality.savePersonalityPreference)(personalityId);
+
+      // 关闭弹窗
+      this.showPersonalityPopup = false;
+
+      // 提示用户
+      uni.showToast({
+        title: "\u5DF2\u5207\u6362\u81F3".concat(newPersonality.name),
+        icon: 'success',
+        duration: 1500
+      });
+
+      // 添加系统提示
+      var systemMessage = {
+        role: 'system',
+        content: "\uFF08\u60A8\u5DF2\u5207\u6362AI\u4EBA\u683C\uFF1A".concat(oldPersonality.name, " \u2192 ").concat(newPersonality.name, "\uFF09"),
+        timestamp: Date.now(),
+        isSystem: true
+      };
+      this.messages.push(systemMessage);
+      this.scrollToBottom();
+      console.log('[CHAT] 切换AI人格:', oldPersonality.name, '→', newPersonality.name);
+    },
+    /**
      * 发送消息到AI并处理回复
      */
     sendToAI: function sendToAI(messageIndex) {
@@ -1215,7 +1334,7 @@ var _default = {
                 _context12.prev = 2;
                 // 准备发送的消息列表（只包含已成功的消息）
                 messagesToSend = _this17.messages.filter(function (msg) {
-                  return msg.sendStatus !== 'failed' && msg.sendStatus !== 'sending';
+                  return msg.sendStatus !== 'failed' && msg.sendStatus !== 'sending' && !msg.isSystem;
                 }).concat([_this17.messages[messageIndex]]); // 调用云函数获取AI回复
                 _context12.next = 6;
                 return uniCloud.callFunction({
@@ -1227,6 +1346,8 @@ var _default = {
                         content: m.content
                       };
                     }),
+                    personality: _this17.currentPersonality,
+                    // 传入当前人格
                     stream: false
                   }
                 });
