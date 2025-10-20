@@ -37954,6 +37954,165 @@ var _default = {
 exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"]))
 
+/***/ }),
+/* 617 */
+/*!****************************************************************!*\
+  !*** D:/HBuilderX.4.65.2025051206/翎心/utils/sensitive-words.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.checkSensitiveWords = checkSensitiveWords;
+exports.default = void 0;
+exports.getCrisisWarning = getCrisisWarning;
+exports.getSensitiveWarning = getSensitiveWarning;
+exports.highlightSensitiveWords = highlightSensitiveWords;
+var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
+/**
+ * 前端敏感词检测工具
+ * 用于实时检测用户输入中的敏感内容
+ */
+
+// 敏感词列表（与后端保持一致）
+var SENSITIVE_WORDS = [
+// 危机相关
+'自杀', '自残', '轻生', '想死', '不想活', '结束生命', '了断', '解脱',
+// 暴力相关
+'杀人', '伤害', '报复', '打人',
+// 其他敏感词
+'毒品', '赌博'];
+
+// 危机干预关键词
+var CRISIS_KEYWORDS = ['自杀', '自残', '轻生', '想死', '不想活', '结束生命', '了断'];
+
+/**
+ * 检查文本是否包含敏感词
+ * @param {string} text - 要检查的文本
+ * @returns {object} - { hasSensitive: boolean, matchedWords: array, isCrisis: boolean }
+ */
+function checkSensitiveWords(text) {
+  if (!text || typeof text !== 'string') {
+    return {
+      hasSensitive: false,
+      matchedWords: [],
+      isCrisis: false,
+      positions: []
+    };
+  }
+  var lowerText = text.toLowerCase();
+  var matchedWords = [];
+  var positions = [];
+  var isCrisis = false;
+
+  // 检查每个敏感词
+  SENSITIVE_WORDS.forEach(function (word) {
+    var lowerWord = word.toLowerCase();
+    var index = lowerText.indexOf(lowerWord);
+    while (index !== -1) {
+      matchedWords.push(word);
+      positions.push({
+        word: word,
+        start: index,
+        end: index + word.length
+      });
+
+      // 检查是否是危机关键词
+      if (CRISIS_KEYWORDS.includes(word)) {
+        isCrisis = true;
+      }
+
+      // 查找下一个匹配
+      index = lowerText.indexOf(lowerWord, index + 1);
+    }
+  });
+  return {
+    hasSensitive: matchedWords.length > 0,
+    matchedWords: (0, _toConsumableArray2.default)(new Set(matchedWords)),
+    // 去重
+    isCrisis: isCrisis,
+    positions: positions
+  };
+}
+
+/**
+ * 高亮显示敏感词
+ * @param {string} text - 原始文本
+ * @param {array} positions - 敏感词位置数组
+ * @returns {array} - 包含文本片段和是否敏感的数组
+ */
+function highlightSensitiveWords(text, positions) {
+  if (!text || !positions || positions.length === 0) {
+    return [{
+      text: text,
+      isSensitive: false
+    }];
+  }
+
+  // 按位置排序
+  var sortedPositions = positions.sort(function (a, b) {
+    return a.start - b.start;
+  });
+  var result = [];
+  var lastEnd = 0;
+  sortedPositions.forEach(function (pos) {
+    // 添加非敏感词部分
+    if (pos.start > lastEnd) {
+      result.push({
+        text: text.substring(lastEnd, pos.start),
+        isSensitive: false
+      });
+    }
+
+    // 添加敏感词部分
+    result.push({
+      text: text.substring(pos.start, pos.end),
+      isSensitive: true,
+      word: pos.word
+    });
+    lastEnd = pos.end;
+  });
+
+  // 添加最后剩余的非敏感词部分
+  if (lastEnd < text.length) {
+    result.push({
+      text: text.substring(lastEnd),
+      isSensitive: false
+    });
+  }
+  return result;
+}
+
+/**
+ * 获取危机干预提示
+ * @returns {string} - 危机干预提示文本
+ */
+function getCrisisWarning() {
+  return "\u26A0\uFE0F \u6211\u4EEC\u6CE8\u610F\u5230\u60A8\u53EF\u80FD\u6B63\u5728\u7ECF\u5386\u56F0\u96BE\u65F6\u671F\u3002\n\n\u5982\u679C\u60A8\u9700\u8981\u7ACB\u5373\u5E2E\u52A9\uFF0C\u8BF7\u8054\u7CFB\uFF1A\n\u2022 \u5FC3\u7406\u5371\u673A\u5E72\u9884\u70ED\u7EBF\uFF1A400-161-9995\uFF0824\u5C0F\u65F6\uFF09\n\u2022 \u751F\u547D\u6559\u80B2\u4E2D\u5FC3\uFF1A400-840-1000\n\u2022 \u6216\u524D\u5F80\u6700\u8FD1\u7684\u533B\u9662\u6025\u8BCA\u79D1\n\n\u60A8\u7684\u751F\u547D\u5F88\u5B9D\u8D35\uFF0C\u8BF7\u4E0D\u8981\u653E\u5F03\u3002";
+}
+
+/**
+ * 获取敏感词警告提示
+ * @param {array} matchedWords - 匹配到的敏感词
+ * @returns {string} - 警告提示
+ */
+function getSensitiveWarning(matchedWords) {
+  return "\u68C0\u6D4B\u5230\u60A8\u7684\u6D88\u606F\u5305\u542B\u654F\u611F\u5185\u5BB9\uFF08".concat(matchedWords.join('、'), "\uFF09\u3002\n\n\u5982\u679C\u60A8\u6B63\u5728\u7ECF\u5386\u56F0\u96BE\uFF0C\u6211\u4EEC\u5EFA\u8BAE\u5BFB\u6C42\u4E13\u4E1A\u5E2E\u52A9\u3002");
+}
+var _default = {
+  checkSensitiveWords: checkSensitiveWords,
+  highlightSensitiveWords: highlightSensitiveWords,
+  getCrisisWarning: getCrisisWarning,
+  getSensitiveWarning: getSensitiveWarning
+};
+exports.default = _default;
+
 /***/ })
 ]]);
 //# sourceMappingURL=../../.sourcemap/mp-weixin/common/vendor.js.map

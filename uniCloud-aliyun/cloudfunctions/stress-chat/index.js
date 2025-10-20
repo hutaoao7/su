@@ -75,12 +75,27 @@ async function generateChatResponse(userId, userMessage, chatHistory = []) {
   } catch (error) {
     console.error('生成聊天回复错误:', error);
     
-    // 错误已在网关层处理，这里仅记录
+    // 处理从AI网关返回的格式化错误
+    if (error.type && error.userMessage) {
+      return {
+        code: -1,
+        msg: error.userMessage,
+        errorType: error.type,
+        data: {
+          content: error.userMessage,
+          suggestion: error.suggestion,
+          canRetry: ['NETWORK', 'TIMEOUT', 'RATE_LIMIT', 'SERVER'].includes(error.type)
+        }
+      };
+    }
+    
+    // 兜底错误处理
     return {
       code: -1,
       msg: error.message || '生成回复失败',
       data: {
-        content: error.message || '服务暂时不可用，请稍后再试'
+        content: '抱歉，AI暂时无法回复。请稍后再试。',
+        canRetry: true
       }
     };
   }

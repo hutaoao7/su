@@ -80,6 +80,15 @@
               <view v-if="msg.sendStatus === 'sending'" class="status-indicator">
                 <u-icon name="loading" size="12" color="#8E8E93"></u-icon>
               </view>
+              <!-- 已撤回标记 -->
+              <view v-if="msg.isRevoked" class="revoked-indicator">
+                <text class="revoked-text">已撤回</text>
+              </view>
+            </view>
+            <!-- 撤回按钮（2分钟内可撤回） -->
+            <view v-if="canRevoke(msg) && !msg.isRevoked" class="revoke-btn" @tap="revokeMessage(index)">
+              <u-icon name="close" size="12" color="#8E8E93"></u-icon>
+              <text class="revoke-text">撤回</text>
             </view>
             <!-- 发送失败重试按钮 -->
             <view v-if="msg.sendStatus === 'failed'" class="retry-btn" @tap="resendMessage(index)">
@@ -187,6 +196,7 @@
 <script>
 import tabBarManager from '@/utils/tabbar-manager.js';
 import chatStorage from '@/utils/chat-storage.js';
+import { checkSensitiveWords, getCrisisWarning, getSensitiveWarning } from '@/utils/sensitive-words.js';
 
 export default {
   data() {
@@ -756,12 +766,57 @@ export default {
       const text = this.inputText.trim();
       if (!text || this.isSending) return;
       
+      // 敏感词检测
+      const sensitiveCheck = checkSensitiveWords(text);
+      
+      // 如果包含危机关键词，显示危机干预提示
+      if (sensitiveCheck.isCrisis) {
+        uni.showModal({
+          title: '⚠️ 重要提示',
+          content: getCrisisWarning(),
+          confirmText: '我知道了',
+          confirmColor: '#DC3545',
+          showCancel: false,
+          success: (res) => {
+            // 用户确认后仍然发送消息，但会由后端进行特殊处理
+            this.proceedSendMessage(text, sensitiveCheck);
+          }
+        });
+        return;
+      }
+      
+      // 如果包含敏感词但不是危机，显示警告
+      if (sensitiveCheck.hasSensitive) {
+        uni.showModal({
+          title: '敏感内容提示',
+          content: getSensitiveWarning(sensitiveCheck.matchedWords),
+          confirmText: '继续发送',
+          cancelText: '重新编辑',
+          success: (res) => {
+            if (res.confirm) {
+              this.proceedSendMessage(text, sensitiveCheck);
+            }
+          }
+        });
+        return;
+      }
+      
+      // 正常发送
+      this.proceedSendMessage(text, null);
+    },
+    
+    /**
+     * 执行发送消息（内部方法）
+     */
+    async proceedSendMessage(text, sensitiveCheck) {
       // 创建用户消息
       const userMessage = {
         role: 'user',
         content: text,
         timestamp: Date.now(),
-        sendStatus: 'sending'  // 添加发送状态
+        sendStatus: 'sending',  // 添加发送状态
+        hasSensitive: sensitiveCheck?.hasSensitive || false,
+        isCrisis: sensitiveCheck?.isCrisis || false
       };
       
       // 添加到消息列表
@@ -916,6 +971,77 @@ export default {
     // 获取消息ID
     getMsgId(index) {
       return this.msgIdPrefix + index;
+    },
+    
+    /**
+     * 判断消息是否可以撤回（2分钟内）
+     */
+    canRevoke(msg) {
+      if (!msg || msg.role !== 'user' || msg.sendStatus !== 'success') {
+        return false;
+      }
+      
+      const now = Date.now();
+      const messageTime = msg.timestamp || 0;
+      const timeDiff = now - messageTime;
+      
+      // 2分钟 = 120000毫秒
+      return timeDiff < 120000;
+    },
+    
+    /**
+     * 撤回消息
+     */
+    async revokeMessage(index) {
+      const message = this.messages[index];
+      
+      if (!message || !this.canRevoke(message)) {
+        uni.showToast({
+          title: '无法撤回此消息',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      uni.showModal({
+        title: '撤回消息',
+        content: '确定要撤回这条消息吗？',
+        confirmText: '撤回',
+        cancelText: '取消',
+        success: async (res) => {
+          if (res.confirm) {
+            // 标记消息为已撤回
+            this.$set(this.messages[index], 'isRevoked', true);
+            this.$set(this.messages[index], 'revokedAt', Date.now());
+            
+            // 保存更新后的消息
+            await this.saveMessage(this.messages[index]);
+            
+            // 震动反馈
+            uni.vibrateShort({
+              success: () => {
+                console.log('[CHAT] 撤回震动反馈');
+              }
+            });
+            
+            // 同时检查是否有对应的AI回复需要标记
+            // 查找下一条AI消息
+            if (index + 1 < this.messages.length && 
+                this.messages[index + 1].role === 'assistant') {
+              this.$set(this.messages[index + 1], 'relatedRevoked', true);
+              await this.saveMessage(this.messages[index + 1]);
+            }
+            
+            uni.showToast({
+              title: '已撤回',
+              icon: 'success',
+              duration: 1500
+            });
+            
+            console.log('[CHAT] 消息已撤回, index:', index);
+          }
+        }
+      });
     },
     
     /**
@@ -1255,6 +1381,54 @@ export default {
   font-size: 24rpx;
   color: #DC3545;
   font-weight: 500;
+}
+
+/* 撤回按钮 */
+.revoke-btn {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 6rpx 12rpx;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1rpx solid #E5E5EA;
+  border-radius: 16rpx;
+  transition: all 0.2s ease;
+}
+
+.revoke-btn:active {
+  transform: scale(0.95);
+  background: #F5F5F7;
+}
+
+.revoke-text {
+  font-size: 22rpx;
+  color: #8E8E93;
+}
+
+/* 已撤回标记 */
+.revoked-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+.revoked-text {
+  font-size: 24rpx;
+  color: #8E8E93;
+  font-style: italic;
+}
+
+/* 已撤回的消息样式 */
+.message.user-message:has(.revoked-indicator) .message-content {
+  opacity: 0.5;
+  position: relative;
+}
+
+.message.user-message:has(.revoked-indicator) .message-content text {
+  text-decoration: line-through;
+  color: #8E8E93;
 }
 
 /* AI消息包装器 */
