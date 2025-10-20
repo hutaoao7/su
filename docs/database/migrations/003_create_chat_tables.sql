@@ -108,6 +108,7 @@ CREATE TABLE IF NOT EXISTS chat_feedbacks (
   improvement_tags jsonb DEFAULT '[]'::jsonb,
   created_at timestamptz DEFAULT now(),
   
+  CONSTRAINT fk_chat_feedbacks_message_id FOREIGN KEY (message_id) REFERENCES chat_messages(id) ON DELETE CASCADE,
   CONSTRAINT fk_chat_feedbacks_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   CONSTRAINT check_chat_feedbacks_rating CHECK (rating IS NULL OR (rating >= 1 AND rating <= 5)),
   CONSTRAINT check_chat_feedbacks_feedback_type CHECK (feedback_type IN ('helpful', 'unhelpful', 'inappropriate'))
@@ -115,8 +116,10 @@ CREATE TABLE IF NOT EXISTS chat_feedbacks (
 
 COMMENT ON TABLE chat_feedbacks IS '聊天反馈表';
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_chat_feedbacks_message_id ON chat_feedbacks(message_id);
 CREATE INDEX IF NOT EXISTS idx_chat_feedbacks_user_id ON chat_feedbacks(user_id);
 CREATE INDEX IF NOT EXISTS idx_chat_feedbacks_rating ON chat_feedbacks(rating);
+CREATE INDEX IF NOT EXISTS idx_chat_feedbacks_feedback_type ON chat_feedbacks(feedback_type);
 CREATE INDEX IF NOT EXISTS idx_chat_feedbacks_created_at ON chat_feedbacks(created_at DESC);
 
 -- ============================================================================
