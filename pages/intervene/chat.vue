@@ -2,13 +2,57 @@
   <view class="chat-page">
     <!-- 顶部操作栏 -->
     <view class="top-actions">
-      <text class="page-title">AI心理支持</text>
+      <view class="title-wrapper">
+        <text class="page-title">AI心理支持</text>
+        <view class="session-indicator" @tap="showSessionList">
+          <text class="session-name">{{ currentSessionName }}</text>
+          <u-icon name="arrow-down" size="12" color="#8E8E93"></u-icon>
+        </view>
+      </view>
       <view class="action-buttons">
+        <view class="action-btn" @tap="handleNewSession">
+          <u-icon name="plus" size="18" color="#8E8E93"></u-icon>
+        </view>
         <view class="action-btn" @tap="handleClearChat">
           <u-icon name="trash" size="18" color="#8E8E93"></u-icon>
         </view>
       </view>
     </view>
+    
+    <!-- 会话列表弹窗 -->
+    <u-popup v-model="showSessionPopup" mode="bottom" :safe-area-inset-bottom="true">
+      <view class="session-popup">
+        <view class="popup-header">
+          <text class="popup-title">会话列表</text>
+          <view class="popup-close" @tap="showSessionPopup = false">
+            <u-icon name="close" size="18" color="#1D1D1F"></u-icon>
+          </view>
+        </view>
+        
+        <scroll-view class="session-list" scroll-y>
+          <view 
+            v-for="(session, index) in sessions" 
+            :key="session.id"
+            class="session-item"
+            :class="{ 'active': session.id === sessionId }"
+            @tap="switchSession(session)"
+          >
+            <view class="session-info">
+              <text class="session-name">{{ session.name }}</text>
+              <text class="session-time">{{ formatSessionTime(session.lastMessageAt) }}</text>
+            </view>
+            <view v-if="session.id !== 'default'" class="session-actions">
+              <view class="action-icon" @tap.stop="renameSession(session)">
+                <u-icon name="edit-pen" size="16" color="#8E8E93"></u-icon>
+              </view>
+              <view class="action-icon" @tap.stop="deleteSession(session)">
+                <u-icon name="trash" size="16" color="#DC3545"></u-icon>
+              </view>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+    </u-popup>
     
     <!-- 消息列表 -->
     <scroll-view 
@@ -26,10 +70,21 @@
       <view v-for="(msg, index) in messages" :key="index" :id="getMsgId(index)" class="message-item">
         <!-- 用户消息 -->
         <view v-if="msg.role === 'user'" class="message user-message">
-          <view class="message-content" @longpress="handleLongPress(msg, index)">
-            <text>{{ msg.content }}</text>
-            <view v-if="msg.isFavorite" class="favorite-badge">
-              <u-icon name="star-fill" size="12" color="#FFB800"></u-icon>
+          <view class="message-content-wrapper">
+            <view class="message-content" @longpress="handleLongPress(msg, index)">
+              <text>{{ msg.content }}</text>
+              <view v-if="msg.isFavorite" class="favorite-badge">
+                <u-icon name="star-fill" size="12" color="#FFB800"></u-icon>
+              </view>
+              <!-- 发送状态指示器 -->
+              <view v-if="msg.sendStatus === 'sending'" class="status-indicator">
+                <u-icon name="loading" size="12" color="#8E8E93"></u-icon>
+              </view>
+            </view>
+            <!-- 发送失败重试按钮 -->
+            <view v-if="msg.sendStatus === 'failed'" class="retry-btn" @tap="resendMessage(index)">
+              <u-icon name="reload" size="14" color="#DC3545"></u-icon>
+              <text class="retry-text">重发</text>
             </view>
           </view>
           <view class="message-avatar">
@@ -42,10 +97,27 @@
           <view class="message-avatar ai-avatar">
             <u-icon name="star" size="20" color="#FFFFFF"></u-icon>
           </view>
-          <view class="message-content" @longpress="handleLongPress(msg, index)">
-            <text>{{ msg.content }}</text>
-            <view v-if="msg.isFavorite" class="favorite-badge">
-              <u-icon name="star-fill" size="12" color="#FFB800"></u-icon>
+          <view class="ai-message-wrapper">
+            <view class="message-content" @longpress="handleLongPress(msg, index)">
+              <text>{{ msg.content }}</text>
+              <view v-if="msg.isFavorite" class="favorite-badge">
+                <u-icon name="star-fill" size="12" color="#FFB800"></u-icon>
+              </view>
+            </view>
+            <!-- AI回复质量评分 -->
+            <view class="message-rating">
+              <view v-if="!msg.rating" class="rating-prompt" @tap="showRatingDialog(msg, index)">
+                <u-icon name="thumb-up" size="14" color="#8E8E93"></u-icon>
+                <text class="rating-text">觉得这个回复怎么样？</text>
+              </view>
+              <view v-else class="rating-result">
+                <u-icon 
+                  :name="msg.rating === 'good' ? 'thumb-up-fill' : 'thumb-down-fill'" 
+                  size="14" 
+                  :color="msg.rating === 'good' ? '#34C759' : '#FF3B30'"
+                ></u-icon>
+                <text class="rating-text rated">已评价</text>
+              </view>
             </view>
           </view>
         </view>
@@ -125,7 +197,10 @@ export default {
       isTyping: false,
       scrollIntoView: '',
       msgIdPrefix: 'msg-',
-      sessionId: 'default', // 会话ID，可扩展为多会话
+      sessionId: 'default', // 当前会话ID
+      currentSessionName: '默认会话', // 当前会话名称
+      sessions: [], // 会话列表
+      showSessionPopup: false, // 显示会话列表弹窗
       isLoadingHistory: false,
       favoriteMessages: [],  // 收藏的消息
       showEmojiPicker: false,  // 是否显示表情选择器
@@ -148,6 +223,9 @@ export default {
     
     // 初始化存储
     await chatStorage.init();
+    
+    // 加载会话列表
+    await this.loadSessions();
     
     // 加载历史消息
     await this.loadHistoryMessages();
@@ -177,6 +255,230 @@ export default {
   },
   
   methods: {
+    /**
+     * 加载会话列表
+     */
+    async loadSessions() {
+      try {
+        const sessionsData = uni.getStorageSync('chat_sessions');
+        if (sessionsData) {
+          this.sessions = JSON.parse(sessionsData);
+        } else {
+          // 创建默认会话
+          this.sessions = [{
+            id: 'default',
+            name: '默认会话',
+            createdAt: Date.now(),
+            lastMessageAt: Date.now(),
+            messageCount: 0
+          }];
+          this.saveSessions();
+        }
+        
+        // 更新当前会话名称
+        const currentSession = this.sessions.find(s => s.id === this.sessionId);
+        if (currentSession) {
+          this.currentSessionName = currentSession.name;
+        }
+        
+        console.log(`[CHAT] 加载了 ${this.sessions.length} 个会话`);
+      } catch (error) {
+        console.error('[CHAT] 加载会话列表失败:', error);
+      }
+    },
+    
+    /**
+     * 保存会话列表
+     */
+    saveSessions() {
+      try {
+        uni.setStorageSync('chat_sessions', JSON.stringify(this.sessions));
+        console.log('[CHAT] 会话列表已保存');
+      } catch (error) {
+        console.error('[CHAT] 保存会话列表失败:', error);
+      }
+    },
+    
+    /**
+     * 显示会话列表
+     */
+    showSessionList() {
+      this.showSessionPopup = true;
+    },
+    
+    /**
+     * 切换会话
+     */
+    async switchSession(session) {
+      if (session.id === this.sessionId) {
+        this.showSessionPopup = false;
+        return;
+      }
+      
+      // 保存当前会话的消息
+      await this.saveAllMessages();
+      
+      // 切换会话
+      this.sessionId = session.id;
+      this.currentSessionName = session.name;
+      this.messages = [];
+      
+      // 加载新会话的消息
+      await this.loadHistoryMessages();
+      
+      // 如果是空会话，添加欢迎消息
+      if (this.messages.length === 0) {
+        this.addAIMessage('您好！我是您的心理支持AI。无论您遇到什么困扰，都可以和我倾诉。我会认真倾听，并尽我所能给予支持和建议。');
+      }
+      
+      this.showSessionPopup = false;
+      
+      uni.showToast({
+        title: `已切换到：${session.name}`,
+        icon: 'success',
+        duration: 1500
+      });
+      
+      console.log('[CHAT] 切换到会话:', session.id);
+    },
+    
+    /**
+     * 创建新会话
+     */
+    handleNewSession() {
+      uni.showModal({
+        title: '新建会话',
+        content: '请输入会话名称',
+        placeholderText: '例如：工作压力、学习困扰等...',
+        editable: true,
+        confirmText: '创建',
+        success: (res) => {
+          if (res.confirm) {
+            const sessionName = res.content?.trim() || `会话${this.sessions.length + 1}`;
+            this.createNewSession(sessionName);
+          }
+        }
+      });
+    },
+    
+    /**
+     * 创建新会话
+     */
+    async createNewSession(name) {
+      const newSession = {
+        id: `session_${Date.now()}`,
+        name: name,
+        createdAt: Date.now(),
+        lastMessageAt: Date.now(),
+        messageCount: 0
+      };
+      
+      this.sessions.unshift(newSession);
+      this.saveSessions();
+      
+      // 切换到新会话
+      await this.switchSession(newSession);
+      
+      console.log('[CHAT] 创建新会话:', newSession);
+    },
+    
+    /**
+     * 重命名会话
+     */
+    renameSession(session) {
+      uni.showModal({
+        title: '重命名会话',
+        content: '请输入新的会话名称',
+        placeholderText: session.name,
+        editable: true,
+        confirmText: '确定',
+        success: (res) => {
+          if (res.confirm && res.content) {
+            const newName = res.content.trim();
+            if (newName) {
+              session.name = newName;
+              if (session.id === this.sessionId) {
+                this.currentSessionName = newName;
+              }
+              this.saveSessions();
+              
+              uni.showToast({
+                title: '重命名成功',
+                icon: 'success'
+              });
+              
+              console.log('[CHAT] 会话已重命名:', session.id, newName);
+            }
+          }
+        }
+      });
+    },
+    
+    /**
+     * 删除会话
+     */
+    deleteSession(session) {
+      uni.showModal({
+        title: '删除会话',
+        content: `确定要删除会话"${session.name}"吗？此操作不可恢复。`,
+        confirmText: '确定删除',
+        confirmColor: '#DC3545',
+        success: async (res) => {
+          if (res.confirm) {
+            // 从列表中移除
+            const index = this.sessions.findIndex(s => s.id === session.id);
+            if (index > -1) {
+              this.sessions.splice(index, 1);
+              this.saveSessions();
+            }
+            
+            // 删除会话的所有消息
+            await chatStorage.clearSession(session.id);
+            
+            // 如果删除的是当前会话，切换到默认会话
+            if (session.id === this.sessionId) {
+              const defaultSession = this.sessions.find(s => s.id === 'default') || this.sessions[0];
+              if (defaultSession) {
+                await this.switchSession(defaultSession);
+              }
+            }
+            
+            uni.showToast({
+              title: '会话已删除',
+              icon: 'success'
+            });
+            
+            console.log('[CHAT] 会话已删除:', session.id);
+          }
+        }
+      });
+    },
+    
+    /**
+     * 格式化会话时间
+     */
+    formatSessionTime(timestamp) {
+      const now = Date.now();
+      const diff = now - timestamp;
+      
+      const minute = 60 * 1000;
+      const hour = 60 * minute;
+      const day = 24 * hour;
+      
+      if (diff < minute) {
+        return '刚刚';
+      } else if (diff < hour) {
+        return `${Math.floor(diff / minute)}分钟前`;
+      } else if (diff < day) {
+        return `${Math.floor(diff / hour)}小时前`;
+      } else if (diff < 7 * day) {
+        return `${Math.floor(diff / day)}天前`;
+      } else {
+        const date = new Date(timestamp);
+        return `${date.getMonth() + 1}/${date.getDate()}`;
+      }
+    },
+    
     /**
      * 加载历史消息
      */
@@ -213,8 +515,23 @@ export default {
           content: message.content,
           timestamp: message.timestamp || Date.now()
         });
+        
+        // 更新会话信息
+        this.updateSessionInfo();
       } catch (error) {
         console.error('[CHAT] 保存消息失败:', error);
+      }
+    },
+    
+    /**
+     * 更新会话信息
+     */
+    updateSessionInfo() {
+      const session = this.sessions.find(s => s.id === this.sessionId);
+      if (session) {
+        session.lastMessageAt = Date.now();
+        session.messageCount = this.messages.length;
+        this.saveSessions();
       }
     },
     
@@ -443,27 +760,45 @@ export default {
       const userMessage = {
         role: 'user',
         content: text,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        sendStatus: 'sending'  // 添加发送状态
       };
       
       // 添加到消息列表
       this.messages.push(userMessage);
+      const messageIndex = this.messages.length - 1;
       this.inputText = '';
       this.scrollToBottom();
       
       // 保存用户消息
       await this.saveMessage(userMessage);
       
+      // 发送到AI并获取回复
+      await this.sendToAI(messageIndex);
+    },
+    
+    /**
+     * 发送消息到AI并处理回复
+     */
+    async sendToAI(messageIndex) {
       // 显示输入中状态
       this.isSending = true;
       this.isTyping = true;
       
       try {
+        // 准备发送的消息列表（只包含已成功的消息）
+        const messagesToSend = this.messages
+          .filter(msg => msg.sendStatus !== 'failed' && msg.sendStatus !== 'sending')
+          .concat([this.messages[messageIndex]]);
+        
         // 调用云函数获取AI回复
         const res = await uniCloud.callFunction({
           name: 'stress-chat',
           data: {
-            messages: this.messages,
+            messages: messagesToSend.map(m => ({
+              role: m.role,
+              content: m.content
+            })),
             stream: false
           }
         });
@@ -471,20 +806,67 @@ export default {
         // 添加AI回复消息
         if (res.result && res.result.success && res.result.data) {
           const aiContent = res.result.data.content || res.result.data.message;
+          
+          // 标记用户消息发送成功
+          this.$set(this.messages[messageIndex], 'sendStatus', 'success');
+          await this.saveMessage(this.messages[messageIndex]);
+          
+          // 添加AI回复
           this.addAIMessage(aiContent);
         } else {
           console.error('[CHAT] AI回复异常:', res);
-          this.addAIMessage('抱歉，AI正在思考中，请稍后再试。');
+          // 标记消息发送失败
+          this.$set(this.messages[messageIndex], 'sendStatus', 'failed');
+          await this.saveMessage(this.messages[messageIndex]);
+          
+          uni.showToast({
+            title: 'AI回复异常，点击重发',
+            icon: 'none',
+            duration: 2000
+          });
         }
         
       } catch (error) {
         console.error('[CHAT] 发送失败:', error);
-        this.addAIMessage('抱歉，我现在无法回复。请稍后再试。');
+        
+        // 标记消息发送失败
+        this.$set(this.messages[messageIndex], 'sendStatus', 'failed');
+        await this.saveMessage(this.messages[messageIndex]);
+        
+        uni.showToast({
+          title: '发送失败，点击重发',
+          icon: 'none',
+          duration: 2000
+        });
       } finally {
         this.isSending = false;
         this.isTyping = false;
         this.scrollToBottom();
       }
+    },
+    
+    /**
+     * 重发失败的消息
+     */
+    async resendMessage(messageIndex) {
+      const message = this.messages[messageIndex];
+      
+      if (!message || message.role !== 'user') {
+        return;
+      }
+      
+      // 更新状态为发送中
+      this.$set(this.messages[messageIndex], 'sendStatus', 'sending');
+      
+      // 震动反馈
+      uni.vibrateShort({
+        success: () => {
+          console.log('[CHAT] 重发震动反馈');
+        }
+      });
+      
+      // 重新发送
+      await this.sendToAI(messageIndex);
     },
     
     // 模拟AI回复（开发阶段使用）
@@ -559,6 +941,117 @@ export default {
           }
         }
       });
+    },
+    
+    /**
+     * 显示评分对话框
+     */
+    showRatingDialog(msg, index) {
+      uni.showActionSheet({
+        itemList: ['👍 很有帮助', '👎 不够满意', '💡 提供反馈'],
+        success: (res) => {
+          const tapIndex = res.tapIndex;
+          
+          if (tapIndex === 0) {
+            // 好评
+            this.rateMessage(msg, index, 'good');
+          } else if (tapIndex === 1) {
+            // 差评
+            this.rateMessage(msg, index, 'bad');
+            // 询问是否提供详细反馈
+            this.askForDetailedFeedback(msg, index);
+          } else if (tapIndex === 2) {
+            // 直接提供反馈
+            this.askForDetailedFeedback(msg, index);
+          }
+        }
+      });
+    },
+    
+    /**
+     * 评价消息
+     */
+    async rateMessage(msg, index, rating) {
+      // 更新本地消息状态
+      this.$set(this.messages[index], 'rating', rating);
+      this.$set(this.messages[index], 'ratedAt', Date.now());
+      
+      // 保存到本地存储
+      await this.saveMessage(this.messages[index]);
+      
+      // 提交评分到服务器（异步，不影响用户体验）
+      this.submitRating(msg, rating).catch(err => {
+        console.warn('[CHAT] 评分上传失败:', err);
+      });
+      
+      // 震动反馈
+      uni.vibrateShort({
+        success: () => {
+          console.log('[CHAT] 评分震动反馈');
+        }
+      });
+      
+      // 显示感谢提示
+      uni.showToast({
+        title: rating === 'good' ? '感谢您的反馈！' : '我们会努力改进',
+        icon: 'success',
+        duration: 1500
+      });
+      
+      console.log('[CHAT] 消息评分:', rating);
+    },
+    
+    /**
+     * 提交评分到服务器
+     */
+    async submitRating(msg, rating, feedback = '') {
+      try {
+        const res = await uniCloud.callFunction({
+          name: 'chat-feedback',
+          data: {
+            sessionId: this.sessionId,
+            messageContent: msg.content,
+            messageTimestamp: msg.timestamp,
+            rating: rating,
+            feedback: feedback,
+            timestamp: Date.now()
+          }
+        });
+        
+        if (res.result && res.result.success) {
+          console.log('[CHAT] 评分已提交');
+        }
+      } catch (error) {
+        console.error('[CHAT] 评分提交失败:', error);
+        // 失败不影响用户体验，仅记录日志
+      }
+    },
+    
+    /**
+     * 询问详细反馈
+     */
+    askForDetailedFeedback(msg, index) {
+      // 延迟显示，避免与评分操作冲突
+      setTimeout(() => {
+        uni.showModal({
+          title: '提供反馈',
+          content: '请告诉我们您的想法，帮助我们改进AI回复质量',
+          placeholderText: '例如：回复太简短、不够专业等...',
+          editable: true,
+          confirmText: '提交反馈',
+          success: (res) => {
+            if (res.confirm && res.content) {
+              // 提交详细反馈
+              this.submitRating(msg, msg.rating || 'neutral', res.content);
+              
+              uni.showToast({
+                title: '感谢您的反馈！',
+                icon: 'success'
+              });
+            }
+          }
+        });
+      }, 300);
     }
   }
 }
@@ -591,10 +1084,42 @@ export default {
   z-index: 10;
 }
 
+/* 标题包装器 */
+.title-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
 .page-title {
   font-size: 36rpx;
   font-weight: 600;
   color: #1D1D1F;
+}
+
+/* 会话指示器 */
+.session-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 4rpx 12rpx;
+  background: #F5F5F7;
+  border-radius: 12rpx;
+  transition: all 0.2s ease;
+}
+
+.session-indicator:active {
+  transform: scale(0.95);
+  background: #E5E5EA;
+}
+
+.session-name {
+  font-size: 24rpx;
+  color: #8E8E93;
+  max-width: 300rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .action-buttons {
@@ -681,6 +1206,14 @@ export default {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
+/* 消息内容包装器 */
+.message-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8rpx;
+}
+
 .message-content {
   max-width: 500rpx;
   padding: 24rpx 28rpx;
@@ -689,6 +1222,86 @@ export default {
   line-height: 1.6;
   word-break: break-word;
   position: relative;
+}
+
+/* 发送状态指示器 */
+.status-indicator {
+  position: absolute;
+  bottom: 4rpx;
+  right: 8rpx;
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+}
+
+/* 重发按钮 */
+.retry-btn {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 16rpx;
+  background: #FFF;
+  border: 1rpx solid #DC3545;
+  border-radius: 20rpx;
+  transition: all 0.2s ease;
+}
+
+.retry-btn:active {
+  transform: scale(0.95);
+  background: #FFF5F5;
+}
+
+.retry-text {
+  font-size: 24rpx;
+  color: #DC3545;
+  font-weight: 500;
+}
+
+/* AI消息包装器 */
+.ai-message-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  max-width: 500rpx;
+}
+
+/* 消息评分 */
+.message-rating {
+  display: flex;
+  align-items: center;
+  padding: 0 8rpx;
+}
+
+.rating-prompt {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 16rpx;
+  background: #F5F5F7;
+  border-radius: 16rpx;
+  transition: all 0.2s ease;
+}
+
+.rating-prompt:active {
+  transform: scale(0.95);
+  background: #E5E5EA;
+}
+
+.rating-result {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 16rpx;
+}
+
+.rating-text {
+  font-size: 22rpx;
+  color: #8E8E93;
+}
+
+.rating-text.rated {
+  color: #34C759;
+  font-weight: 500;
 }
 
 .favorite-badge {
@@ -903,5 +1516,108 @@ export default {
 .emoji-item:active {
   background: #E5E5EA;
   transform: scale(1.2);
+}
+
+/* 会话弹窗 */
+.session-popup {
+  background: #FFFFFF;
+  border-radius: 24rpx 24rpx 0 0;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx;
+  border-bottom: 1rpx solid #E5E5EA;
+}
+
+.popup-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1D1D1F;
+}
+
+.popup-close {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #F5F5F7;
+  transition: all 0.2s ease;
+}
+
+.popup-close:active {
+  transform: scale(0.95);
+  background: #E5E5EA;
+}
+
+.session-list {
+  flex: 1;
+  padding: 16rpx 0;
+  max-height: 600rpx;
+}
+
+.session-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx;
+  transition: background 0.2s ease;
+}
+
+.session-item:active {
+  background: #F5F5F7;
+}
+
+.session-item.active {
+  background: #F0F9FF;
+  border-left: 4rpx solid #0A84FF;
+}
+
+.session-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.session-item .session-name {
+  font-size: 28rpx;
+  color: #1D1D1F;
+  font-weight: 500;
+  max-width: 400rpx;
+}
+
+.session-time {
+  font-size: 24rpx;
+  color: #8E8E93;
+}
+
+.session-actions {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.action-icon {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #F5F5F7;
+  transition: all 0.2s ease;
+}
+
+.action-icon:active {
+  transform: scale(0.9);
+  background: #E5E5EA;
 }
 </style>

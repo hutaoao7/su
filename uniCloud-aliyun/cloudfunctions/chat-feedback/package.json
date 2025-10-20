@@ -1,0 +1,10 @@
+{
+  "name": "chat-feedback",
+  "version": "1.0.0",
+  "description": "AI聊天反馈收集",
+  "main": "index.js",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0"
+  }
+}
+
