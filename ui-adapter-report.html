@@ -1,0 +1,2442 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UI适配检测报告</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .header h1 { font-size: 32px; margin-bottom: 10px; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .stat-value { font-size: 36px; font-weight: bold; margin-bottom: 5px; }
+    .stat-label { color: #666; font-size: 14px; }
+    .issues { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .issue {
+      border-left: 4px solid #ccc;
+      padding: 15px;
+      margin-bottom: 15px;
+      background: #f9fafb;
+      border-radius: 4px;
+    }
+    .issue.error { border-color: #f56c6c; }
+    .issue.warning { border-color: #e6a23c; }
+    .issue.info { border-color: #409eff; }
+    .issue-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .issue-file { font-weight: bold; color: #333; }
+    .issue-level {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .level-error { background: #fef0f0; color: #f56c6c; }
+    .level-warning { background: #fdf6ec; color: #e6a23c; }
+    .level-info { background: #ecf5ff; color: #409eff; }
+    .issue-rule { color: #666; font-size: 14px; margin-bottom: 5px; }
+    .issue-message { color: #333; }
+    .issue-details { color: #999; font-size: 12px; margin-top: 5px; font-family: monospace; }
+    .success {
+      background: #f0f9ff;
+      border: 2px solid #67c23a;
+      color: #67c23a;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .timestamp { color: rgba(255,255,255,0.8); font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔍 UI适配检测报告</h1>
+      <div class="timestamp">生成时间: 2025/10/20 15:33:43</div>
+    </div>
+    
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-value">68</div>
+        <div class="stat-label">扫描文件数</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: #f56c6c;">0</div>
+        <div class="stat-label">错误</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: #e6a23c;">75</div>
+        <div class="stat-label">警告</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: #409eff;">158</div>
+        <div class="stat-label">提示</div>
+      </div>
+    </div>
+    
+    
+      <div class="issues">
+        <h2 style="margin-bottom: 20px;">问题列表 (233)</h2>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\academic\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\academic\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\academic\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\academic\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\result.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\result.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\result.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\result.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\result.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\result.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\sleep\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\sleep\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\sleep\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\sleep\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\social\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\social\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\social\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\social\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\stress\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\stress\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\stress\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\assess\stress\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\cdk\redeem.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\cdk\redeem.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\cdk\redeem.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\cdk\redeem.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\cdk\redeem.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\community\detail.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\community\detail.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用较大固定宽度，建议添加max-width约束; 使用固定尺寸但未设置overflow，内容可能溢出; 使用Grid布局但未针对平板/大屏设备适配</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\community\detail.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\community\detail.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\community\detail.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\community\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\community\index.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\community\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\community\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\community\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\community\publish.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\community\publish.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出; 使用Grid布局但未针对平板/大屏设备适配</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\community\publish.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\community\publish.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\community\publish.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\features\features.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">宽度width: 428px接近或超出iPhone SE屏幕宽度(375px); 使用Grid布局但未针对平板/大屏设备适配</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\features\features.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\features\features.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\feedback\feedback.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\feedback\feedback.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\feedback\feedback.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\feedback\feedback.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\feedback\feedback.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\home\home.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\home\home.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\home\home.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\home\home.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\home\home.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\index\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\index\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\index\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\intervene\chat.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 触摸区域大小</div>
+            <div class="issue-message">检测到可能过小的触摸区域，建议至少44px（88rpx）</div>
+            <div class="issue-details">width: 36rpx, height: 36rpx, width: 12rpx</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\intervene\chat.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\intervene\chat.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">多个大尺寸固定值（width: 500rpx, width: 500rpx, height: 600rpx）可能溢出; 使用Grid布局但未针对平板/大屏设备适配</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\intervene\chat.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\intervene\chat.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\intervene\chat.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\intervene\meditation.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\intervene\meditation.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\intervene\meditation.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\intervene\meditation.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\intervene\meditation.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\login\login.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 触摸区域大小</div>
+            <div class="issue-message">检测到可能过小的触摸区域，建议至少44px（88rpx）</div>
+            <div class="issue-details">width: 36rpx, height: 36rpx, width: 32rpx</div>
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\login\login.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">多个大尺寸固定值（width: 750rpx, height: 600px, width: 768px）可能溢出; 宽度width: 375px接近或超出iPhone SE屏幕宽度(375px); 宽度width: 430px接近或超出iPhone SE屏幕宽度(375px); 宽度width: 750rpx接近或超出iPhone SE屏幕宽度(750rpx); 宽度width: 768px接近或超出iPhone SE屏幕宽度(375px); 高度height: 600px占用屏幕高度过大，建议使用min-height或max-height; 使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\login\login.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\music\index.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">宽度width: 375px接近或超出iPhone SE屏幕宽度(375px); 宽度width: 768px接近或超出iPhone SE屏幕宽度(375px); 宽度width: 750rpx接近或超出iPhone SE屏幕宽度(750rpx)</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\music\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\music\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\music\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\music\player.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">多个大尺寸固定值（width: 560rpx, height: 560rpx, width: 768px）可能溢出; 宽度width: 375px接近或超出iPhone SE屏幕宽度(375px); 宽度width: 768px接近或超出iPhone SE屏幕宽度(375px); 宽度width: 750rpx接近或超出iPhone SE屏幕宽度(750rpx)</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\music\player.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\music\player.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\user\home.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 触摸区域大小</div>
+            <div class="issue-message">检测到可能过小的触摸区域，建议至少44px（88rpx）</div>
+            <div class="issue-details">height: 36rpx, height: 26rpx</div>
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages\user\home.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">宽度width: 375px接近或超出iPhone SE屏幕宽度(375px); 宽度width: 428px接近或超出iPhone SE屏幕宽度(375px); 宽度width: 768px接近或超出iPhone SE屏幕宽度(375px); 宽度width: 750rpx接近或超出iPhone SE屏幕宽度(750rpx)</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\user\home.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages\user\home.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\academic\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\academic\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\academic\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\academic\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\result.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 触摸区域大小</div>
+            <div class="issue-message">检测到可能过小的触摸区域，建议至少44px（88rpx）</div>
+            <div class="issue-details">width: 16rpx, height: 16rpx</div>
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\result.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">多个大尺寸固定值（height: 800rpx, width: 767px, width: 768px）可能溢出; 宽度width: 375px接近或超出iPhone SE屏幕宽度(375px); 宽度width: 376px接近或超出iPhone SE屏幕宽度(375px); 宽度width: 414px接近或超出iPhone SE屏幕宽度(375px); 宽度width: 415px接近或超出iPhone SE屏幕宽度(375px); 宽度width: 767px接近或超出iPhone SE屏幕宽度(375px); 宽度width: 768px接近或超出iPhone SE屏幕宽度(375px); 宽度width: 750rpx接近或超出iPhone SE屏幕宽度(750rpx); 宽度width: 750rpx接近或超出iPhone SE屏幕宽度(750rpx); 高度height: 1334rpx占用屏幕高度过大，建议使用min-height或max-height</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\result.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\result.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\sleep\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\sleep\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\sleep\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\sleep\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\social\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\social\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\social\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\social\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\stress\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\stress\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\stress\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\assess\stress\index.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\consent.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\consent.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\consent.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用较大固定宽度，建议添加max-width约束; 使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\consent.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\consent.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\consent.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\disclaimer.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\disclaimer.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 fixed定位检测</div>
+            <div class="issue-message">使用fixed定位且有top/bottom属性，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\disclaimer.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\disclaimer.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\disclaimer.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\disclaimer.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\privacy-policy.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\privacy-policy.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\privacy-policy.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\privacy-policy.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\privacy-policy.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\revoke.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\revoke.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\revoke.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\revoke.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\revoke.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\revoke.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\user-agreement.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\user-agreement.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 fixed定位检测</div>
+            <div class="issue-message">使用fixed定位且有top/bottom属性，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\user-agreement.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\user-agreement.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\user-agreement.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\consent\user-agreement.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\intervene\meditation.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\intervene\meditation.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\intervene\meditation.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\intervene\meditation.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\music\player.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\music\player.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\music\player.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\music\player.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\cdk\redeem.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\cdk\redeem.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\data-export.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\data-export.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\data-export.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\data-export.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\data-export.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\data-export.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\feedback.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\feedback.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\feedback.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\feedback.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\feedback.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\profile.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\profile.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">宽度width: 800px接近或超出iPhone SE屏幕宽度(375px); 高度height: 800px占用屏幕高度过大，建议使用min-height或max-height; 使用较大固定宽度，建议添加max-width约束</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\profile.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\profile.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\profile.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\redeem.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">pages-sub\other\redeem.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\AiModule.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\AiModule.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 fixed定位检测</div>
+            <div class="issue-message">使用fixed定位且有top/bottom属性，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\AiModule.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 触摸区域大小</div>
+            <div class="issue-message">检测到可能过小的触摸区域，建议至少44px（88rpx）</div>
+            <div class="issue-details">height: 2rpx, width: 24rpx, height: 24rpx</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\AiModule.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\AiModule.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\AiModule.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\AiModule.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\AiModule.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\CdkModule.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\CdkModule.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\CdkModule.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">大量使用固定宽度，建议使用相对单位（%、vh、vw）提升响应式; 使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\CdkModule.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\CdkModule.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\ConfirmDialog.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\ConfirmDialog.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 fixed定位检测</div>
+            <div class="issue-message">使用fixed定位且有top/bottom属性，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\ConfirmDialog.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\ConfirmDialog.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">大量使用固定宽度，建议使用相对单位（%、vh、vw）提升响应式; 使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\ConfirmDialog.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\ConfirmDialog.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\ConfirmDialog.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\EmptyState.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\EmptyState.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\EmptyState.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">大量使用固定宽度，建议使用相对单位（%、vh、vw）提升响应式; 使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\EmptyState.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\EmptyState.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\ErrorBoundary.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\ErrorBoundary.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">宽度width: 768px接近或超出iPhone SE屏幕宽度(375px); 使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\ErrorBoundary.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\GlobalLoading.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\GlobalLoading.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 fixed定位检测</div>
+            <div class="issue-message">使用fixed定位且有top/bottom属性，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\GlobalLoading.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\GlobalLoading.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\GlobalLoading.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\GlobalLoading.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\LoadingState.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\LoadingState.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 fixed定位检测</div>
+            <div class="issue-message">使用fixed定位且有top/bottom属性，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\LoadingState.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">多个大尺寸固定值（width: 600rpx, width: 500rpx, width: 750rpx）可能溢出; 宽度width: 750rpx接近或超出iPhone SE屏幕宽度(750rpx)</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\LoadingState.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\NavBar.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\NavBar.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 rpx单位使用</div>
+            <div class="issue-message">px使用过多（px:1, rpx:4），建议使用rpx单位</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\NavBar.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 fixed定位检测</div>
+            <div class="issue-message">使用fixed定位且有top/bottom属性，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\NavBar.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\NavBar.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\NavBar.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\NavBar.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\common\TabBar.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\TabBar.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\VirtualMessageList.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\VirtualMessageList.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\common\VirtualMessageList.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\custom-tabbar\custom-tabbar.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">宽度width: 375px接近或超出iPhone SE屏幕宽度(375px)</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\custom-tabbar\custom-tabbar.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\custom-tabbar\custom-tabbar.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\custom-tabbar\custom-tabbar.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 字体可访问性检测</div>
+            <div class="issue-message">检测到过小的字体（小于12px/24rpx），可能影响可读性</div>
+            <div class="issue-details">font-size: 10px, font-size: 9px</div>
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\MusicModule.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\MusicModule.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 fixed定位检测</div>
+            <div class="issue-message">使用fixed定位且有top/bottom属性，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\MusicModule.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 触摸区域大小</div>
+            <div class="issue-message">检测到可能过小的触摸区域，建议至少44px（88rpx）</div>
+            <div class="issue-details">height: 4rpx</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\MusicModule.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\MusicModule.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">使用固定尺寸但未设置overflow，内容可能溢出; 使用Grid布局但未针对平板/大屏设备适配</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\MusicModule.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\MusicModule.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\MusicModule.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\SafeNavBar.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\SafeNavBar.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 fixed定位检测</div>
+            <div class="issue-message">使用fixed定位且有top/bottom属性，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\scale\ScaleRunner.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 触摸区域大小</div>
+            <div class="issue-message">检测到可能过小的触摸区域，建议至少44px（88rpx）</div>
+            <div class="issue-details">height: 4rpx, width: 20rpx, height: 20rpx</div>
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\scale\ScaleRunner.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 屏幕尺寸边界检测</div>
+            <div class="issue-message">屏幕尺寸边界问题</div>
+            <div class="issue-details">多个大尺寸固定值（height: 667px, width: 1200rpx, width: 560rpx）可能溢出; 宽度width: 1200rpx接近或超出iPhone SE屏幕宽度(750rpx); 高度height: 667px占用屏幕高度过大，建议使用min-height或max-height; 使用Grid布局但未针对平板/大屏设备适配</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\scale\ScaleRunner.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\ScreeningModule.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 Safe Area适配</div>
+            <div class="issue-message">检测到固定定位或底部padding，但缺少safe-area-inset适配</div>
+            
+          </div>
+        
+          <div class="issue warning">
+            <div class="issue-header">
+              <div class="issue-file">components\ScreeningModule.vue</div>
+              <div class="issue-level level-warning">WARNING</div>
+            </div>
+            <div class="issue-rule">📋 触摸区域大小</div>
+            <div class="issue-message">检测到可能过小的触摸区域，建议至少44px（88rpx）</div>
+            <div class="issue-details">height: 8rpx</div>
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\ScreeningModule.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 响应式布局</div>
+            <div class="issue-message">复杂布局但缺少媒体查询，建议添加响应式适配</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\ScreeningModule.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 横屏适配检测</div>
+            <div class="issue-message">复杂布局但未检测到横屏适配，建议添加横屏模式样式</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\ScreeningModule.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 暗黑模式检测</div>
+            <div class="issue-message">检测到硬编码颜色值，建议添加暗黑模式支持</div>
+            
+          </div>
+        
+          <div class="issue info">
+            <div class="issue-header">
+              <div class="issue-file">components\ScreeningModule.vue</div>
+              <div class="issue-level level-info">INFO</div>
+            </div>
+            <div class="issue-rule">📋 颜色对比度检测（WCAG）</div>
+            <div class="issue-message">可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）</div>
+            
+          </div>
+        
+      </div>
+    
+  </div>
+</body>
+</html>
+  

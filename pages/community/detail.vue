@@ -89,7 +89,7 @@
         />
         <view class="comment-content">
           <text class="comment-author">{{ comment.user_name }}</text>
-          <text class="comment-text">{{ comment.content }}</text>
+          <rich-text class="comment-text" :nodes="renderCommentContent(comment.content)"></rich-text>
           <view class="comment-meta">
             <text class="comment-time">{{ formatTime(comment.created_at) }}</text>
             <view class="comment-like" @tap.stop="likeComment(comment)">
@@ -107,11 +107,15 @@
 
     <!-- 评论输入框 -->
     <view class="comment-input-bar">
+      <view class="mention-btn" @tap="showUserPicker">
+        <u-icon name="at" size="22" color="#86868B"></u-icon>
+      </view>
       <input 
         class="comment-input"
         v-model="commentText"
         placeholder="说点什么..."
         :disabled="commenting"
+        @input="handleCommentInput"
         @confirm="submitComment"
       />
       <button 
@@ -122,6 +126,53 @@
         发送
       </button>
     </view>
+    
+    <!-- @用户选择器 -->
+    <u-popup 
+      :show="showMentionPicker" 
+      mode="bottom" 
+      :round="20"
+      @close="showMentionPicker = false"
+    >
+      <view class="mention-picker">
+        <view class="picker-header">
+          <text class="picker-title">选择要@的用户</text>
+          <u-icon name="close" size="24" @tap="showMentionPicker = false"></u-icon>
+        </view>
+        
+        <view class="search-user">
+          <input 
+            class="search-input"
+            v-model="mentionKeyword"
+            placeholder="搜索用户..."
+            @input="handleSearchUser"
+          />
+        </view>
+        
+        <scroll-view class="user-list" scroll-y>
+          <view 
+            v-for="user in filteredUsers" 
+            :key="user.id"
+            class="user-item"
+            @tap="selectMentionUser(user)"
+          >
+            <image 
+              class="user-avatar"
+              :src="user.avatar"
+              mode="aspectFill"
+            />
+            <view class="user-info">
+              <text class="user-name">{{ user.name }}</text>
+              <text v-if="user.role" class="user-role">{{ user.role === 'author' ? '作者' : '评论者' }}</text>
+            </view>
+          </view>
+          
+          <view v-if="filteredUsers.length === 0" class="empty-users">
+            <text class="empty-text">没有找到用户</text>
+          </view>
+        </scroll-view>
+      </view>
+    </u-popup>
     
     <!-- 操作菜单 -->
     <u-action-sheet 
@@ -176,6 +227,14 @@
 import { getTopicDetail, updateTopic, deleteTopic, reportTopic } from '@/api/community.js';
 import { callCloudFunction } from '@/utils/unicloud-handler.js';
 import { trackEvent } from '@/utils/analytics.js';
+import { 
+  detectMentionTrigger, 
+  insertMention, 
+  parseMentions,
+  renderMentions,
+  getAvailableUsers,
+  searchUsers
+} from '@/utils/mention-helper.js';
 
 export default {
   data() {
@@ -200,11 +259,22 @@ export default {
         { label: '虚假信息', value: 'fake' },
         { label: '侵权内容', value: 'copyright' },
         { label: '其他', value: 'other' }
-      ]
+      ],
+      // @用户相关
+      showMentionPicker: false,
+      mentionKeyword: '',
+      availableUsers: [],
+      mentionTrigger: null, // { atPos, keyword }
+      cursorPosition: 0
     };
   },
   
   computed: {
+    // 过滤后的用户列表
+    filteredUsers() {
+      return searchUsers(this.mentionKeyword, this.availableUsers);
+    },
+    
     isAuthor() {
       return this.topic && this.currentUserId && this.topic.user_id === this.currentUserId;
     }
@@ -249,6 +319,9 @@ export default {
         
         if (res && res.list) {
           this.comments = res.list;
+          
+          // 初始化可用用户列表（话题作者+评论者）
+          this.availableUsers = getAvailableUsers(this.topic, this.comments);
         }
       } catch (error) {
         console.error('[DETAIL] 加载评论失败:', error);
@@ -295,10 +368,14 @@ export default {
       this.commenting = true;
       
       try {
+        // 解析@用户
+        const mentionedUserIds = parseMentions(text);
+        
         const res = await callCloudFunction('community-comments', {
           action: 'create',
           topic_id: this.topicId,
-          content: text
+          content: text,
+          mentioned_users: mentionedUserIds // 传递@的用户ID列表
         });
         
         if (res && res.comment) {
@@ -306,9 +383,19 @@ export default {
           this.commentText = '';
           this.topic.comments_count++;
           
+          // 更新可用用户列表
+          this.availableUsers = getAvailableUsers(this.topic, this.comments);
+          
           uni.showToast({
             title: '评论成功',
             icon: 'success'
+          });
+          
+          // 埋点
+          trackEvent('comment_submit', {
+            topic_id: this.topicId,
+            has_mention: mentionedUserIds.length > 0,
+            mention_count: mentionedUserIds.length
           });
         }
       } catch (error) {
@@ -321,6 +408,99 @@ export default {
       } finally {
         this.commenting = false;
       }
+    },
+    
+    // @用户相关方法
+    // 显示用户选择器
+    showUserPicker() {
+      this.showMentionPicker = true;
+      this.mentionKeyword = '';
+      
+      // 记录当前光标位置和@位置
+      this.mentionTrigger = {
+        atPos: this.commentText.length,
+        keyword: ''
+      };
+      
+      // 自动在光标处插入@符号
+      if (!this.commentText.endsWith('@')) {
+        this.commentText += '@';
+        this.cursorPosition = this.commentText.length;
+      }
+    },
+    
+    // 监听评论输入，检测@符号
+    handleCommentInput(e) {
+      const value = e.detail.value || '';
+      const cursor = e.detail.cursor || value.length;
+      
+      this.cursorPosition = cursor;
+      
+      // 检测是否触发@
+      const trigger = detectMentionTrigger(value, cursor);
+      
+      if (trigger) {
+        this.mentionTrigger = trigger;
+        this.mentionKeyword = trigger.keyword;
+        
+        // 如果关键词发生变化，自动显示选择器
+        if (trigger.keyword && !this.showMentionPicker) {
+          this.showMentionPicker = true;
+        }
+      } else {
+        this.mentionTrigger = null;
+        
+        // 如果不在@状态，关闭选择器
+        if (this.showMentionPicker && !this.mentionKeyword) {
+          // this.showMentionPicker = false;
+        }
+      }
+    },
+    
+    // 搜索用户
+    handleSearchUser() {
+      // searchUsers 方法会自动在 computed.filteredUsers 中调用
+    },
+    
+    // 选择要@的用户
+    selectMentionUser(user) {
+      if (!this.mentionTrigger) {
+        // 如果没有触发位置，直接在末尾追加
+        this.commentText += `@[${user.name}](${user.id}) `;
+      } else {
+        // 在触发位置插入
+        const result = insertMention(
+          this.commentText,
+          this.mentionTrigger.atPos,
+          this.cursorPosition,
+          user
+        );
+        
+        this.commentText = result.content;
+        this.cursorPosition = result.cursorPos;
+      }
+      
+      // 关闭选择器
+      this.showMentionPicker = false;
+      this.mentionTrigger = null;
+      this.mentionKeyword = '';
+      
+      // 震动反馈
+      uni.vibrateShort();
+      
+      // 埋点
+      trackEvent('mention_user_select', {
+        topic_id: this.topicId,
+        mentioned_user_id: user.id
+      });
+    },
+    
+    // 渲染评论内容（高亮@用户）
+    renderCommentContent(content) {
+      if (!content) {
+        return '';
+      }
+      return renderMentions(content);
     },
     
     previewImage(index) {
@@ -729,6 +909,17 @@ export default {
   align-items: center;
 }
 
+.mention-btn {
+  width: 72rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F9FAFB;
+  border-radius: 36rpx;
+  flex-shrink: 0;
+}
+
 .comment-input {
   flex: 1;
   height: 72rpx;
@@ -750,6 +941,105 @@ export default {
 
 .comment-btn[disabled] {
   opacity: 0.5;
+}
+
+/* @用户选择器样式 */
+.mention-picker {
+  background: #FFFFFF;
+  border-radius: 24rpx 24rpx 0 0;
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32rpx;
+  border-bottom: 1rpx solid #F0F0F5;
+}
+
+.picker-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1D1D1F;
+}
+
+.search-user {
+  padding: 24rpx 32rpx;
+}
+
+.search-input {
+  width: 100%;
+  height: 72rpx;
+  background: #F9FAFB;
+  border-radius: 36rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+}
+
+.user-list {
+  max-height: 600rpx;
+  padding: 0 32rpx 32rpx;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 24rpx;
+  background: #F9FAFB;
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+  transition: all 0.3s;
+}
+
+.user-item:active {
+  background: #F0F0F5;
+}
+
+.user-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.user-name {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #1D1D1F;
+}
+
+.user-role {
+  font-size: 24rpx;
+  color: #86868B;
+}
+
+.empty-users {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 0;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #86868B;
+}
+
+/* 评论中的@标签样式 */
+.comment-text >>> .mention-tag {
+  color: #0A84FF;
+  font-weight: 500;
 }
 
 /* 举报对话框 */

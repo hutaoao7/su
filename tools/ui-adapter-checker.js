@@ -164,16 +164,97 @@ const config = {
       name: '屏幕尺寸边界检测',
       level: 'warning',
       check: (content) => {
-        // 检测固定宽度/高度值（可能在小屏幕上溢出）
-        const fixedLargeSize = content.match(/(?:width|height)\s*:\s*(?:[5-9]\d{2,}|[1-9]\d{3,})(?:px|rpx)/g);
+        const issues = [];
         
+        // 1. 检测固定宽度/高度值（可能在小屏幕上溢出）
+        const fixedLargeSize = content.match(/(?:width|height)\s*:\s*(?:[5-9]\d{2,}|[1-9]\d{3,})(?:px|rpx)/g);
         if (fixedLargeSize && fixedLargeSize.length > 2) {
+          issues.push(`多个大尺寸固定值（${fixedLargeSize.slice(0, 3).join(', ')}）可能溢出`);
+        }
+        
+        // 2. 检测iPhone SE (375px/750rpx) 最小宽度适配
+        // 查找可能超出iPhone SE宽度的固定值
+        const widthMatch = content.match(/width\s*:\s*(\d+)(px|rpx)/g);
+        if (widthMatch) {
+          widthMatch.forEach(match => {
+            const value = parseInt(match.match(/\d+/)[0]);
+            const unit = match.match(/(px|rpx)/)[1];
+            
+            // rpx: 750为100%宽度, px: 375为100%宽度
+            const threshold = unit === 'rpx' ? 750 : 375;
+            if (value > threshold * 0.95) {
+              issues.push(`宽度${match}接近或超出iPhone SE屏幕宽度(${threshold}${unit})`);
+            }
+          });
+        }
+        
+        // 3. 检测固定高度可能导致内容被截断
+        const fixedHeightLarge = content.match(/height\s*:\s*(\d+)(px|rpx)/g);
+        if (fixedHeightLarge) {
+          fixedHeightLarge.forEach(match => {
+            const value = parseInt(match.match(/\d+/)[0]);
+            const unit = match.match(/(px|rpx)/)[1];
+            
+            // rpx: 1334为iPhone SE高度, px: 667
+            const threshold = unit === 'rpx' ? 1334 : 667;
+            if (value > threshold * 0.8) {
+              issues.push(`高度${match}占用屏幕高度过大，建议使用min-height或max-height`);
+            }
+          });
+        }
+        
+        // 4. 检测是否使用了相对单位（%、vh、vw）
+        const hasRelativeUnits = /%|vh|vw/.test(content);
+        const hasFixedWidth = /width\s*:\s*\d+(?:px|rpx)/.test(content);
+        const isComplexLayout = content.length > 1000;
+        
+        if (hasFixedWidth && !hasRelativeUnits && isComplexLayout) {
+          issues.push('大量使用固定宽度，建议使用相对单位（%、vh、vw）提升响应式');
+        }
+        
+        // 5. 检测是否使用max-width/min-width约束
+        const hasMaxWidth = /max-width|min-width/.test(content);
+        const hasLargeFixed = /width\s*:\s*[6-9]\d{2,}(?:px|rpx)/.test(content);
+        
+        if (hasLargeFixed && !hasMaxWidth) {
+          issues.push('使用较大固定宽度，建议添加max-width约束');
+        }
+        
+        // 6. 检测calc()的正确使用
+        const calcMatch = content.match(/calc\([^)]+\)/g);
+        if (calcMatch) {
+          calcMatch.forEach(calc => {
+            // 检查是否混合单位（rpx + px会有问题）
+            if (/\d+rpx/.test(calc) && /\d+px/.test(calc)) {
+              issues.push(`calc(${calc})混合rpx和px单位，可能导致计算错误`);
+            }
+          });
+        }
+        
+        // 7. 检测overflow处理
+        const hasFixedSize = /(?:width|height)\s*:\s*\d+(?:px|rpx)/.test(content);
+        const hasOverflow = /overflow\s*:\s*(?:auto|scroll|hidden)/.test(content);
+        
+        if (hasFixedSize && !hasOverflow && isComplexLayout) {
+          issues.push('使用固定尺寸但未设置overflow，内容可能溢出');
+        }
+        
+        // 8. 检测iPad和大屏设备的适配
+        const hasTabletMedia = /@media.*min-width\s*:\s*(?:768|1024)/.test(content);
+        const hasComplexGrid = /grid-template-columns/.test(content);
+        
+        if (hasComplexGrid && !hasTabletMedia) {
+          issues.push('使用Grid布局但未针对平板/大屏设备适配');
+        }
+        
+        if (issues.length > 0) {
           return {
             passed: false,
-            message: '检测到多个大尺寸固定宽高值，可能在小屏幕上溢出',
-            details: fixedLargeSize.slice(0, 3).join(', ')
+            message: '屏幕尺寸边界问题',
+            details: issues.join('; ')
           };
         }
+        
         return { passed: true };
       }
     },

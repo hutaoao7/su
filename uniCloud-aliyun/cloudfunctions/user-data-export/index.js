@@ -1,12 +1,11 @@
 /**
  * 用户数据导出云函数
  * 
- * 功能：
- * 1. 汇总用户所有数据
- * 2. 支持JSON/CSV导出
- * 3. 自动脱敏敏感信息
- * 4. 记录导出历史
- * 5. 频率限制（24小时5次）
+ * 功能说明：
+ * 1. 从数据库查询用户的所有数据
+ * 2. 权限验证和身份认证
+ * 3. 记录导出日志
+ * 4. 支持邮件发送（可选）
  * 
  * @author CraneHeart Team
  * @date 2025-10-20
@@ -18,35 +17,49 @@ const db = uniCloud.database();
 const dbCmd = db.command;
 
 exports.main = async (event, context) => {
-	const { action, format, options = {} } = event;
-	const { uid } = context;
+	console.log('[user-data-export] 请求参数:', event);
 	
-	// Token验证
-	if (!uid) {
-		return {
-			code: 401,
-			message: '未授权，请先登录'
-		};
-	}
+	const { operation, dataTypes, format, encrypted } = event;
 	
 	try {
-		switch (action) {
+		// 1. 验证Token并获取用户信息
+		const user = await verifyToken(event.token);
+		if (!user) {
+			return {
+				code: 401,
+				message: '未授权，请先登录',
+				data: null
+			};
+		}
+		
+		const userId = user.uid;
+		
+		// 2. 根据operation执行不同操作
+		switch (operation) {
 			case 'export':
-				return await handleExport(uid, format, options, event);
-			case 'getHistory':
-				return await getExportHistory(uid);
-			case 'download':
-				return await downloadExport(uid, event.exportId);
+				// 导出数据
+				return await handleExport(userId, dataTypes, format, encrypted);
+			
+			case 'get_history':
+				// 获取导出历史
+				return await getExportHistory(userId);
+			
+			case 'send_email':
+				// 发送邮件（可选功能）
+				return await sendExportEmail(userId, event.exportId);
+			
 			default:
 				return {
-					code: 40001,
-					message: '不支持的操作类型'
+					code: 400,
+					message: '不支持的操作类型',
+					data: null
 				};
 		}
+		
 	} catch (error) {
-		console.error('导出错误:', error);
+		console.error('[user-data-export] 错误:', error);
 		return {
-			code: 50001,
+			code: 500,
 			message: error.message || '服务器错误',
 			data: null
 		};
@@ -54,476 +67,373 @@ exports.main = async (event, context) => {
 };
 
 /**
- * 处理数据导出
+ * 验证Token
  */
-async function handleExport(uid, format, options, event) {
-	// 1. 检查频率限制
-	const rateLimitCheck = await checkRateLimit(uid);
-	if (!rateLimitCheck.allowed) {
-		return {
-			code: 40006,
-			message: `导出频率限制，请${rateLimitCheck.waitTime}分钟后重试`,
-			data: null
-		};
+async function verifyToken(token) {
+	if (!token) {
+		return null;
 	}
-	
-	// 2. 验证导出格式
-	if (!['JSON', 'CSV'].includes(format)) {
-		return {
-			code: 40002,
-			message: '不支持的导出格式，仅支持JSON和CSV',
-			data: null
-		};
-	}
-	
-	// 3. 创建导出记录
-	const exportLog = await createExportLog(uid, format, event);
 	
 	try {
-		// 4. 收集用户数据
-		const userData = await collectUserData(uid, options);
+		const res = await db.collection('users')
+			.where({
+				token: token
+			})
+			.limit(1)
+			.get();
 		
-		// 5. 生成导出文件
-		const fileInfo = await generateExportFile(userData, format);
+		if (res.data && res.data.length > 0) {
+			return res.data[0];
+		}
 		
-		// 6. 上传到云存储
-		const uploadResult = await uploadToCloudStorage(fileInfo, uid, exportLog.id);
+		return null;
+	} catch (error) {
+		console.error('[user-data-export] 验证Token失败:', error);
+		return null;
+	}
+}
+
+/**
+ * 处理数据导出
+ */
+async function handleExport(userId, dataTypes, format, encrypted) {
+	try {
+		// 1. 收集数据
+		const exportData = {
+			metadata: {
+				exportTime: new Date().toISOString(),
+				userId: userId,
+				dataTypes: dataTypes,
+				format: format,
+				encrypted: encrypted
+			}
+		};
 		
-		// 7. 更新导出记录为成功
-		await updateExportLog(exportLog.id, {
-			export_status: 'completed',
-			file_size: fileInfo.size,
-			file_path: uploadResult.url,
-			data_items: userData.stats,
-			completed_at: new Date()
+		// 判断是否导出所有数据
+		const exportAll = dataTypes.includes('all');
+		
+		// 2. 收集各类数据
+		if (exportAll || dataTypes.includes('profile')) {
+			exportData.profile = await collectProfileData(userId);
+		}
+		
+		if (exportAll || dataTypes.includes('assessments')) {
+			exportData.assessments = await collectAssessmentData(userId);
+		}
+		
+		if (exportAll || dataTypes.includes('chats')) {
+			exportData.chats = await collectChatData(userId);
+		}
+		
+		if (exportAll || dataTypes.includes('music')) {
+			exportData.music = await collectMusicData(userId);
+		}
+		
+		if (exportAll || dataTypes.includes('community')) {
+			exportData.community = await collectCommunityData(userId);
+		}
+		
+		if (exportAll || dataTypes.includes('cdk')) {
+			exportData.cdk = await collectCDKData(userId);
+		}
+		
+		if (exportAll || dataTypes.includes('consent')) {
+			exportData.consent = await collectConsentData(userId);
+		}
+		
+		// 3. 记录导出日志
+		const exportLog = await recordExportLog(userId, {
+			dataTypes,
+			format,
+			encrypted,
+			dataSize: JSON.stringify(exportData).length,
+			timestamp: new Date()
 		});
 		
+		// 4. 返回导出数据
 		return {
 			code: 0,
 			message: '导出成功',
 			data: {
 				exportId: exportLog.id,
-				format: format,
-				fileSize: fileInfo.size,
-				downloadUrl: uploadResult.url,
-				expiresAt: uploadResult.expiresAt,
-				dataItems: userData.stats
+				exportData: exportData
 			}
 		};
-	} catch (error) {
-		// 更新导出记录为失败
-		await updateExportLog(exportLog.id, {
-			export_status: 'failed',
-			error_message: error.message
-		});
 		
+	} catch (error) {
+		console.error('[user-data-export] 导出数据失败:', error);
 		throw error;
 	}
 }
 
 /**
- * 检查频率限制（24小时内最多5次）
+ * 收集用户基本信息
  */
-async function checkRateLimit(uid) {
-	const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-	
-	const recentExports = await db.collection('data_export_logs')
-		.where({
-			user_id: uid,
-			created_at: dbCmd.gte(oneDayAgo)
-		})
-		.count();
-	
-	const allowed = recentExports.total < 5;
-	
-	if (!allowed) {
-		// 计算需要等待的时间
-		const oldestExport = await db.collection('data_export_logs')
-			.where({
-				user_id: uid,
-				created_at: dbCmd.gte(oneDayAgo)
-			})
-			.orderBy('created_at', 'asc')
-			.limit(1)
-			.get();
-		
-		if (oldestExport.data.length > 0) {
-			const waitTime = Math.ceil(
-				(new Date(oldestExport.data[0].created_at).getTime() + 24 * 60 * 60 * 1000 - Date.now()) / 60000
-			);
-			return { allowed: false, waitTime };
-		}
-	}
-	
-	return { allowed: true };
-}
-
-/**
- * 创建导出记录
- */
-async function createExportLog(uid, format, event) {
-	const result = await db.collection('data_export_logs').add({
-		user_id: uid,
-		export_format: format,
-		export_status: 'processing',
-		ip_address: event.context?.CLIENTIP || null,
-		user_agent: event.context?.['user-agent'] || null,
-		created_at: new Date()
-	});
-	
-	return { id: result.id };
-}
-
-/**
- * 收集用户数据
- */
-async function collectUserData(uid, options) {
-	const {
-		includeChats = true,
-		includeAssessments = true,
-		maskSensitive = true
-	} = options;
-	
-	const data = {
-		meta: {
-			exportTime: new Date().toISOString(),
-			exportVersion: '1.0.0',
-			userId: uid
-		},
-		stats: {}
-	};
-	
-	// 收集用户基本信息
+async function collectProfileData(userId) {
 	try {
-		const userInfo = await db.collection('users')
-			.doc(uid)
+		// 查询用户表
+		const userRes = await db.collection('users')
+			.where({ _id: userId })
 			.field({
-				id: true,
-				nickname: true,
-				avatar_url: true,
-				created_at: true
+				password: false,
+				token: false
 			})
 			.get();
 		
-		if (userInfo.data.length > 0) {
-			data.userInfo = userInfo.data[0];
-			data.stats.userInfo = 1;
-		}
-	} catch (error) {
-		console.error('收集用户信息失败:', error);
-		data.userInfo = null;
-		data.stats.userInfo = 0;
-	}
-	
-	// 收集评估记录
-	if (includeAssessments) {
-		try {
-			const assessments = await db.collection('assessments')
-				.where({ user_id: uid })
-				.orderBy('created_at', 'desc')
-				.get();
-			
-			data.assessments = assessments.data;
-			data.stats.assessments = assessments.data.length;
-		} catch (error) {
-			console.error('收集评估记录失败:', error);
-			data.assessments = [];
-			data.stats.assessments = 0;
-		}
-	}
-	
-	// 收集聊天记录
-	if (includeChats) {
-		try {
-			const chatSessions = await db.collection('chat_sessions')
-				.where({ user_id: uid })
-				.get();
-			
-			const chats = [];
-			let totalMessages = 0;
-			
-			for (const session of chatSessions.data) {
-				const messages = await db.collection('chat_messages')
-					.where({ session_id: session.id })
-					.orderBy('created_at', 'asc')
-					.limit(100) // 每个会话最多100条消息
-					.get();
-				
-				chats.push({
-					session: session,
-					messages: maskSensitive ? sanitizeMessages(messages.data) : messages.data
-				});
-				
-				totalMessages += messages.data.length;
-			}
-			
-			data.chatHistory = chats;
-			data.stats.chatSessions = chatSessions.data.length;
-			data.stats.chatMessages = totalMessages;
-		} catch (error) {
-			console.error('收集聊天记录失败:', error);
-			data.chatHistory = [];
-			data.stats.chatSessions = 0;
-			data.stats.chatMessages = 0;
-		}
-	}
-	
-	// 收集音乐收藏
-	try {
-		const musicFavorites = await db.collection('user_music_favorites')
-			.where({ user_id: uid })
+		// 查询用户资料表
+		const profileRes = await db.collection('user_profiles')
+			.where({ user_id: userId })
 			.get();
 		
-		data.musicFavorites = musicFavorites.data;
-		data.stats.musicFavorites = musicFavorites.data.length;
-	} catch (error) {
-		console.error('收集音乐收藏失败:', error);
-		data.musicFavorites = [];
-		data.stats.musicFavorites = 0;
-	}
-	
-	// 收集社区数据
-	try {
-		const communityTopics = await db.collection('community_topics')
-			.where({ author_id: uid })
+		// 查询用户设置表
+		const settingsRes = await db.collection('user_settings')
+			.where({ user_id: userId })
 			.get();
 		
-		data.communityTopics = communityTopics.data;
-		data.stats.communityTopics = communityTopics.data.length;
+		return {
+			basic: userRes.data[0] || null,
+			profile: profileRes.data[0] || null,
+			settings: settingsRes.data[0] || null
+		};
 	} catch (error) {
-		console.error('收集社区数据失败:', error);
-		data.communityTopics = [];
-		data.stats.communityTopics = 0;
+		console.error('[user-data-export] 收集用户信息失败:', error);
+		return null;
 	}
-	
-	return data;
 }
 
 /**
- * 脱敏处理消息
+ * 收集评估数据
  */
-function sanitizeMessages(messages) {
-	return messages.map(msg => ({
-		...msg,
-		content: sanitizeContent(msg.content || '')
-	}));
-}
-
-/**
- * 内容脱敏
- */
-function sanitizeContent(content) {
-	if (!content) return '';
-	
-	// 移除手机号
-	content = content.replace(/1[3-9]\d{9}/g, '***手机号***');
-	
-	// 移除身份证号
-	content = content.replace(/\d{17}[\dXx]/g, '***身份证号***');
-	
-	// 移除邮箱
-	content = content.replace(/[\w.-]+@[\w.-]+\.\w+/g, '***邮箱***');
-	
-	return content;
-}
-
-/**
- * 生成导出文件
- */
-async function generateExportFile(userData, format) {
-	let fileContent;
-	let mimeType;
-	let extension;
-	
-	switch (format) {
-		case 'JSON':
-			fileContent = JSON.stringify(userData, null, 2);
-			mimeType = 'application/json';
-			extension = 'json';
-			break;
+async function collectAssessmentData(userId) {
+	try {
+		// 查询评估记录
+		const assessmentRes = await db.collection('assessments')
+			.where({ user_id: userId })
+			.orderBy('created_at', 'desc')
+			.get();
 		
-		case 'CSV':
-			fileContent = convertToCSV(userData);
-			mimeType = 'text/csv';
-			extension = 'csv';
-			break;
+		// 查询评估结果
+		const resultRes = await db.collection('assessment_results')
+			.where({ user_id: userId })
+			.orderBy('created_at', 'desc')
+			.get();
 		
-		default:
-			throw new Error('不支持的导出格式');
+		return {
+			records: assessmentRes.data || [],
+			results: resultRes.data || [],
+			count: assessmentRes.data.length
+		};
+	} catch (error) {
+		console.error('[user-data-export] 收集评估数据失败:', error);
+		return null;
 	}
-	
-	return {
-		content: fileContent,
-		size: Buffer.byteLength(fileContent, 'utf8'),
-		mimeType,
-		extension
-	};
 }
 
 /**
- * 转换为CSV格式
+ * 收集AI对话数据
  */
-function convertToCSV(userData) {
-	let csv = '\uFEFF'; // 添加BOM以支持Excel打开中文
-	
-	// 元数据
-	csv += '# 导出元数据\n';
-	csv += `导出时间,${userData.meta.exportTime}\n`;
-	csv += `用户ID,${userData.meta.userId}\n`;
-	csv += '\n';
-	
-	// 统计信息
-	csv += '# 数据统计\n';
-	csv += '数据类型,数量\n';
-	csv += Object.entries(userData.stats)
-		.map(([key, value]) => `${key},${value}`)
-		.join('\n');
-	csv += '\n\n';
-	
-	// 评估记录
-	if (userData.assessments && userData.assessments.length > 0) {
-		csv += '# 评估记录\n';
-		csv += 'ID,量表名称,分数,等级,创建时间\n';
-		userData.assessments.forEach(item => {
-			csv += `${item.id || ''},${escapeCSV(item.scale_name)},${item.score || ''},${escapeCSV(item.level)},${item.created_at || ''}\n`;
+async function collectChatData(userId) {
+	try {
+		// 查询会话
+		const sessionRes = await db.collection('chat_sessions')
+			.where({ user_id: userId })
+			.orderBy('updated_at', 'desc')
+			.get();
+		
+		// 查询消息（限制最近1000条）
+		const messageRes = await db.collection('chat_messages')
+			.where({ user_id: userId })
+			.orderBy('created_at', 'desc')
+			.limit(1000)
+			.get();
+		
+		return {
+			sessions: sessionRes.data || [],
+			messages: messageRes.data || [],
+			sessionCount: sessionRes.data.length,
+			messageCount: messageRes.data.length
+		};
+	} catch (error) {
+		console.error('[user-data-export] 收集聊天数据失败:', error);
+		return null;
+	}
+}
+
+/**
+ * 收集音乐数据
+ */
+async function collectMusicData(userId) {
+	try {
+		// 查询收藏
+		const favoriteRes = await db.collection('user_music_favorites')
+			.where({ user_id: userId })
+			.get();
+		
+		// 查询播放历史（限制最近500条）
+		const historyRes = await db.collection('user_music_history')
+			.where({ user_id: userId })
+			.orderBy('played_at', 'desc')
+			.limit(500)
+			.get();
+		
+		return {
+			favorites: favoriteRes.data || [],
+			history: historyRes.data || [],
+			favoriteCount: favoriteRes.data.length,
+			historyCount: historyRes.data.length
+		};
+	} catch (error) {
+		console.error('[user-data-export] 收集音乐数据失败:', error);
+		return null;
+	}
+}
+
+/**
+ * 收集社区数据
+ */
+async function collectCommunityData(userId) {
+	try {
+		// 查询话题
+		const topicRes = await db.collection('community_topics')
+			.where({ user_id: userId })
+			.orderBy('created_at', 'desc')
+			.get();
+		
+		// 查询评论
+		const commentRes = await db.collection('community_comments')
+			.where({ user_id: userId })
+			.orderBy('created_at', 'desc')
+			.get();
+		
+		// 查询点赞
+		const likeRes = await db.collection('community_likes')
+			.where({ user_id: userId })
+			.get();
+		
+		return {
+			topics: topicRes.data || [],
+			comments: commentRes.data || [],
+			likes: likeRes.data || [],
+			topicCount: topicRes.data.length,
+			commentCount: commentRes.data.length,
+			likeCount: likeRes.data.length
+		};
+	} catch (error) {
+		console.error('[user-data-export] 收集社区数据失败:', error);
+		return null;
+	}
+}
+
+/**
+ * 收集CDK数据
+ */
+async function collectCDKData(userId) {
+	try {
+		// 查询兑换记录
+		const redeemRes = await db.collection('cdk_redeem_records')
+			.where({ user_id: userId })
+			.orderBy('redeemed_at', 'desc')
+			.get();
+		
+		return {
+			records: redeemRes.data || [],
+			count: redeemRes.data.length
+		};
+	} catch (error) {
+		console.error('[user-data-export] 收集CDK数据失败:', error);
+		return null;
+	}
+}
+
+/**
+ * 收集同意记录
+ */
+async function collectConsentData(userId) {
+	try {
+		// 查询同意记录
+		const consentRes = await db.collection('consent_records')
+			.where({ user_id: userId })
+			.orderBy('created_at', 'desc')
+			.get();
+		
+		// 查询撤回记录
+		const revokeRes = await db.collection('consent_revoke_logs')
+			.where({ user_id: userId })
+			.get();
+		
+		return {
+			records: consentRes.data || [],
+			revokes: revokeRes.data || [],
+			recordCount: consentRes.data.length,
+			revokeCount: revokeRes.data.length
+		};
+	} catch (error) {
+		console.error('[user-data-export] 收集同意记录失败:', error);
+		return null;
+	}
+}
+
+/**
+ * 记录导出日志
+ */
+async function recordExportLog(userId, logData) {
+	try {
+		const res = await db.collection('data_export_logs').add({
+			user_id: userId,
+			data_types: logData.dataTypes,
+			format: logData.format,
+			encrypted: logData.encrypted,
+			data_size: logData.dataSize,
+			status: 'completed',
+			created_at: logData.timestamp,
+			expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30天后过期
 		});
-		csv += '\n';
+		
+		return {
+			id: res.id
+		};
+	} catch (error) {
+		console.error('[user-data-export] 记录导出日志失败:', error);
+		return { id: null };
 	}
-	
-	// 聊天会话统计
-	if (userData.chatHistory && userData.chatHistory.length > 0) {
-		csv += '# 聊天会话统计\n';
-		csv += '会话ID,会话名称,消息数量,创建时间\n';
-		userData.chatHistory.forEach(chat => {
-			csv += `${chat.session.id},${escapeCSV(chat.session.name)},${chat.messages.length},${chat.session.created_at}\n`;
-		});
-		csv += '\n';
-	}
-	
-	return csv;
-}
-
-/**
- * CSV值转义
- */
-function escapeCSV(value) {
-	if (value === null || value === undefined) return '';
-	
-	let str = String(value);
-	
-	// 如果包含逗号、引号或换行符，需要用引号包裹
-	if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-		// 引号需要转义为两个引号
-		str = str.replace(/"/g, '""');
-		str = `"${str}"`;
-	}
-	
-	return str;
-}
-
-/**
- * 上传到云存储
- */
-async function uploadToCloudStorage(fileInfo, uid, exportId) {
-	const cloudPath = `exports/${uid}/${Date.now()}_${exportId}.${fileInfo.extension}`;
-	
-	// 使用uniCloud上传文件
-	const result = await uniCloud.uploadFile({
-		cloudPath: cloudPath,
-		fileContent: Buffer.from(fileInfo.content, 'utf8')
-	});
-	
-	// 生成临时下载链接（7天有效）
-	const tempFileURL = await uniCloud.getTempFileURL({
-		fileList: [result.fileID],
-		maxAge: 7 * 24 * 60 * 60 // 7天
-	});
-	
-	return {
-		url: tempFileURL.fileList[0].tempFileURL,
-		expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-	};
-}
-
-/**
- * 更新导出记录
- */
-async function updateExportLog(exportId, updates) {
-	await db.collection('data_export_logs')
-		.doc(exportId)
-		.update(updates);
 }
 
 /**
  * 获取导出历史
  */
-async function getExportHistory(uid) {
-	const history = await db.collection('data_export_logs')
-		.where({ user_id: uid })
-		.orderBy('created_at', 'desc')
-		.limit(20)
-		.get();
-	
-	return {
-		code: 0,
-		message: '获取成功',
-		data: history.data
-	};
+async function getExportHistory(userId) {
+	try {
+		const res = await db.collection('data_export_logs')
+			.where({ user_id: userId })
+			.orderBy('created_at', 'desc')
+			.limit(50)
+			.get();
+		
+		return {
+			code: 0,
+			message: '获取成功',
+			data: res.data || []
+		};
+	} catch (error) {
+		console.error('[user-data-export] 获取导出历史失败:', error);
+		return {
+			code: 500,
+			message: '获取失败',
+			data: []
+		};
+	}
 }
 
 /**
- * 下载导出文件
+ * 发送导出邮件（可选功能）
  */
-async function downloadExport(uid, exportId) {
-	const exportLog = await db.collection('data_export_logs')
-		.doc(exportId)
-		.get();
-	
-	if (exportLog.data.length === 0) {
-		return {
-			code: 40001,
-			message: '导出记录不存在',
-			data: null
-		};
-	}
-	
-	const log = exportLog.data[0];
-	
-	if (log.user_id !== uid) {
-		return {
-			code: 40003,
-			message: '无权访问此导出',
-			data: null
-		};
-	}
-	
-	if (log.export_status !== 'completed') {
-		return {
-			code: 40004,
-			message: '导出未完成或已失败',
-			data: null
-		};
-	}
-	
-	// 检查是否过期
-	if (log.expires_at && new Date(log.expires_at) < new Date()) {
-		return {
-			code: 40005,
-			message: '导出文件已过期',
-			data: null
-		};
-	}
+async function sendExportEmail(userId, exportId) {
+	// TODO: 实现邮件发送功能
+	// 需要配置邮件服务（如阿里云邮件推送、SendGrid等）
 	
 	return {
 		code: 0,
-		message: '获取成功',
-		data: {
-			downloadUrl: log.file_path,
-			fileSize: log.file_size,
-			format: log.export_format,
-			createdAt: log.created_at,
-			expiresAt: log.expires_at
-		}
+		message: '邮件发送功能暂未开启',
+		data: null
 	};
 }
-

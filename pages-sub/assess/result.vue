@@ -190,14 +190,14 @@
           >
             <view class="compare-item-header">
               <text class="compare-item-date">{{ formatDate(item.timestamp) }}</text>
-              <view class="compare-item-level" :class="getLevelClass(item.level)">
+              <view class="compare-item-level" :class="historyItemLevelClassList[index]">
                 {{ item.level }}
               </view>
             </view>
             <view class="compare-item-score">
               <text class="score-label">得分：</text>
               <text class="score-value">{{ item.score }}</text>
-              <text class="score-change" v-if="index > 0" :class="getScoreChangeClass(item, historyData[index-1])">
+              <text class="score-change" v-if="index > 0" :class="scoreChangeClassList[index]">
                 {{ getScoreChange(item, historyData[index-1]) }}
               </text>
             </view>
@@ -218,7 +218,7 @@
                 <text class="label">历史</text>
                 <text class="value history">{{ historyData[selectedCompareIndex].score }}</text>
               </view>
-              <view class="compare-diff" :class="getCompareClass(score, historyData[selectedCompareIndex].score)">
+              <view class="compare-diff" :class="compareClass">
                 {{ getCompareDiff(score, historyData[selectedCompareIndex].score) }}
               </view>
             </view>
@@ -233,7 +233,7 @@
               </view>
               <view class="level-item">
                 <text class="label">历史</text>
-                <view class="level-badge" :class="getLevelClass(historyData[selectedCompareIndex].level)">
+                <view class="level-badge" :class="historySelectedLevelClass">
                   {{ historyData[selectedCompareIndex].level }}
                 </view>
               </view>
@@ -385,6 +385,33 @@ export default {
     
     levelDescription() {
       return this.generateLevelDescription();
+    },
+    
+    historyItemLevelClassList() {
+      if (!Array.isArray(this.historyData)) return [];
+      return this.historyData.map((historyItem) => this.getLevelClass(historyItem.level));
+    },
+    
+    scoreChangeClassList() {
+      if (!Array.isArray(this.historyData)) return [];
+      return this.historyData.map((item, index) => {
+        if (index === 0) return '';
+        const previousItem = this.historyData[index - 1];
+        return this.getScoreChangeClass(item, previousItem);
+      });
+    },
+    
+    compareClass() {
+      if (this.selectedCompareIndex === null) return '';
+      const historyScore = this.historyData?.[this.selectedCompareIndex]?.score;
+      if (typeof historyScore !== 'number') return '';
+      return this.getCompareClass(this.score, historyScore);
+    },
+    
+    historySelectedLevelClass() {
+      if (this.selectedCompareIndex === null) return '';
+      const historyLevel = this.historyData?.[this.selectedCompareIndex]?.level;
+      return this.getLevelClass(historyLevel);
     },
     
     /**

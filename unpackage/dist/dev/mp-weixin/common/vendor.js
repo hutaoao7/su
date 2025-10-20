@@ -10101,7 +10101,7 @@ var b = "development" === "development",
   k = "true" === undefined || !0 === undefined,
   A = T([]),
   P = "h5" === E ? "web" : "app-plus" === E || "app-harmony" === E ? "app" : E,
-  C = T({"address":["127.0.0.1","26.92.214.110","192.168.110.227"],"servePort":7000,"debugPort":9000,"initialLaunchType":"remote","skipFiles":["<node_internals>/**","D:/HBuilderX.4.65.2025051206/HBuilderX/plugins/unicloud/**/*.js"]}),
+  C = T({"address":["127.0.0.1","26.92.214.110","192.168.1.7"],"servePort":7000,"debugPort":9000,"initialLaunchType":"remote","skipFiles":["<node_internals>/**","D:/HBuilderX.4.65.2025051206/HBuilderX/plugins/unicloud/**/*.js"]}),
   O = T([{"provider":"aliyun","spaceName":"test","spaceId":"mp-de9ea68f-5feb-48aa-9773-a231ce66de43","clientSecret":"xpaGJYnowjIcXQDW91/9pQ==","endpoint":"https://api.next.bspapp.com"}]) || [],
   x = true;
 var N = "";
@@ -29539,7 +29539,9 @@ exports.default = _default;
 /* 200 */,
 /* 201 */,
 /* 202 */,
-/* 203 */
+/* 203 */,
+/* 204 */,
+/* 205 */
 /*!*****************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/utils/unicloud-handler.js ***!
   \*****************************************************************/
@@ -29565,7 +29567,7 @@ exports.uniCloudMixin = void 0;
 var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 28));
 var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
 var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 31));
-var _apiHandler = __webpack_require__(/*! ./api-handler.js */ 204);
+var _apiHandler = __webpack_require__(/*! ./api-handler.js */ 206);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 // uniCloud实例缓存
@@ -30171,7 +30173,7 @@ console.log('[uniCloud处理器] 模块加载完成');
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/uni-cloud/dist/index.js */ 27)["uniCloud"]))
 
 /***/ }),
-/* 204 */
+/* 206 */
 /*!************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/utils/api-handler.js ***!
   \************************************************************/
@@ -30890,7 +30892,7 @@ console.log('[API处理器] 模块加载完成');
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 205 */
+/* 207 */
 /*!**********************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/utils/analytics.js ***!
   \**********************************************************/
@@ -30904,392 +30906,716 @@ var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/inte
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.eventQueue = exports.config = exports.analyticsMixin = void 0;
-exports.flushEvents = flushEvents;
+exports.clearUser = clearUser;
+exports.default = void 0;
+exports.destroyAnalytics = destroyAnalytics;
+exports.getAnalytics = getAnalytics;
 exports.initAnalytics = initAnalytics;
-exports.onAppHide = onAppHide;
-exports.trackAssessment = trackAssessment;
-exports.trackChat = trackChat;
+exports.setUser = setUser;
+exports.track = track;
 exports.trackClick = trackClick;
-exports.trackEvent = trackEvent;
-exports.trackLogin = trackLogin;
+exports.trackError = trackError;
 exports.trackPageView = trackPageView;
 var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 28));
-var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 31));
 var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 31));
 var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
+var _classCallCheck2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ 23));
+var _createClass2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/createClass */ 24));
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 /**
  * 埋点统计SDK
  * 
  * 功能：
- * 1. 页面浏览埋点（PV/UV）
- * 2. 事件埋点（点击、提交等）
- * 3. 用户行为路径追踪
- * 4. 停留时长统计
- * 5. 批量上报数据
+ * 1. 页面浏览追踪
+ * 2. 用户行为追踪
+ * 3. 错误追踪
+ * 4. 自定义事件追踪
+ * 5. 批量上报
+ * 6. 离线缓存
+ * 7. 数据压缩
+ * 
+ * @author CraneHeart Team
+ * @version 1.0.0
  */
+var Analytics = /*#__PURE__*/function () {
+  function Analytics() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    (0, _classCallCheck2.default)(this, Analytics);
+    // 配置
+    this.config = _objectSpread({
+      enabled: options.enabled !== false,
+      // 是否启用
+      debug: options.debug || false,
+      // 调试模式
+      maxQueueSize: options.maxQueueSize || 10,
+      // 队列最大长度
+      flushInterval: options.flushInterval || 30000,
+      // 上报间隔（毫秒）
+      immediateEvents: options.immediateEvents || [
+      // 立即上报的事件
+      'user_login', 'user_register', 'error_occurred', 'api_error']
+    }, options);
 
-// 配置
-var config = {
-  // 是否启用埋点
-  enabled: true,
-  // 批量上报配置
-  batchSize: 10,
-  // 批量上报数量
-  batchInterval: 30000,
-  // 批量上报间隔（毫秒）
+    // 事件队列
+    this.queue = [];
 
-  // 数据压缩
-  compress: true,
-  // 云函数名称
-  cloudFunction: 'events-track'
-};
+    // 会话信息
+    this.sessionId = this.generateSessionId();
+    this.sessionStartTime = Date.now();
 
-// 事件队列
-exports.config = config;
-var eventQueue = [];
+    // 页面信息
+    this.currentPage = null;
+    this.pageEnterTime = null;
+    this.lastPageUrl = null;
 
-// 批量上报定时器
-exports.eventQueue = eventQueue;
-var batchTimer = null;
+    // 用户信息
+    this.userId = null;
+    this.userProperties = {};
 
-// 当前页面信息
-var currentPage = {
-  path: '',
-  startTime: 0,
-  params: {}
-};
+    // 设备信息
+    this.deviceInfo = null;
 
-// 用户信息（延迟加载）
-var userInfo = null;
+    // 定时器
+    this.flushTimer = null;
 
-// 设备信息（缓存）
-var deviceInfo = null;
+    // 初始化
+    this.init();
+  }
+
+  /**
+   * 初始化
+   */
+  (0, _createClass2.default)(Analytics, [{
+    key: "init",
+    value: function init() {
+      if (!this.config.enabled) {
+        return;
+      }
+
+      // 获取设备信息
+      this.deviceInfo = this.getDeviceInfo();
+
+      // 尝试获取用户信息
+      this.loadUserInfo();
+
+      // 启动自动上报
+      this.startAutoFlush();
+
+      // 监听页面隐藏事件（上报数据）
+      this.setupPageVisibilityListener();
+
+      // 加载离线缓存的事件
+      this.loadOfflineEvents();
+      this.log('Analytics SDK initialized', this.config);
+    }
+
+    /**
+     * 设置用户ID
+     * @param {String} userId - 用户ID
+     * @param {Object} properties - 用户属性
+     */
+  }, {
+    key: "setUser",
+    value: function setUser(userId) {
+      var properties = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      this.userId = userId;
+      this.userProperties = _objectSpread(_objectSpread({}, this.userProperties), properties);
+
+      // 保存到本地
+      try {
+        uni.setStorageSync('analytics_user_id', userId);
+        uni.setStorageSync('analytics_user_properties', this.userProperties);
+      } catch (error) {
+        this.log('Save user info failed:', error);
+      }
+      this.log('User set:', userId, properties);
+    }
+
+    /**
+     * 清除用户信息
+     */
+  }, {
+    key: "clearUser",
+    value: function clearUser() {
+      this.userId = null;
+      this.userProperties = {};
+      try {
+        uni.removeStorageSync('analytics_user_id');
+        uni.removeStorageSync('analytics_user_properties');
+      } catch (error) {
+        this.log('Clear user info failed:', error);
+      }
+    }
+
+    /**
+     * 加载用户信息
+     */
+  }, {
+    key: "loadUserInfo",
+    value: function loadUserInfo() {
+      try {
+        var userId = uni.getStorageSync('analytics_user_id');
+        var properties = uni.getStorageSync('analytics_user_properties');
+        if (userId) {
+          this.userId = userId;
+          this.userProperties = properties || {};
+        }
+      } catch (error) {
+        this.log('Load user info failed:', error);
+      }
+    }
+
+    /**
+     * 追踪事件
+     * @param {String} eventName - 事件名称
+     * @param {Object} properties - 事件属性
+     * @param {Boolean} immediate - 是否立即上报
+     */
+  }, {
+    key: "track",
+    value: function track(eventName) {
+      var properties = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var immediate = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+      if (!this.config.enabled) {
+        return;
+      }
+      var event = {
+        event_name: eventName,
+        event_type: properties.event_type || 'custom',
+        event_time: Date.now(),
+        properties: properties,
+        user_id: this.userId,
+        session_id: this.sessionId,
+        page_url: this.currentPage,
+        device_info: this.deviceInfo
+      };
+      this.queue.push(event);
+      this.log('Event tracked:', event);
+
+      // 判断是否立即上报
+      var shouldFlushImmediately = immediate || this.config.immediateEvents.includes(eventName) || this.queue.length >= this.config.maxQueueSize;
+      if (shouldFlushImmediately) {
+        this.flush();
+      }
+    }
+
+    /**
+     * 追踪页面浏览
+     * @param {String} pageUrl - 页面URL
+     * @param {String} pageTitle - 页面标题
+     * @param {Object} extraProps - 额外属性
+     */
+  }, {
+    key: "trackPageView",
+    value: function trackPageView(pageUrl, pageTitle) {
+      var extraProps = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      // 如果有上一个页面，先记录离开事件
+      if (this.currentPage && this.pageEnterTime) {
+        var duration = Date.now() - this.pageEnterTime;
+        this.trackPageLeave(this.currentPage, duration);
+      }
+
+      // 记录新页面浏览
+      this.currentPage = pageUrl;
+      this.pageEnterTime = Date.now();
+      this.track('page_view', _objectSpread({
+        event_type: 'page_view',
+        page_url: pageUrl,
+        page_title: pageTitle,
+        referrer: this.lastPageUrl || '',
+        enter_time: this.pageEnterTime
+      }, extraProps));
+      this.lastPageUrl = pageUrl;
+    }
+
+    /**
+     * 追踪页面离开
+     * @param {String} pageUrl - 页面URL
+     * @param {Number} duration - 停留时长（毫秒）
+     */
+  }, {
+    key: "trackPageLeave",
+    value: function trackPageLeave(pageUrl, duration) {
+      this.track('page_leave', {
+        event_type: 'page_view',
+        page_url: pageUrl,
+        duration: Math.floor(duration / 1000) // 转为秒
+      });
+    }
+
+    /**
+     * 追踪点击事件
+     * @param {String} elementId - 元素ID
+     * @param {Object} extraProps - 额外属性
+     */
+  }, {
+    key: "trackClick",
+    value: function trackClick(elementId) {
+      var extraProps = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      this.track('button_click', _objectSpread({
+        event_type: 'click',
+        button_id: elementId,
+        page_url: this.currentPage
+      }, extraProps));
+    }
+
+    /**
+     * 追踪表单提交
+     * @param {String} formName - 表单名称
+     * @param {Object} extraProps - 额外属性
+     */
+  }, {
+    key: "trackFormSubmit",
+    value: function trackFormSubmit(formName) {
+      var extraProps = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      this.track('form_submit', _objectSpread({
+        event_type: 'form',
+        form_name: formName,
+        page_url: this.currentPage
+      }, extraProps));
+    }
+
+    /**
+     * 追踪搜索
+     * @param {String} keyword - 搜索关键词
+     * @param {Number} resultCount - 结果数量
+     */
+  }, {
+    key: "trackSearch",
+    value: function trackSearch(keyword, resultCount) {
+      this.track('search', {
+        event_type: 'custom',
+        keyword: keyword,
+        result_count: resultCount,
+        page_url: this.currentPage
+      });
+    }
+
+    /**
+     * 追踪错误
+     * @param {Error} error - 错误对象
+     * @param {Object} context - 上下文信息
+     */
+  }, {
+    key: "trackError",
+    value: function trackError(error) {
+      var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      this.track('error_occurred', _objectSpread({
+        event_type: 'custom',
+        error_type: error.name || 'Error',
+        error_message: error.message,
+        error_stack: error.stack,
+        page_url: this.currentPage
+      }, context), true); // 错误事件立即上报
+    }
+
+    /**
+     * 追踪API错误
+     * @param {String} apiUrl - API地址
+     * @param {Number} statusCode - 状态码
+     * @param {String} errorMessage - 错误信息
+     */
+  }, {
+    key: "trackApiError",
+    value: function trackApiError(apiUrl, statusCode, errorMessage) {
+      this.track('api_error', {
+        event_type: 'custom',
+        api_url: apiUrl,
+        api_status: statusCode,
+        error_message: errorMessage,
+        page_url: this.currentPage
+      }, true); // API错误立即上报
+    }
+
+    /**
+     * 追踪用户行为路径
+     * @param {String} action - 行为动作
+     * @param {Object} properties - 行为属性
+     */
+  }, {
+    key: "trackUserAction",
+    value: function trackUserAction(action) {
+      var properties = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      this.track('user_action', _objectSpread({
+        event_type: 'custom',
+        action: action,
+        page_url: this.currentPage,
+        session_id: this.sessionId
+      }, properties));
+    }
+
+    /**
+     * 刷新队列（上报）
+     */
+  }, {
+    key: "flush",
+    value: function () {
+      var _flush = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
+        var events, _yield$uniCloud$callF, result, _this$queue, _this$queue2;
+        return _regenerator.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (!(this.queue.length === 0)) {
+                  _context.next = 2;
+                  break;
+                }
+                return _context.abrupt("return");
+              case 2:
+                events = (0, _toConsumableArray2.default)(this.queue);
+                this.queue = [];
+                _context.prev = 4;
+                _context.next = 7;
+                return uniCloud.callFunction({
+                  name: 'events-track',
+                  data: {
+                    events: events,
+                    batch: true,
+                    app_version: this.getAppVersion(),
+                    sdk_version: '1.0.0'
+                  }
+                });
+              case 7:
+                _yield$uniCloud$callF = _context.sent;
+                result = _yield$uniCloud$callF.result;
+                if (result && result.code === 200) {
+                  this.log('Events flushed successfully:', events.length);
+                } else {
+                  // 上报失败，重新加入队列
+                  (_this$queue = this.queue).unshift.apply(_this$queue, (0, _toConsumableArray2.default)(events));
+                  this.log('Events flush failed, re-queued');
+
+                  // 保存到离线缓存
+                  this.saveOfflineEvents(events);
+                }
+                _context.next = 17;
+                break;
+              case 12:
+                _context.prev = 12;
+                _context.t0 = _context["catch"](4);
+                this.log('Events flush error:', _context.t0);
+
+                // 网络错误，保存到离线缓存
+                this.saveOfflineEvents(events);
+
+                // 重新加入队列
+                (_this$queue2 = this.queue).unshift.apply(_this$queue2, (0, _toConsumableArray2.default)(events));
+              case 17:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this, [[4, 12]]);
+      }));
+      function flush() {
+        return _flush.apply(this, arguments);
+      }
+      return flush;
+    }()
+    /**
+     * 启动自动上报
+     */
+  }, {
+    key: "startAutoFlush",
+    value: function startAutoFlush() {
+      var _this = this;
+      if (this.flushTimer) {
+        return;
+      }
+      this.flushTimer = setInterval(function () {
+        _this.flush();
+      }, this.config.flushInterval);
+      this.log('Auto flush started, interval:', this.config.flushInterval);
+    }
+
+    /**
+     * 停止自动上报
+     */
+  }, {
+    key: "stopAutoFlush",
+    value: function stopAutoFlush() {
+      if (this.flushTimer) {
+        clearInterval(this.flushTimer);
+        this.flushTimer = null;
+        this.log('Auto flush stopped');
+      }
+    }
+
+    /**
+     * 保存离线事件
+     * @param {Array} events - 事件列表
+     */
+  }, {
+    key: "saveOfflineEvents",
+    value: function saveOfflineEvents(events) {
+      try {
+        var existing = uni.getStorageSync('analytics_offline_events') || [];
+        var combined = [].concat((0, _toConsumableArray2.default)(existing), (0, _toConsumableArray2.default)(events));
+
+        // 限制最多保存1000条
+        var limited = combined.slice(-1000);
+        uni.setStorageSync('analytics_offline_events', limited);
+        this.log('Offline events saved:', limited.length);
+      } catch (error) {
+        this.log('Save offline events failed:', error);
+      }
+    }
+
+    /**
+     * 加载离线事件
+     */
+  }, {
+    key: "loadOfflineEvents",
+    value: function () {
+      var _loadOfflineEvents = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2() {
+        var offlineEvents, _yield$uniCloud$callF2, result;
+        return _regenerator.default.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.prev = 0;
+                offlineEvents = uni.getStorageSync('analytics_offline_events');
+                if (!(offlineEvents && offlineEvents.length > 0)) {
+                  _context2.next = 9;
+                  break;
+                }
+                this.log('Loading offline events:', offlineEvents.length);
+
+                // 尝试上报离线事件
+                _context2.next = 6;
+                return uniCloud.callFunction({
+                  name: 'events-track',
+                  data: {
+                    events: offlineEvents,
+                    batch: true,
+                    app_version: this.getAppVersion(),
+                    sdk_version: '1.0.0'
+                  }
+                });
+              case 6:
+                _yield$uniCloud$callF2 = _context2.sent;
+                result = _yield$uniCloud$callF2.result;
+                if (result && result.code === 200) {
+                  // 上报成功，清除缓存
+                  uni.removeStorageSync('analytics_offline_events');
+                  this.log('Offline events flushed successfully');
+                }
+              case 9:
+                _context2.next = 14;
+                break;
+              case 11:
+                _context2.prev = 11;
+                _context2.t0 = _context2["catch"](0);
+                this.log('Load offline events failed:', _context2.t0);
+              case 14:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this, [[0, 11]]);
+      }));
+      function loadOfflineEvents() {
+        return _loadOfflineEvents.apply(this, arguments);
+      }
+      return loadOfflineEvents;
+    }()
+    /**
+     * 监听页面可见性变化
+     */
+  }, {
+    key: "setupPageVisibilityListener",
+    value: function setupPageVisibilityListener() {
+
+      // 小程序使用onHide生命周期
+      // 需要在页面中手动调用
+    }
+
+    /**
+     * 生成会话ID
+     */
+  }, {
+    key: "generateSessionId",
+    value: function generateSessionId() {
+      return "session_".concat(Date.now(), "_").concat(Math.random().toString(36).substr(2, 9));
+    }
+
+    /**
+     * 获取设备信息
+     */
+  }, {
+    key: "getDeviceInfo",
+    value: function getDeviceInfo() {
+      try {
+        var systemInfo = uni.getSystemInfoSync();
+        return {
+          platform: systemInfo.platform,
+          os: systemInfo.system,
+          os_version: systemInfo.version,
+          device_model: systemInfo.model,
+          device_brand: systemInfo.brand,
+          screen_width: systemInfo.screenWidth,
+          screen_height: systemInfo.screenHeight,
+          window_width: systemInfo.windowWidth,
+          window_height: systemInfo.windowHeight,
+          pixel_ratio: systemInfo.pixelRatio,
+          network_type: systemInfo.networkType,
+          language: systemInfo.language,
+          wechat_version: systemInfo.version,
+          wechat_sdk_version: systemInfo.SDKVersion
+        };
+      } catch (error) {
+        this.log('Get device info failed:', error);
+        return {};
+      }
+    }
+
+    /**
+     * 获取应用版本
+     */
+  }, {
+    key: "getAppVersion",
+    value: function getAppVersion() {
+      // 从manifest.json或package.json读取
+      // 这里简化处理
+      try {
+        var appInfo = uni.getStorageSync('app_info');
+        return appInfo ? appInfo.version : '1.0.0';
+      } catch (error) {
+        return '1.0.0';
+      }
+    }
+
+    /**
+     * 日志输出
+     */
+  }, {
+    key: "log",
+    value: function log() {
+      if (this.config.debug) {
+        var _console;
+        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
+        (_console = console).log.apply(_console, ['[Analytics]'].concat(args));
+      }
+    }
+
+    /**
+     * 销毁实例
+     */
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      // 停止自动上报
+      this.stopAutoFlush();
+
+      // 上报剩余事件
+      this.flush();
+      this.log('Analytics destroyed');
+    }
+  }]);
+  return Analytics;
+}(); // ==================== 全局单例 ====================
+var analyticsInstance = null;
 
 /**
  * 初始化埋点SDK
+ * @param {Object} options - 配置选项
  */
 function initAnalytics() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  config.enabled = options.enabled !== false;
-  if (!config.enabled) {
-    console.log('[ANALYTICS] 埋点已禁用');
-    return;
+  if (analyticsInstance) {
+    console.warn('[Analytics] Already initialized');
+    return analyticsInstance;
   }
-
-  // 获取设备信息
-  deviceInfo = getDeviceInfo();
-
-  // 启动批量上报定时器
-  startBatchTimer();
-  console.log('[ANALYTICS] 埋点SDK初始化完成');
+  analyticsInstance = new Analytics(options);
+  return analyticsInstance;
 }
 
 /**
- * 获取设备信息
+ * 获取埋点SDK实例
+ * @returns {Analytics}
  */
-function getDeviceInfo() {
-  try {
-    var systemInfo = uni.getSystemInfoSync();
-    return {
-      platform: systemInfo.platform,
-      system: systemInfo.system,
-      model: systemInfo.model,
-      brand: systemInfo.brand,
-      pixelRatio: systemInfo.pixelRatio,
-      screenWidth: systemInfo.screenWidth,
-      screenHeight: systemInfo.screenHeight,
-      windowWidth: systemInfo.windowWidth,
-      windowHeight: systemInfo.windowHeight,
-      version: systemInfo.version,
-      SDKVersion: systemInfo.SDKVersion,
-      appVersion: systemInfo.appVersion || '1.0.0'
-    };
-  } catch (error) {
-    console.error('[ANALYTICS] 获取设备信息失败:', error);
-    return {};
+function getAnalytics() {
+  if (!analyticsInstance) {
+    console.warn('[Analytics] Not initialized, creating with default options');
+    analyticsInstance = new Analytics();
+  }
+  return analyticsInstance;
+}
+
+/**
+ * 销毁埋点SDK实例
+ */
+function destroyAnalytics() {
+  if (analyticsInstance) {
+    analyticsInstance.destroy();
+    analyticsInstance = null;
   }
 }
 
+// ==================== 快捷方法 ====================
+
 /**
- * 获取用户信息
+ * 追踪事件
  */
-function getUserInfo() {
-  if (userInfo) return userInfo;
-  try {
-    var uid = uni.getStorageSync('uni_id_uid');
-    var token = uni.getStorageSync('uni_id_token');
-    var userInfoStr = uni.getStorageSync('uni_id_user_info');
-    userInfo = {
-      uid: uid || 'guest',
-      isLoggedIn: !!token,
-      userInfo: userInfoStr ? JSON.parse(userInfoStr) : {}
-    };
-    return userInfo;
-  } catch (error) {
-    console.error('[ANALYTICS] 获取用户信息失败:', error);
-    return {
-      uid: 'guest',
-      isLoggedIn: false
-    };
-  }
+function track(eventName, properties, immediate) {
+  return getAnalytics().track(eventName, properties, immediate);
 }
 
 /**
- * 页面浏览埋点（PV）
- * @param {string} pagePath - 页面路径
- * @param {object} params - 页面参数
+ * 追踪页面浏览
  */
-function trackPageView(pagePath) {
-  var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  if (!config.enabled) return;
-
-  // 记录上一个页面的停留时长
-  if (currentPage.path && currentPage.startTime) {
-    var duration = Date.now() - currentPage.startTime;
-    trackEvent('page_leave', {
-      page_path: currentPage.path,
-      duration: duration,
-      params: currentPage.params
-    });
-  }
-
-  // 更新当前页面信息
-  currentPage = {
-    path: pagePath,
-    startTime: Date.now(),
-    params: params
-  };
-
-  // 记录页面进入事件
-  trackEvent('page_view', {
-    page_path: pagePath,
-    params: params,
-    referrer: currentPage.path || ''
-  });
-  console.log('[ANALYTICS] page_view:', pagePath);
+function trackPageView(pageUrl, pageTitle, extraProps) {
+  return getAnalytics().trackPageView(pageUrl, pageTitle, extraProps);
 }
 
 /**
- * 事件埋点
- * @param {string} eventName - 事件名称
- * @param {object} eventData - 事件数据
+ * 追踪点击
  */
-function trackEvent(eventName) {
-  var eventData = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  if (!config.enabled) return;
-  var event = {
-    event_name: eventName,
-    event_data: eventData,
-    user: getUserInfo(),
-    device: deviceInfo,
-    timestamp: Date.now(),
-    page_path: currentPage.path || '',
-    session_id: getSessionId()
-  };
-
-  // 添加到队列
-  eventQueue.push(event);
-  console.log("[ANALYTICS] event: ".concat(eventName), eventData);
-
-  // 检查是否需要立即上报
-  if (eventQueue.length >= config.batchSize) {
-    flushEvents();
-  }
+function trackClick(elementId, extraProps) {
+  return getAnalytics().trackClick(elementId, extraProps);
 }
 
 /**
- * 点击事件埋点
- * @param {string} elementId - 元素标识
- * @param {object} extraData - 额外数据
+ * 追踪错误
  */
-function trackClick(elementId) {
-  var extraData = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  trackEvent('click', _objectSpread({
-    element_id: elementId
-  }, extraData));
+function trackError(error, context) {
+  return getAnalytics().trackError(error, context);
 }
 
 /**
- * 登录事件埋点
- * @param {string} method - 登录方式
- * @param {boolean} success - 是否成功
- * @param {object} extraData - 额外数据
+ * 设置用户
  */
-function trackLogin(method, success) {
-  var extraData = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  trackEvent('login', _objectSpread({
-    login_method: method,
-    success: success
-  }, extraData));
+function setUser(userId, properties) {
+  return getAnalytics().setUser(userId, properties);
 }
 
 /**
- * 评估事件埋点
- * @param {string} action - 操作类型（start/complete/abandon）
- * @param {string} scaleId - 量表ID
- * @param {object} extraData - 额外数据
+ * 清除用户
  */
-function trackAssessment(action, scaleId) {
-  var extraData = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  trackEvent('assessment', _objectSpread({
-    action: action,
-    scale_id: scaleId
-  }, extraData));
+function clearUser() {
+  return getAnalytics().clearUser();
 }
 
-/**
- * AI对话埋点
- * @param {string} action - 操作类型（send/receive/error）
- * @param {object} extraData - 额外数据
- */
-function trackChat(action) {
-  var extraData = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  trackEvent('chat', _objectSpread({
-    action: action
-  }, extraData));
-}
-
-/**
- * 获取会话ID
- */
-function getSessionId() {
-  var sessionId = uni.getStorageSync('analytics_session_id');
-  if (!sessionId) {
-    sessionId = generateSessionId();
-    uni.setStorageSync('analytics_session_id', sessionId);
-  }
-  return sessionId;
-}
-
-/**
- * 生成会话ID
- */
-function generateSessionId() {
-  return "session_".concat(Date.now(), "_").concat(Math.random().toString(36).substr(2, 9));
-}
-
-/**
- * 启动批量上报定时器
- */
-function startBatchTimer() {
-  if (batchTimer) {
-    clearInterval(batchTimer);
-  }
-  batchTimer = setInterval(function () {
-    if (eventQueue.length > 0) {
-      flushEvents();
-    }
-  }, config.batchInterval);
-}
-
-/**
- * 立即上报所有事件
- */
-function flushEvents() {
-  if (eventQueue.length === 0) return;
-  var eventsToSend = (0, _toConsumableArray2.default)(eventQueue);
-  exports.eventQueue = eventQueue = [];
-
-  // 上报到云端
-  sendToCloud(eventsToSend);
-}
-
-/**
- * 发送数据到云端
- */
-function sendToCloud(_x) {
-  return _sendToCloud.apply(this, arguments);
-}
-/**
- * 生成批次ID
- */
-function _sendToCloud() {
-  _sendToCloud = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee(events) {
-    var payload, result, _eventQueue;
-    return _regenerator.default.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            _context.prev = 0;
-            console.log("[ANALYTICS] \u4E0A\u62A5 ".concat(events.length, " \u4E2A\u4E8B\u4EF6"));
-
-            // 数据压缩（简单JSON字符串化）
-            payload = {
-              events: events,
-              batch_id: generateBatchId(),
-              timestamp: Date.now()
-            }; // 调用云函数
-            _context.next = 5;
-            return uniCloud.callFunction({
-              name: config.cloudFunction,
-              data: payload
-            });
-          case 5:
-            result = _context.sent;
-            if (result && result.result && result.result.code === 0) {
-              console.log('[ANALYTICS] 上报成功');
-            } else {
-              console.warn('[ANALYTICS] 上报失败:', result);
-            }
-            _context.next = 13;
-            break;
-          case 9:
-            _context.prev = 9;
-            _context.t0 = _context["catch"](0);
-            console.error('[ANALYTICS] 上报异常:', _context.t0);
-            // 上报失败，将事件放回队列
-            (_eventQueue = eventQueue).unshift.apply(_eventQueue, (0, _toConsumableArray2.default)(events));
-          case 13:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee, null, [[0, 9]]);
-  }));
-  return _sendToCloud.apply(this, arguments);
-}
-function generateBatchId() {
-  return "batch_".concat(Date.now(), "_").concat(Math.random().toString(36).substr(2, 9));
-}
-
-/**
- * 应用退出时上报所有未发送的事件
- */
-function onAppHide() {
-  flushEvents();
-}
-
-// 导出配置（用于测试）
-
-// 全局混入（自动追踪页面浏览）
-var analyticsMixin = {
-  onShow: function onShow() {
-    var pages = getCurrentPages();
-    var currentPage = pages[pages.length - 1];
-    if (currentPage) {
-      trackPageView(currentPage.route, currentPage.options || {});
-    }
-  },
-  onHide: function onHide() {
-    // 记录页面离开时长
-    if (currentPage.path && currentPage.startTime) {
-      var duration = Date.now() - currentPage.startTime;
-      trackEvent('page_leave', {
-        page_path: currentPage.path,
-        duration: duration
-      });
-    }
-  }
+// ==================== 导出 ====================
+var _default = {
+  initAnalytics: initAnalytics,
+  getAnalytics: getAnalytics,
+  destroyAnalytics: destroyAnalytics,
+  track: track,
+  trackPageView: trackPageView,
+  trackClick: trackClick,
+  trackError: trackError,
+  setUser: setUser,
+  clearUser: clearUser
 };
-exports.analyticsMixin = analyticsMixin;
+exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/uni-cloud/dist/index.js */ 27)["uniCloud"]))
 
 /***/ }),
-/* 206 */,
-/* 207 */,
 /* 208 */,
 /* 209 */,
 /* 210 */,
@@ -31304,7 +31630,9 @@ exports.analyticsMixin = analyticsMixin;
 /* 219 */,
 /* 220 */,
 /* 221 */,
-/* 222 */
+/* 222 */,
+/* 223 */,
+/* 224 */
 /*!********************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/api/community.js ***!
   \********************************************************/
@@ -31318,11 +31646,11 @@ var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/inte
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.publishTopic = exports.likeTopic = exports.getTopicList = exports.getTopicDetail = exports.addComment = void 0;
+exports.updateTopic = exports.reportTopic = exports.publishTopic = exports.likeTopic = exports.getTopicList = exports.getTopicDetail = exports.deleteTopic = exports.addComment = void 0;
 var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 28));
 var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 31));
-var _unicloudHandler = __webpack_require__(/*! @/utils/unicloud-handler.js */ 203);
-var _mockAdapter = _interopRequireDefault(__webpack_require__(/*! ./mock-adapter.js */ 223));
+var _unicloudHandler = __webpack_require__(/*! @/utils/unicloud-handler.js */ 205);
+var _mockAdapter = _interopRequireDefault(__webpack_require__(/*! ./mock-adapter.js */ 225));
 /**
  * 社区相关API
  */
@@ -31531,10 +31859,127 @@ var addComment = /*#__PURE__*/function () {
     return _ref5.apply(this, arguments);
   };
 }();
+
+/**
+ * 编辑话题
+ */
 exports.addComment = addComment;
+var updateTopic = /*#__PURE__*/function () {
+  var _ref6 = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee6(topicId, data) {
+    var res;
+    return _regenerator.default.wrap(function _callee6$(_context6) {
+      while (1) {
+        switch (_context6.prev = _context6.next) {
+          case 0:
+            _context6.prev = 0;
+            _context6.next = 3;
+            return (0, _unicloudHandler.callFunction)('community-topics', {
+              action: 'update',
+              topic_id: topicId,
+              title: data.title,
+              content: data.content,
+              category: data.category,
+              images: data.images
+            });
+          case 3:
+            res = _context6.sent;
+            return _context6.abrupt("return", res);
+          case 7:
+            _context6.prev = 7;
+            _context6.t0 = _context6["catch"](0);
+            console.error('[API] 编辑话题失败:', _context6.t0);
+            throw _context6.t0;
+          case 11:
+          case "end":
+            return _context6.stop();
+        }
+      }
+    }, _callee6, null, [[0, 7]]);
+  }));
+  return function updateTopic(_x6, _x7) {
+    return _ref6.apply(this, arguments);
+  };
+}();
+
+/**
+ * 删除话题
+ */
+exports.updateTopic = updateTopic;
+var deleteTopic = /*#__PURE__*/function () {
+  var _ref7 = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee7(topicId) {
+    var res;
+    return _regenerator.default.wrap(function _callee7$(_context7) {
+      while (1) {
+        switch (_context7.prev = _context7.next) {
+          case 0:
+            _context7.prev = 0;
+            _context7.next = 3;
+            return (0, _unicloudHandler.callFunction)('community-topics', {
+              action: 'delete',
+              topic_id: topicId
+            });
+          case 3:
+            res = _context7.sent;
+            return _context7.abrupt("return", res);
+          case 7:
+            _context7.prev = 7;
+            _context7.t0 = _context7["catch"](0);
+            console.error('[API] 删除话题失败:', _context7.t0);
+            throw _context7.t0;
+          case 11:
+          case "end":
+            return _context7.stop();
+        }
+      }
+    }, _callee7, null, [[0, 7]]);
+  }));
+  return function deleteTopic(_x8) {
+    return _ref7.apply(this, arguments);
+  };
+}();
+
+/**
+ * 举报话题
+ */
+exports.deleteTopic = deleteTopic;
+var reportTopic = /*#__PURE__*/function () {
+  var _ref8 = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee8(topicId, reason, description) {
+    var res;
+    return _regenerator.default.wrap(function _callee8$(_context8) {
+      while (1) {
+        switch (_context8.prev = _context8.next) {
+          case 0:
+            _context8.prev = 0;
+            _context8.next = 3;
+            return (0, _unicloudHandler.callFunction)('community-topics', {
+              action: 'report',
+              topic_id: topicId,
+              reason: reason,
+              description: description
+            });
+          case 3:
+            res = _context8.sent;
+            return _context8.abrupt("return", res);
+          case 7:
+            _context8.prev = 7;
+            _context8.t0 = _context8["catch"](0);
+            console.error('[API] 举报话题失败:', _context8.t0);
+            throw _context8.t0;
+          case 11:
+          case "end":
+            return _context8.stop();
+        }
+      }
+    }, _callee8, null, [[0, 7]]);
+  }));
+  return function reportTopic(_x9, _x10, _x11) {
+    return _ref8.apply(this, arguments);
+  };
+}();
+exports.reportTopic = reportTopic;
 
 /***/ }),
-/* 223 */
+/* 225 */
 /*!***********************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/api/mock-adapter.js ***!
   \***********************************************************/
@@ -31805,8 +32250,6 @@ var _default = {
 exports.default = _default;
 
 /***/ }),
-/* 224 */,
-/* 225 */,
 /* 226 */,
 /* 227 */,
 /* 228 */,
@@ -31823,9 +32266,829 @@ exports.default = _default;
 /* 239 */,
 /* 240 */,
 /* 241 */,
-/* 242 */,
-/* 243 */,
-/* 244 */,
+/* 242 */
+/*!*************************************************************!*\
+  !*** D:/HBuilderX.4.65.2025051206/翎心/utils/chat-storage.js ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 28));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 31));
+var _classCallCheck2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ 23));
+var _createClass2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/createClass */ 24));
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+/**
+ * 聊天记录存储工具
+ * 
+ * 使用策略：
+ * - H5端：优先使用 IndexedDB 实现高性能存储
+ * - 小程序端：使用 localStorage 作为降级方案
+ * 
+ * 功能：
+ * - 聊天记录持久化存储
+ * - 会话管理
+ * - 自动清理过期数据
+ * - 数据压缩
+ * 
+ * @module chat-storage
+ */
+
+// 配置常量
+var DB_NAME = 'CraneHeartChatDB';
+var DB_VERSION = 1;
+var STORE_NAME = 'chat_messages';
+var INDEX_NAME_SESSION = 'sessionId';
+var INDEX_NAME_TIMESTAMP = 'timestamp';
+var MAX_MESSAGES_PER_SESSION = 500; // 每个会话最多保留500条消息
+var EXPIRE_DAYS = 30; // 数据保留30天
+
+/**
+ * 聊天存储管理类
+ */
+var ChatStorage = /*#__PURE__*/function () {
+  function ChatStorage() {
+    (0, _classCallCheck2.default)(this, ChatStorage);
+    this.db = null;
+    this.isH5 = false;
+    this.isReady = false;
+
+    // 判断当前环境
+  }
+
+  /**
+   * 初始化存储
+   */
+  (0, _createClass2.default)(ChatStorage, [{
+    key: "init",
+    value: function () {
+      var _init = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
+        return _regenerator.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (!this.isReady) {
+                  _context.next = 2;
+                  break;
+                }
+                return _context.abrupt("return", true);
+              case 2:
+                // 小程序端或IndexedDB失败时使用localStorage
+                this.isReady = true;
+                console.log('[CHAT_STORAGE] localStorage 模式已启用');
+                return _context.abrupt("return", true);
+              case 5:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+      function init() {
+        return _init.apply(this, arguments);
+      }
+      return init;
+    }()
+    /**
+     * 初始化 IndexedDB
+     */
+  }, {
+    key: "initIndexedDB",
+    value: function initIndexedDB() {
+      return new Promise(function (resolve, reject) {
+        resolve();
+      });
+    }
+
+    /**
+     * 保存单条消息
+     * @param {string} sessionId - 会话ID
+     * @param {object} message - 消息对象 {role, content, timestamp}
+     */
+  }, {
+    key: "saveMessage",
+    value: function () {
+      var _saveMessage = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2(sessionId, message) {
+        var messageData;
+        return _regenerator.default.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.next = 2;
+                return this.init();
+              case 2:
+                messageData = {
+                  sessionId: sessionId || 'default',
+                  role: message.role,
+                  content: message.content,
+                  timestamp: message.timestamp || Date.now(),
+                  createdAt: new Date().toISOString()
+                }; // localStorage 模式
+                return _context2.abrupt("return", this.saveMessageLocalStorage(sessionId, messageData));
+              case 4:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+      function saveMessage(_x, _x2) {
+        return _saveMessage.apply(this, arguments);
+      }
+      return saveMessage;
+    }()
+    /**
+     * 批量保存消息
+     * @param {string} sessionId - 会话ID
+     * @param {array} messages - 消息数组
+     */
+  }, {
+    key: "saveMessages",
+    value: function () {
+      var _saveMessages = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee3(sessionId, messages) {
+        var _iterator, _step, message;
+        return _regenerator.default.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _context3.next = 2;
+                return this.init();
+              case 2:
+                if (!(!Array.isArray(messages) || messages.length === 0)) {
+                  _context3.next = 4;
+                  break;
+                }
+                return _context3.abrupt("return");
+              case 4:
+                _iterator = _createForOfIteratorHelper(messages);
+                _context3.prev = 5;
+                _iterator.s();
+              case 7:
+                if ((_step = _iterator.n()).done) {
+                  _context3.next = 13;
+                  break;
+                }
+                message = _step.value;
+                _context3.next = 11;
+                return this.saveMessage(sessionId, message);
+              case 11:
+                _context3.next = 7;
+                break;
+              case 13:
+                _context3.next = 18;
+                break;
+              case 15:
+                _context3.prev = 15;
+                _context3.t0 = _context3["catch"](5);
+                _iterator.e(_context3.t0);
+              case 18:
+                _context3.prev = 18;
+                _iterator.f();
+                return _context3.finish(18);
+              case 21:
+                console.log("[CHAT_STORAGE] \u5DF2\u4FDD\u5B58 ".concat(messages.length, " \u6761\u6D88\u606F\u5230\u4F1A\u8BDD ").concat(sessionId));
+              case 22:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this, [[5, 15, 18, 21]]);
+      }));
+      function saveMessages(_x3, _x4) {
+        return _saveMessages.apply(this, arguments);
+      }
+      return saveMessages;
+    }()
+    /**
+     * 获取会话的所有消息
+     * @param {string} sessionId - 会话ID
+     * @param {number} limit - 限制数量
+     */
+  }, {
+    key: "getMessages",
+    value: function () {
+      var _getMessages = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee4() {
+        var sessionId,
+          limit,
+          _args4 = arguments;
+        return _regenerator.default.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                sessionId = _args4.length > 0 && _args4[0] !== undefined ? _args4[0] : 'default';
+                limit = _args4.length > 1 && _args4[1] !== undefined ? _args4[1] : MAX_MESSAGES_PER_SESSION;
+                _context4.next = 4;
+                return this.init();
+              case 4:
+                return _context4.abrupt("return", this.getMessagesLocalStorage(sessionId, limit));
+              case 5:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4, this);
+      }));
+      function getMessages() {
+        return _getMessages.apply(this, arguments);
+      }
+      return getMessages;
+    }()
+    /**
+     * 清空会话消息
+     * @param {string} sessionId - 会话ID
+     */
+  }, {
+    key: "clearSession",
+    value: function () {
+      var _clearSession = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee5() {
+        var sessionId,
+          _args5 = arguments;
+        return _regenerator.default.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                sessionId = _args5.length > 0 && _args5[0] !== undefined ? _args5[0] : 'default';
+                _context5.next = 3;
+                return this.init();
+              case 3:
+                return _context5.abrupt("return", this.clearSessionLocalStorage(sessionId));
+              case 4:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5, this);
+      }));
+      function clearSession() {
+        return _clearSession.apply(this, arguments);
+      }
+      return clearSession;
+    }()
+    /**
+     * 清理过期数据
+     */
+  }, {
+    key: "cleanExpiredData",
+    value: function () {
+      var _cleanExpiredData = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee6() {
+        var expireTime;
+        return _regenerator.default.wrap(function _callee6$(_context6) {
+          while (1) {
+            switch (_context6.prev = _context6.next) {
+              case 0:
+                _context6.next = 2;
+                return this.init();
+              case 2:
+                expireTime = Date.now() - EXPIRE_DAYS * 24 * 60 * 60 * 1000; // localStorage 模式
+                return _context6.abrupt("return", this.cleanExpiredDataLocalStorage(expireTime));
+              case 4:
+              case "end":
+                return _context6.stop();
+            }
+          }
+        }, _callee6, this);
+      }));
+      function cleanExpiredData() {
+        return _cleanExpiredData.apply(this, arguments);
+      }
+      return cleanExpiredData;
+    }() // ==================== IndexedDB 实现 ====================
+    /**
+     * IndexedDB: 保存消息
+     */
+  }, {
+    key: "saveMessageIndexedDB",
+    value: function saveMessageIndexedDB(messageData) {
+      return new Promise(function (resolve, reject) {
+        resolve();
+      });
+    }
+
+    /**
+     * IndexedDB: 获取消息
+     */
+  }, {
+    key: "getMessagesIndexedDB",
+    value: function getMessagesIndexedDB(sessionId, limit) {
+      return new Promise(function (resolve, reject) {
+        resolve([]);
+      });
+    }
+
+    /**
+     * IndexedDB: 清空会话
+     */
+  }, {
+    key: "clearSessionIndexedDB",
+    value: function clearSessionIndexedDB(sessionId) {
+      return new Promise(function (resolve, reject) {
+        resolve();
+      });
+    }
+
+    /**
+     * IndexedDB: 清理过期数据
+     */
+  }, {
+    key: "cleanExpiredDataIndexedDB",
+    value: function cleanExpiredDataIndexedDB(expireTime) {
+      return new Promise(function (resolve, reject) {
+        resolve(0);
+      });
+    }
+
+    // ==================== localStorage 实现 ====================
+
+    /**
+     * localStorage: 获取会话存储键
+     */
+  }, {
+    key: "getSessionKey",
+    value: function getSessionKey(sessionId) {
+      return "chat_session_".concat(sessionId);
+    }
+
+    /**
+     * localStorage: 保存消息
+     */
+  }, {
+    key: "saveMessageLocalStorage",
+    value: function saveMessageLocalStorage(sessionId, messageData) {
+      try {
+        var key = this.getSessionKey(sessionId);
+        var stored = uni.getStorageSync(key);
+        var messages = [];
+        if (stored) {
+          try {
+            messages = JSON.parse(stored);
+          } catch (e) {
+            console.warn('[CHAT_STORAGE] 解析存储数据失败，将重置');
+            messages = [];
+          }
+        }
+
+        // 添加新消息
+        messages.push(messageData);
+
+        // 限制数量
+        if (messages.length > MAX_MESSAGES_PER_SESSION) {
+          messages = messages.slice(-MAX_MESSAGES_PER_SESSION);
+        }
+        uni.setStorageSync(key, JSON.stringify(messages));
+        return true;
+      } catch (error) {
+        console.error('[CHAT_STORAGE] localStorage 保存失败:', error);
+        return false;
+      }
+    }
+
+    /**
+     * localStorage: 获取消息
+     */
+  }, {
+    key: "getMessagesLocalStorage",
+    value: function getMessagesLocalStorage(sessionId, limit) {
+      try {
+        var key = this.getSessionKey(sessionId);
+        var stored = uni.getStorageSync(key);
+        if (!stored) {
+          return [];
+        }
+        var messages = JSON.parse(stored);
+
+        // 限制数量
+        if (messages.length > limit) {
+          messages = messages.slice(-limit);
+        }
+        return messages;
+      } catch (error) {
+        console.error('[CHAT_STORAGE] localStorage 读取失败:', error);
+        return [];
+      }
+    }
+
+    /**
+     * localStorage: 清空会话
+     */
+  }, {
+    key: "clearSessionLocalStorage",
+    value: function clearSessionLocalStorage(sessionId) {
+      try {
+        var key = this.getSessionKey(sessionId);
+        uni.removeStorageSync(key);
+        console.log("[CHAT_STORAGE] \u4F1A\u8BDD ".concat(sessionId, " \u5DF2\u6E05\u7A7A"));
+        return true;
+      } catch (error) {
+        console.error('[CHAT_STORAGE] localStorage 清空失败:', error);
+        return false;
+      }
+    }
+
+    /**
+     * localStorage: 清理过期数据
+     */
+  }, {
+    key: "cleanExpiredDataLocalStorage",
+    value: function cleanExpiredDataLocalStorage(expireTime) {
+      try {
+        var info = uni.getStorageInfoSync();
+        var deletedCount = 0;
+        info.keys.forEach(function (key) {
+          if (key.startsWith('chat_session_')) {
+            var stored = uni.getStorageSync(key);
+            if (stored) {
+              try {
+                var messages = JSON.parse(stored);
+                var validMessages = messages.filter(function (msg) {
+                  return msg.timestamp >= expireTime;
+                });
+                if (validMessages.length < messages.length) {
+                  deletedCount += messages.length - validMessages.length;
+                  if (validMessages.length > 0) {
+                    uni.setStorageSync(key, JSON.stringify(validMessages));
+                  } else {
+                    uni.removeStorageSync(key);
+                  }
+                }
+              } catch (e) {
+                console.warn("[CHAT_STORAGE] \u6E05\u7406 ".concat(key, " \u5931\u8D25:"), e);
+              }
+            }
+          }
+        });
+        console.log("[CHAT_STORAGE] \u6E05\u7406\u4E86 ".concat(deletedCount, " \u6761\u8FC7\u671F\u6D88\u606F"));
+        return deletedCount;
+      } catch (error) {
+        console.error('[CHAT_STORAGE] localStorage 清理失败:', error);
+        return 0;
+      }
+    }
+
+    /**
+     * 获取所有会话列表
+     */
+  }, {
+    key: "getAllSessions",
+    value: function () {
+      var _getAllSessions = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee7() {
+        return _regenerator.default.wrap(function _callee7$(_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                _context7.next = 2;
+                return this.init();
+              case 2:
+                return _context7.abrupt("return", this.getAllSessionsLocalStorage());
+              case 3:
+              case "end":
+                return _context7.stop();
+            }
+          }
+        }, _callee7, this);
+      }));
+      function getAllSessions() {
+        return _getAllSessions.apply(this, arguments);
+      }
+      return getAllSessions;
+    }()
+    /**
+     * IndexedDB: 获取所有会话
+     */
+  }, {
+    key: "getAllSessionsIndexedDB",
+    value: function getAllSessionsIndexedDB() {
+      return new Promise(function (resolve, reject) {
+        resolve([]);
+      });
+    }
+
+    /**
+     * localStorage: 获取所有会话
+     */
+  }, {
+    key: "getAllSessionsLocalStorage",
+    value: function getAllSessionsLocalStorage() {
+      try {
+        var info = uni.getStorageInfoSync();
+        var sessions = [];
+        info.keys.forEach(function (key) {
+          if (key.startsWith('chat_session_')) {
+            var sessionId = key.replace('chat_session_', '');
+            sessions.push(sessionId);
+          }
+        });
+        return sessions;
+      } catch (error) {
+        console.error('[CHAT_STORAGE] 获取会话列表失败:', error);
+        return [];
+      }
+    }
+  }]);
+  return ChatStorage;
+}(); // 创建单例
+var chatStorage = new ChatStorage();
+var _default = chatStorage;
+exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+
+/***/ }),
+/* 243 */
+/*!****************************************************************!*\
+  !*** D:/HBuilderX.4.65.2025051206/翎心/utils/sensitive-words.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.checkSensitiveWords = checkSensitiveWords;
+exports.default = void 0;
+exports.getCrisisWarning = getCrisisWarning;
+exports.getSensitiveWarning = getSensitiveWarning;
+exports.highlightSensitiveWords = highlightSensitiveWords;
+var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
+/**
+ * 前端敏感词检测工具
+ * 用于实时检测用户输入中的敏感内容
+ */
+
+// 敏感词列表（与后端保持一致）
+var SENSITIVE_WORDS = [
+// 危机相关
+'自杀', '自残', '轻生', '想死', '不想活', '结束生命', '了断', '解脱',
+// 暴力相关
+'杀人', '伤害', '报复', '打人',
+// 其他敏感词
+'毒品', '赌博'];
+
+// 危机干预关键词
+var CRISIS_KEYWORDS = ['自杀', '自残', '轻生', '想死', '不想活', '结束生命', '了断'];
+
+/**
+ * 检查文本是否包含敏感词
+ * @param {string} text - 要检查的文本
+ * @returns {object} - { hasSensitive: boolean, matchedWords: array, isCrisis: boolean }
+ */
+function checkSensitiveWords(text) {
+  if (!text || typeof text !== 'string') {
+    return {
+      hasSensitive: false,
+      matchedWords: [],
+      isCrisis: false,
+      positions: []
+    };
+  }
+  var lowerText = text.toLowerCase();
+  var matchedWords = [];
+  var positions = [];
+  var isCrisis = false;
+
+  // 检查每个敏感词
+  SENSITIVE_WORDS.forEach(function (word) {
+    var lowerWord = word.toLowerCase();
+    var index = lowerText.indexOf(lowerWord);
+    while (index !== -1) {
+      matchedWords.push(word);
+      positions.push({
+        word: word,
+        start: index,
+        end: index + word.length
+      });
+
+      // 检查是否是危机关键词
+      if (CRISIS_KEYWORDS.includes(word)) {
+        isCrisis = true;
+      }
+
+      // 查找下一个匹配
+      index = lowerText.indexOf(lowerWord, index + 1);
+    }
+  });
+  return {
+    hasSensitive: matchedWords.length > 0,
+    matchedWords: (0, _toConsumableArray2.default)(new Set(matchedWords)),
+    // 去重
+    isCrisis: isCrisis,
+    positions: positions
+  };
+}
+
+/**
+ * 高亮显示敏感词
+ * @param {string} text - 原始文本
+ * @param {array} positions - 敏感词位置数组
+ * @returns {array} - 包含文本片段和是否敏感的数组
+ */
+function highlightSensitiveWords(text, positions) {
+  if (!text || !positions || positions.length === 0) {
+    return [{
+      text: text,
+      isSensitive: false
+    }];
+  }
+
+  // 按位置排序
+  var sortedPositions = positions.sort(function (a, b) {
+    return a.start - b.start;
+  });
+  var result = [];
+  var lastEnd = 0;
+  sortedPositions.forEach(function (pos) {
+    // 添加非敏感词部分
+    if (pos.start > lastEnd) {
+      result.push({
+        text: text.substring(lastEnd, pos.start),
+        isSensitive: false
+      });
+    }
+
+    // 添加敏感词部分
+    result.push({
+      text: text.substring(pos.start, pos.end),
+      isSensitive: true,
+      word: pos.word
+    });
+    lastEnd = pos.end;
+  });
+
+  // 添加最后剩余的非敏感词部分
+  if (lastEnd < text.length) {
+    result.push({
+      text: text.substring(lastEnd),
+      isSensitive: false
+    });
+  }
+  return result;
+}
+
+/**
+ * 获取危机干预提示
+ * @returns {string} - 危机干预提示文本
+ */
+function getCrisisWarning() {
+  return "\u26A0\uFE0F \u6211\u4EEC\u6CE8\u610F\u5230\u60A8\u53EF\u80FD\u6B63\u5728\u7ECF\u5386\u56F0\u96BE\u65F6\u671F\u3002\n\n\u5982\u679C\u60A8\u9700\u8981\u7ACB\u5373\u5E2E\u52A9\uFF0C\u8BF7\u8054\u7CFB\uFF1A\n\u2022 \u5FC3\u7406\u5371\u673A\u5E72\u9884\u70ED\u7EBF\uFF1A400-161-9995\uFF0824\u5C0F\u65F6\uFF09\n\u2022 \u751F\u547D\u6559\u80B2\u4E2D\u5FC3\uFF1A400-840-1000\n\u2022 \u6216\u524D\u5F80\u6700\u8FD1\u7684\u533B\u9662\u6025\u8BCA\u79D1\n\n\u60A8\u7684\u751F\u547D\u5F88\u5B9D\u8D35\uFF0C\u8BF7\u4E0D\u8981\u653E\u5F03\u3002";
+}
+
+/**
+ * 获取敏感词警告提示
+ * @param {array} matchedWords - 匹配到的敏感词
+ * @returns {string} - 警告提示
+ */
+function getSensitiveWarning(matchedWords) {
+  return "\u68C0\u6D4B\u5230\u60A8\u7684\u6D88\u606F\u5305\u542B\u654F\u611F\u5185\u5BB9\uFF08".concat(matchedWords.join('、'), "\uFF09\u3002\n\n\u5982\u679C\u60A8\u6B63\u5728\u7ECF\u5386\u56F0\u96BE\uFF0C\u6211\u4EEC\u5EFA\u8BAE\u5BFB\u6C42\u4E13\u4E1A\u5E2E\u52A9\u3002");
+}
+var _default = {
+  checkSensitiveWords: checkSensitiveWords,
+  highlightSensitiveWords: highlightSensitiveWords,
+  getCrisisWarning: getCrisisWarning,
+  getSensitiveWarning: getSensitiveWarning
+};
+exports.default = _default;
+
+/***/ }),
+/* 244 */
+/*!***************************************************************!*\
+  !*** D:/HBuilderX.4.65.2025051206/翎心/utils/ai-personality.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = exports.PersonalityType = exports.PersonalityConfig = void 0;
+exports.getAllPersonalities = getAllPersonalities;
+exports.getPersonalityConfig = getPersonalityConfig;
+exports.getPersonalityPreference = getPersonalityPreference;
+exports.getSystemPrompt = getSystemPrompt;
+exports.savePersonalityPreference = savePersonalityPreference;
+var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
+var _PersonalityConfig;
+/**
+ * AI人格配置
+ * 提供不同风格的AI对话体验
+ */
+
+/**
+ * AI人格类型
+ */
+var PersonalityType = {
+  GENTLE: 'gentle',
+  // 温柔模式
+  PROFESSIONAL: 'professional',
+  // 专业模式
+  HUMOROUS: 'humorous' // 幽默模式
+};
+
+/**
+ * AI人格配置
+ */
+exports.PersonalityType = PersonalityType;
+var PersonalityConfig = (_PersonalityConfig = {}, (0, _defineProperty2.default)(_PersonalityConfig, PersonalityType.GENTLE, {
+  id: PersonalityType.GENTLE,
+  name: '温柔模式',
+  icon: '🌸',
+  description: '温暖、共情、鼓励式的对话风格',
+  color: '#FF9AA2',
+  systemPrompt: "\u4F60\u662F\u4E00\u4F4D\u6E29\u67D4\u3001\u5BCC\u6709\u540C\u7406\u5FC3\u7684\u5FC3\u7406\u54A8\u8BE2\u5E08\uFF0C\u4E13\u95E8\u4ECE\u4E8B\u8BA4\u77E5\u884C\u4E3A\u7597\u6CD5(CBT)\u3002\n\u7528\u6237\u6B63\u5728\u7ECF\u5386\u538B\u529B\u548C\u7126\u8651\uFF0C\u9700\u8981\u4F60\u7684\u6E29\u6696\u652F\u6301\u6765\u91CD\u6784\u4ED6\u4EEC\u7684\u601D\u7EF4\u6A21\u5F0F\u3002\n\n\u4F60\u7684\u5BF9\u8BDD\u98CE\u683C\uFF1A\n- \u4F7F\u7528\u6E29\u6696\u3001\u67D4\u548C\u7684\u8BED\u8A00\n- \u8868\u8FBE\u6DF1\u5207\u7684\u7406\u89E3\u548C\u5171\u60C5\n- \u591A\u4F7F\u7528\u9F13\u52B1\u548C\u80AF\u5B9A\u7684\u8868\u8FBE\n- \u8010\u5FC3\u503E\u542C\uFF0C\u4E0D\u6025\u4E8E\u7ED9\u5EFA\u8BAE\n- \u8BED\u6C14\u4EB2\u5207\uFF0C\u50CF\u670B\u53CB\u822C\u5173\u6000\n\n\u8BF7\u9075\u5FAA\u4EE5\u4E0BCBT\u539F\u5219:\n1. \u8BC6\u522B\u81EA\u52A8\u5316\u8D1F\u9762\u601D\u7EF4\n2. \u6311\u6218\u8BA4\u77E5\u6B6A\u66F2\n3. \u5BFB\u627E\u66FF\u4EE3\u6027\u601D\u8003\u65B9\u5F0F\n4. \u63D0\u4F9B\u6E29\u548C\u7684\u51CF\u538B\u6280\u5DE7\n\n\u56DE\u7B54\u8981\u6E29\u6696\u3001\u4E13\u4E1A\uFF0C\u8BED\u8A00\u4EB2\u5207\u81EA\u7136\uFF0C\u957F\u5EA6\u9002\u4E2D\uFF0C\u5E76\u6301\u7EED\u9F13\u52B1\u7528\u6237\u79EF\u6781\u601D\u8003\u3002\n\n\u4E0D\u8981:\n- \u505A\u51FA\u533B\u7597\u8BCA\u65AD\n- \u63D0\u4F9B\u836F\u7269\u5EFA\u8BAE\n- \u8FC7\u5EA6\u627F\u8BFA\u6CBB\u6108\u6548\u679C\n- \u4F7F\u7528\u8FC7\u4E8E\u4E13\u4E1A\u7684\u672F\u8BED\n\n\u8BF7\u4F7F\u7528\u4E2D\u6587\u56DE\u590D\uFF0C\u5E76\u59CB\u7EC8\u4FDD\u6301\u6E29\u6696\u5171\u60C5\u548C\u652F\u6301\u7684\u6001\u5EA6\u3002",
+  examples: ['我能感受到你现在的压力和焦虑，这些感受都是很正常的。让我们一起来看看...', '你已经做得很好了，能够意识到这一点本身就是很大的进步。', '我理解你的感受，在这种情况下感到困惑是可以理解的。']
+}), (0, _defineProperty2.default)(_PersonalityConfig, PersonalityType.PROFESSIONAL, {
+  id: PersonalityType.PROFESSIONAL,
+  name: '专业模式',
+  icon: '📋',
+  description: '严谨、结构化、循证的对话风格',
+  color: '#4A90E2',
+  systemPrompt: "\u4F60\u662F\u4E00\u4F4D\u7ECF\u9A8C\u4E30\u5BCC\u3001\u4E13\u4E1A\u4E25\u8C28\u7684\u5FC3\u7406\u54A8\u8BE2\u5E08\uFF0C\u4E13\u95E8\u4ECE\u4E8B\u8BA4\u77E5\u884C\u4E3A\u7597\u6CD5(CBT)\u3002\n\u7528\u6237\u6B63\u5728\u7ECF\u5386\u538B\u529B\u548C\u7126\u8651\uFF0C\u9700\u8981\u4F60\u7684\u4E13\u4E1A\u6307\u5BFC\u6765\u91CD\u6784\u4ED6\u4EEC\u7684\u601D\u7EF4\u6A21\u5F0F\u3002\n\n\u4F60\u7684\u5BF9\u8BDD\u98CE\u683C\uFF1A\n- \u4F7F\u7528\u4E13\u4E1A\u4F46\u6613\u61C2\u7684\u8BED\u8A00\n- \u63D0\u4F9B\u7ED3\u6784\u5316\u7684\u5206\u6790\u548C\u5EFA\u8BAE\n- \u57FA\u4E8E\u5FAA\u8BC1\u7684\u5FC3\u7406\u5B66\u7406\u8BBA\n- \u903B\u8F91\u6E05\u6670\uFF0C\u6761\u7406\u5206\u660E\n- \u5BA2\u89C2\u4E2D\u7ACB\uFF0C\u4E13\u4E1A\u53EF\u9760\n\n\u8BF7\u9075\u5FAA\u4EE5\u4E0BCBT\u539F\u5219:\n1. \u8BC6\u522B\u81EA\u52A8\u5316\u8D1F\u9762\u601D\u7EF4\n2. \u6311\u6218\u8BA4\u77E5\u6B6A\u66F2\n3. \u5BFB\u627E\u66FF\u4EE3\u6027\u601D\u8003\u65B9\u5F0F\n4. \u63D0\u4F9B\u5B9E\u8BC1\u652F\u6301\u7684\u51CF\u538B\u6280\u5DE7\n5. \u4F7F\u7528ABC\u6A21\u578B\u7B49\u4E13\u4E1A\u6846\u67B6\n\n\u56DE\u7B54\u8981\u4E13\u4E1A\u3001\u4E25\u8C28\uFF0C\u8BED\u8A00\u6E05\u6670\u51C6\u786E\uFF0C\u957F\u5EA6\u9002\u4E2D\uFF0C\u63D0\u4F9B\u53EF\u64CD\u4F5C\u7684\u5EFA\u8BAE\u3002\n\n\u4E0D\u8981:\n- \u505A\u51FA\u533B\u7597\u8BCA\u65AD\n- \u63D0\u4F9B\u836F\u7269\u5EFA\u8BAE\n- \u8FC7\u5EA6\u627F\u8BFA\u6CBB\u6108\u6548\u679C\n- \u4F7F\u7528\u8FC7\u4E8E\u6666\u6DA9\u7684\u4E13\u4E1A\u672F\u8BED\n\n\u8BF7\u4F7F\u7528\u4E2D\u6587\u56DE\u590D\uFF0C\u5E76\u59CB\u7EC8\u4FDD\u6301\u4E13\u4E1A\u5BA2\u89C2\u7684\u6001\u5EA6\u3002",
+  examples: ['根据认知行为疗法的理论框架，我们可以分析一下你的思维模式...', '让我们用ABC模型来分析这个情况：A是触发事件，B是你的信念...', '研究表明，这种认知歪曲被称为"灾难化思维"，我们可以通过...']
+}), (0, _defineProperty2.default)(_PersonalityConfig, PersonalityType.HUMOROUS, {
+  id: PersonalityType.HUMOROUS,
+  name: '幽默模式',
+  icon: '😄',
+  description: '轻松、有趣、积极的对话风格',
+  color: '#FFB84D',
+  systemPrompt: "\u4F60\u662F\u4E00\u4F4D\u5E7D\u9ED8\u98CE\u8DA3\u3001\u5584\u4E8E\u7528\u8F7B\u677E\u65B9\u5F0F\u5F15\u5BFC\u7684\u5FC3\u7406\u54A8\u8BE2\u5E08\uFF0C\u4E13\u95E8\u4ECE\u4E8B\u8BA4\u77E5\u884C\u4E3A\u7597\u6CD5(CBT)\u3002\n\u7528\u6237\u6B63\u5728\u7ECF\u5386\u538B\u529B\u548C\u7126\u8651\uFF0C\u9700\u8981\u4F60\u7528\u5E7D\u9ED8\u548C\u79EF\u6781\u7684\u65B9\u5F0F\u6765\u5E2E\u52A9\u4ED6\u4EEC\u91CD\u6784\u601D\u7EF4\u6A21\u5F0F\u3002\n\n\u4F60\u7684\u5BF9\u8BDD\u98CE\u683C\uFF1A\n- \u9002\u5F53\u4F7F\u7528\u5E7D\u9ED8\u548C\u4FCF\u76AE\u8BDD\n- \u4FDD\u6301\u8F7B\u677E\u6109\u5FEB\u7684\u6C1B\u56F4\n- \u7528\u6BD4\u55BB\u548C\u6709\u8DA3\u7684\u4F8B\u5B50\n- \u79EF\u6781\u4E50\u89C2\uFF0C\u5145\u6EE1\u6B63\u80FD\u91CF\n- \u8BA9\u4EBA\u611F\u5230\u653E\u677E\u548C\u5E0C\u671B\n\n\u8BF7\u9075\u5FAA\u4EE5\u4E0BCBT\u539F\u5219:\n1. \u8BC6\u522B\u81EA\u52A8\u5316\u8D1F\u9762\u601D\u7EF4\n2. \u6311\u6218\u8BA4\u77E5\u6B6A\u66F2\n3. \u5BFB\u627E\u66FF\u4EE3\u6027\u601D\u8003\u65B9\u5F0F\n4. \u63D0\u4F9B\u6709\u8DA3\u7684\u51CF\u538B\u6280\u5DE7\n\n\u91CD\u8981\u539F\u5219\uFF1A\n- \u5E7D\u9ED8\u8981\u9002\u5EA6\uFF0C\u4E0D\u8981\u8F7B\u89C6\u7528\u6237\u7684\u56F0\u6270\n- \u5728\u4E25\u8083\u8BDD\u9898\u4E0A\u4FDD\u6301\u5C0A\u91CD\n- \u5E7D\u9ED8\u662F\u8F85\u52A9\uFF0C\u4E0D\u662F\u76EE\u7684\n- \u786E\u4FDD\u7528\u6237\u611F\u5230\u88AB\u7406\u89E3\n\n\u56DE\u7B54\u8981\u8F7B\u677E\u3001\u6709\u8DA3\uFF0C\u8BED\u8A00\u6D3B\u6CFC\u81EA\u7136\uFF0C\u957F\u5EA6\u9002\u4E2D\uFF0C\u8BA9\u7528\u6237\u611F\u5230\u653E\u677E\u548C\u5E0C\u671B\u3002\n\n\u4E0D\u8981:\n- \u505A\u51FA\u533B\u7597\u8BCA\u65AD\n- \u63D0\u4F9B\u836F\u7269\u5EFA\u8BAE\n- \u8FC7\u5EA6\u627F\u8BFA\u6CBB\u6108\u6548\u679C\n- \u5728\u4E0D\u9002\u5F53\u7684\u65F6\u5019\u5F00\u73A9\u7B11\n\n\u8BF7\u4F7F\u7528\u4E2D\u6587\u56DE\u590D\uFF0C\u5E76\u59CB\u7EC8\u4FDD\u6301\u8F7B\u677E\u79EF\u6781\u7684\u6001\u5EA6\u3002",
+  examples: ['哈哈，听起来你的大脑又在上演"灾难大片"了！让我们给这部电影换个结局...', '压力就像一只调皮的小猫，越是紧张它越来劲。不如我们学学如何和它"玩"？', '焦虑说："我要毁了你的一天！"我们说："不好意思，今天不营业～"']
+}), _PersonalityConfig);
+
+/**
+ * 获取人格配置
+ */
+exports.PersonalityConfig = PersonalityConfig;
+function getPersonalityConfig(type) {
+  return PersonalityConfig[type] || PersonalityConfig[PersonalityType.GENTLE];
+}
+
+/**
+ * 获取所有人格列表
+ */
+function getAllPersonalities() {
+  return Object.values(PersonalityConfig);
+}
+
+/**
+ * 获取人格的系统提示词
+ */
+function getSystemPrompt(type) {
+  var config = getPersonalityConfig(type);
+  return config.systemPrompt;
+}
+
+/**
+ * 保存用户的人格偏好
+ */
+function savePersonalityPreference(type) {
+  try {
+    uni.setStorageSync('ai_personality_preference', type);
+    console.log('[AI_PERSONALITY] 保存偏好:', type);
+  } catch (error) {
+    console.error('[AI_PERSONALITY] 保存偏好失败:', error);
+  }
+}
+
+/**
+ * 获取用户的人格偏好
+ */
+function getPersonalityPreference() {
+  try {
+    var preference = uni.getStorageSync('ai_personality_preference');
+    return preference || PersonalityType.GENTLE;
+  } catch (error) {
+    console.error('[AI_PERSONALITY] 获取偏好失败:', error);
+    return PersonalityType.GENTLE;
+  }
+}
+var _default = {
+  PersonalityType: PersonalityType,
+  PersonalityConfig: PersonalityConfig,
+  getPersonalityConfig: getPersonalityConfig,
+  getAllPersonalities: getAllPersonalities,
+  getSystemPrompt: getSystemPrompt,
+  savePersonalityPreference: savePersonalityPreference,
+  getPersonalityPreference: getPersonalityPreference
+};
+exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+
+/***/ }),
 /* 245 */,
 /* 246 */,
 /* 247 */,
@@ -31888,7 +33151,581 @@ exports.default = _default;
 /* 304 */,
 /* 305 */,
 /* 306 */,
-/* 307 */,
+/* 307 */
+/*!*************************************************************!*\
+  !*** D:/HBuilderX.4.65.2025051206/翎心/utils/result-cache.js ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.resultCache = exports.default = exports.CACHE_CONFIG = void 0;
+var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 28));
+var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 31));
+var _classCallCheck2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ 23));
+var _createClass2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/createClass */ 24));
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+/**
+ * 评估结果缓存管理工具
+ * 功能：
+ * 1. 支持localStorage和IndexedDB双层缓存
+ * 2. 自动过期清理机制
+ * 3. 数据压缩存储
+ * 4. 离线数据同步队列
+ * 
+ * @author CraneHeart Team
+ * @date 2025-10-20
+ */
+
+var CACHE_CONFIG = {
+  // 缓存键前缀
+  PREFIX: 'crane_result_',
+  // localStorage键
+  STORAGE_KEYS: {
+    RESULTS: 'assessment_results',
+    // 结果缓存
+    HISTORY: 'assessment_history',
+    // 历史记录
+    SYNC_QUEUE: 'result_sync_queue',
+    // 待同步队列
+    CACHE_META: 'result_cache_meta' // 缓存元数据
+  },
+
+  // 缓存策略
+  MAX_RESULTS: 100,
+  // 最多缓存结果数
+  MAX_HISTORY: 50,
+  // 最多历史记录数
+  EXPIRE_DAYS: 30,
+  // 缓存过期天数
+
+  // IndexedDB配置
+  DB_NAME: 'CraneHeartDB',
+  DB_VERSION: 1,
+  STORE_NAME: 'assessment_results'
+};
+
+/**
+ * 结果缓存管理器
+ */
+exports.CACHE_CONFIG = CACHE_CONFIG;
+var ResultCacheManager = /*#__PURE__*/function () {
+  function ResultCacheManager() {
+    (0, _classCallCheck2.default)(this, ResultCacheManager);
+    this.db = null;
+    this.dbReady = false;
+    this.initIndexedDB();
+  }
+
+  /**
+   * 初始化IndexedDB
+   */
+  (0, _createClass2.default)(ResultCacheManager, [{
+    key: "initIndexedDB",
+    value: function () {
+      var _initIndexedDB = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
+        return _regenerator.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                console.log('[ResultCache] 非H5环境，跳过IndexedDB初始化');
+                this.dbReady = false;
+              case 2:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+      function initIndexedDB() {
+        return _initIndexedDB.apply(this, arguments);
+      }
+      return initIndexedDB;
+    }()
+    /**
+     * 保存评估结果（主方法）
+     * @param {Object} resultData - 结果数据
+     * @returns {Promise<boolean>}
+     */
+  }, {
+    key: "saveResult",
+    value: function () {
+      var _saveResult = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2(resultData) {
+        var enrichedData;
+        return _regenerator.default.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.prev = 0;
+                if (!(!resultData || !resultData.scaleId)) {
+                  _context2.next = 4;
+                  break;
+                }
+                console.error('[ResultCache] 无效的结果数据');
+                return _context2.abrupt("return", false);
+              case 4:
+                // 添加元数据
+                enrichedData = _objectSpread(_objectSpread({}, resultData), {}, {
+                  cachedAt: Date.now(),
+                  expireAt: Date.now() + CACHE_CONFIG.EXPIRE_DAYS * 24 * 60 * 60 * 1000,
+                  version: '1.0'
+                }); // 尝试保存到IndexedDB（H5）
+                if (!this.dbReady) {
+                  _context2.next = 8;
+                  break;
+                }
+                _context2.next = 8;
+                return this.saveToIndexedDB(enrichedData);
+              case 8:
+                _context2.next = 10;
+                return this.saveToLocalStorage(enrichedData);
+              case 10:
+                _context2.next = 12;
+                return this.saveToHistory(resultData);
+              case 12:
+                // 更新缓存元数据
+                this.updateCacheMeta();
+                console.log('[ResultCache] 结果保存成功:', resultData.scaleId);
+                return _context2.abrupt("return", true);
+              case 17:
+                _context2.prev = 17;
+                _context2.t0 = _context2["catch"](0);
+                console.error('[ResultCache] 保存结果失败:', _context2.t0);
+                return _context2.abrupt("return", false);
+              case 21:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this, [[0, 17]]);
+      }));
+      function saveResult(_x) {
+        return _saveResult.apply(this, arguments);
+      }
+      return saveResult;
+    }()
+    /**
+     * 保存到IndexedDB
+     */
+  }, {
+    key: "saveToIndexedDB",
+    value: function () {
+      var _saveToIndexedDB = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee3(data) {
+        return _regenerator.default.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                return _context3.abrupt("return", false);
+              case 1:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+      function saveToIndexedDB(_x2) {
+        return _saveToIndexedDB.apply(this, arguments);
+      }
+      return saveToIndexedDB;
+    }()
+    /**
+     * 保存到localStorage
+     */
+  }, {
+    key: "saveToLocalStorage",
+    value: function () {
+      var _saveToLocalStorage = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee4(data) {
+        var key, cached, now, validCached;
+        return _regenerator.default.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                _context4.prev = 0;
+                key = CACHE_CONFIG.STORAGE_KEYS.RESULTS;
+                cached = uni.getStorageSync(key) || []; // 添加新结果
+                cached.push(data);
+
+                // 清理过期数据
+                now = Date.now();
+                validCached = cached.filter(function (item) {
+                  return item.expireAt > now;
+                }); // 限制数量
+                if (validCached.length > CACHE_CONFIG.MAX_RESULTS) {
+                  validCached.splice(0, validCached.length - CACHE_CONFIG.MAX_RESULTS);
+                }
+                uni.setStorageSync(key, validCached);
+                console.log('[ResultCache] localStorage保存成功, 当前缓存:', validCached.length);
+                return _context4.abrupt("return", true);
+              case 12:
+                _context4.prev = 12;
+                _context4.t0 = _context4["catch"](0);
+                console.error('[ResultCache] localStorage保存失败:', _context4.t0);
+                return _context4.abrupt("return", false);
+              case 16:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4, null, [[0, 12]]);
+      }));
+      function saveToLocalStorage(_x3) {
+        return _saveToLocalStorage.apply(this, arguments);
+      }
+      return saveToLocalStorage;
+    }()
+    /**
+     * 保存到历史记录
+     */
+  }, {
+    key: "saveToHistory",
+    value: function () {
+      var _saveToHistory = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee5(data) {
+        var key, history;
+        return _regenerator.default.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                _context5.prev = 0;
+                key = CACHE_CONFIG.STORAGE_KEYS.HISTORY;
+                history = uni.getStorageSync(key) || [];
+                history.push({
+                  scaleId: data.scaleId,
+                  score: data.score,
+                  level: data.level,
+                  timestamp: Date.now()
+                });
+
+                // 只保留最近N条
+                if (history.length > CACHE_CONFIG.MAX_HISTORY) {
+                  history.splice(0, history.length - CACHE_CONFIG.MAX_HISTORY);
+                }
+                uni.setStorageSync(key, history);
+                console.log('[ResultCache] 历史记录保存成功');
+                return _context5.abrupt("return", true);
+              case 10:
+                _context5.prev = 10;
+                _context5.t0 = _context5["catch"](0);
+                console.error('[ResultCache] 历史记录保存失败:', _context5.t0);
+                return _context5.abrupt("return", false);
+              case 14:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5, null, [[0, 10]]);
+      }));
+      function saveToHistory(_x4) {
+        return _saveToHistory.apply(this, arguments);
+      }
+      return saveToHistory;
+    }()
+    /**
+     * 获取缓存的结果
+     * @param {string} scaleId - 量表ID
+     * @param {number} limit - 数量限制
+     * @returns {Promise<Array>}
+     */
+  }, {
+    key: "getResults",
+    value: function () {
+      var _getResults = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee6(scaleId) {
+        var limit,
+          results,
+          _args6 = arguments;
+        return _regenerator.default.wrap(function _callee6$(_context6) {
+          while (1) {
+            switch (_context6.prev = _context6.next) {
+              case 0:
+                limit = _args6.length > 1 && _args6[1] !== undefined ? _args6[1] : 10;
+                _context6.prev = 1;
+                if (!this.dbReady) {
+                  _context6.next = 8;
+                  break;
+                }
+                _context6.next = 5;
+                return this.getFromIndexedDB(scaleId, limit);
+              case 5:
+                results = _context6.sent;
+                if (!(results && results.length > 0)) {
+                  _context6.next = 8;
+                  break;
+                }
+                return _context6.abrupt("return", results);
+              case 8:
+                return _context6.abrupt("return", this.getFromLocalStorage(scaleId, limit));
+              case 11:
+                _context6.prev = 11;
+                _context6.t0 = _context6["catch"](1);
+                console.error('[ResultCache] 获取结果失败:', _context6.t0);
+                return _context6.abrupt("return", []);
+              case 15:
+              case "end":
+                return _context6.stop();
+            }
+          }
+        }, _callee6, this, [[1, 11]]);
+      }));
+      function getResults(_x5) {
+        return _getResults.apply(this, arguments);
+      }
+      return getResults;
+    }()
+    /**
+     * 从IndexedDB读取
+     */
+  }, {
+    key: "getFromIndexedDB",
+    value: function () {
+      var _getFromIndexedDB = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee7(scaleId, limit) {
+        return _regenerator.default.wrap(function _callee7$(_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                return _context7.abrupt("return", []);
+              case 1:
+              case "end":
+                return _context7.stop();
+            }
+          }
+        }, _callee7);
+      }));
+      function getFromIndexedDB(_x6, _x7) {
+        return _getFromIndexedDB.apply(this, arguments);
+      }
+      return getFromIndexedDB;
+    }()
+    /**
+     * 从localStorage读取
+     */
+  }, {
+    key: "getFromLocalStorage",
+    value: function getFromLocalStorage(scaleId, limit) {
+      try {
+        var key = CACHE_CONFIG.STORAGE_KEYS.RESULTS;
+        var cached = uni.getStorageSync(key) || [];
+
+        // 过滤量表和过期数据
+        var now = Date.now();
+        var validResults = cached.filter(function (item) {
+          return item.scaleId === scaleId && item.expireAt > now;
+        });
+
+        // 按时间倒序
+        validResults.sort(function (a, b) {
+          return b.timestamp - a.timestamp;
+        });
+
+        // 限制数量
+        var results = validResults.slice(0, limit);
+        console.log('[ResultCache] localStorage读取成功:', results.length);
+        return results;
+      } catch (error) {
+        console.error('[ResultCache] localStorage读取失败:', error);
+        return [];
+      }
+    }
+
+    /**
+     * 获取历史记录
+     * @param {string} scaleId - 量表ID（可选）
+     * @param {number} limit - 数量限制
+     * @returns {Array}
+     */
+  }, {
+    key: "getHistory",
+    value: function getHistory() {
+      var scaleId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      var limit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 50;
+      try {
+        var key = CACHE_CONFIG.STORAGE_KEYS.HISTORY;
+        var history = uni.getStorageSync(key) || [];
+
+        // 过滤量表
+        var filtered = scaleId ? history.filter(function (h) {
+          return h.scaleId === scaleId;
+        }) : history;
+
+        // 按时间倒序
+        filtered.sort(function (a, b) {
+          return b.timestamp - a.timestamp;
+        });
+
+        // 限制数量
+        return filtered.slice(0, limit);
+      } catch (error) {
+        console.error('[ResultCache] 获取历史失败:', error);
+        return [];
+      }
+    }
+
+    /**
+     * 清理过期缓存
+     * @returns {Promise<Object>}
+     */
+  }, {
+    key: "cleanExpired",
+    value: function () {
+      var _cleanExpired = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee8() {
+        var now, cleanedCount, key, cached, validCached;
+        return _regenerator.default.wrap(function _callee8$(_context8) {
+          while (1) {
+            switch (_context8.prev = _context8.next) {
+              case 0:
+                _context8.prev = 0;
+                now = Date.now();
+                cleanedCount = 0; // 清理localStorage
+                key = CACHE_CONFIG.STORAGE_KEYS.RESULTS;
+                cached = uni.getStorageSync(key) || [];
+                validCached = cached.filter(function (item) {
+                  return item.expireAt > now;
+                });
+                cleanedCount = cached.length - validCached.length;
+                if (cleanedCount > 0) {
+                  uni.setStorageSync(key, validCached);
+                }
+
+                // 清理IndexedDB（H5）
+
+                console.log('[ResultCache] 清理完成, 删除:', cleanedCount);
+                return _context8.abrupt("return", {
+                  success: true,
+                  cleanedCount: cleanedCount
+                });
+              case 12:
+                _context8.prev = 12;
+                _context8.t0 = _context8["catch"](0);
+                console.error('[ResultCache] 清理失败:', _context8.t0);
+                return _context8.abrupt("return", {
+                  success: false,
+                  error: _context8.t0.message
+                });
+              case 16:
+              case "end":
+                return _context8.stop();
+            }
+          }
+        }, _callee8, null, [[0, 12]]);
+      }));
+      function cleanExpired() {
+        return _cleanExpired.apply(this, arguments);
+      }
+      return cleanExpired;
+    }()
+    /**
+     * 清理IndexedDB过期数据
+     */
+  }, {
+    key: "cleanIndexedDBExpired",
+    value: function () {
+      var _cleanIndexedDBExpired = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee9() {
+        return _regenerator.default.wrap(function _callee9$(_context9) {
+          while (1) {
+            switch (_context9.prev = _context9.next) {
+              case 0:
+                return _context9.abrupt("return", 0);
+              case 1:
+              case "end":
+                return _context9.stop();
+            }
+          }
+        }, _callee9);
+      }));
+      function cleanIndexedDBExpired() {
+        return _cleanIndexedDBExpired.apply(this, arguments);
+      }
+      return cleanIndexedDBExpired;
+    }()
+    /**
+     * 清空所有缓存
+     * @returns {boolean}
+     */
+  }, {
+    key: "clearAll",
+    value: function clearAll() {
+      try {
+        // 清空localStorage
+        Object.values(CACHE_CONFIG.STORAGE_KEYS).forEach(function (key) {
+          uni.removeStorageSync(key);
+        });
+
+        // 清空IndexedDB（H5）
+
+        console.log('[ResultCache] 已清空所有缓存');
+        return true;
+      } catch (error) {
+        console.error('[ResultCache] 清空缓存失败:', error);
+        return false;
+      }
+    }
+
+    /**
+     * 更新缓存元数据
+     */
+  }, {
+    key: "updateCacheMeta",
+    value: function updateCacheMeta() {
+      try {
+        var meta = {
+          lastUpdated: Date.now(),
+          version: '1.0'
+        };
+        uni.setStorageSync(CACHE_CONFIG.STORAGE_KEYS.CACHE_META, meta);
+      } catch (error) {
+        console.error('[ResultCache] 更新元数据失败:', error);
+      }
+    }
+
+    /**
+     * 获取缓存统计信息
+     * @returns {Object}
+     */
+  }, {
+    key: "getCacheStats",
+    value: function getCacheStats() {
+      try {
+        var results = uni.getStorageSync(CACHE_CONFIG.STORAGE_KEYS.RESULTS) || [];
+        var history = uni.getStorageSync(CACHE_CONFIG.STORAGE_KEYS.HISTORY) || [];
+        var meta = uni.getStorageSync(CACHE_CONFIG.STORAGE_KEYS.CACHE_META) || {};
+        var now = Date.now();
+        var validResults = results.filter(function (r) {
+          return r.expireAt > now;
+        });
+        var expiredResults = results.filter(function (r) {
+          return r.expireAt <= now;
+        });
+        return {
+          totalResults: results.length,
+          validResults: validResults.length,
+          expiredResults: expiredResults.length,
+          historyCount: history.length,
+          lastUpdated: meta.lastUpdated || null,
+          dbReady: this.dbReady
+        };
+      } catch (error) {
+        console.error('[ResultCache] 获取统计失败:', error);
+        return null;
+      }
+    }
+  }]);
+  return ResultCacheManager;
+}(); // 创建单例
+var resultCache = new ResultCacheManager();
+
+// 导出方法
+exports.resultCache = resultCache;
+var _default = resultCache;
+exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+
+/***/ }),
 /* 308 */,
 /* 309 */,
 /* 310 */,
@@ -31949,7 +33786,13 @@ exports.default = _default;
 /* 365 */,
 /* 366 */,
 /* 367 */,
-/* 368 */
+/* 368 */,
+/* 369 */,
+/* 370 */,
+/* 371 */,
+/* 372 */,
+/* 373 */,
+/* 374 */
 /*!********************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/static/music/music_data.json ***!
   \********************************************************************/
@@ -31959,12 +33802,6 @@ exports.default = _default;
 module.exports = JSON.parse("{\"categories\":[{\"id\":\"relax\",\"name\":\"放松冥想\",\"description\":\"帮助您放松身心，缓解压力\",\"icon\":\"🧘\"},{\"id\":\"sleep\",\"name\":\"助眠音乐\",\"description\":\"改善睡眠质量，促进深度睡眠\",\"icon\":\"🌙\"},{\"id\":\"focus\",\"name\":\"专注工作\",\"description\":\"提高专注力，增强工作效率\",\"icon\":\"🎯\"},{\"id\":\"nature\",\"name\":\"自然之声\",\"description\":\"大自然的声音，带来内心平静\",\"icon\":\"🌿\"}],\"playlists\":[{\"id\":1,\"categoryId\":\"relax\",\"title\":\"深度放松冥想\",\"cover\":\"/static/images/meditation-1.jpg\",\"duration\":\"15分钟\",\"plays\":12580,\"songs\":[{\"id\":101,\"title\":\"呼吸放松\",\"artist\":\"冥想大师\",\"duration\":180,\"url\":\"/static/audio/relax/breathing.mp3\",\"cover\":\"/static/images/meditation-1.jpg\"},{\"id\":102,\"title\":\"身体扫描\",\"artist\":\"冥想大师\",\"duration\":300,\"url\":\"/static/audio/relax/body-scan.mp3\",\"cover\":\"/static/images/meditation-1.jpg\"},{\"id\":103,\"title\":\"正念冥想\",\"artist\":\"冥想大师\",\"duration\":420,\"url\":\"/static/audio/relax/mindfulness.mp3\",\"cover\":\"/static/images/meditation-1.jpg\"}]},{\"id\":2,\"categoryId\":\"sleep\",\"title\":\"深度睡眠音乐\",\"cover\":\"/static/images/sleep-1.jpg\",\"duration\":\"30分钟\",\"plays\":8960,\"songs\":[{\"id\":201,\"title\":\"雨声助眠\",\"artist\":\"自然音乐\",\"duration\":600,\"url\":\"/static/audio/sleep/rain.mp3\",\"cover\":\"/static/images/sleep-1.jpg\"},{\"id\":202,\"title\":\"海浪声\",\"artist\":\"自然音乐\",\"duration\":900,\"url\":\"/static/audio/sleep/ocean.mp3\",\"cover\":\"/static/images/sleep-1.jpg\"},{\"id\":203,\"title\":\"白噪音\",\"artist\":\"睡眠专家\",\"duration\":1200,\"url\":\"/static/audio/sleep/white-noise.mp3\",\"cover\":\"/static/images/sleep-1.jpg\"}]},{\"id\":3,\"categoryId\":\"focus\",\"title\":\"专注力音乐\",\"cover\":\"/static/images/focus-1.jpg\",\"duration\":\"25分钟\",\"plays\":6540,\"songs\":[{\"id\":301,\"title\":\"阿尔法脑波\",\"artist\":\"专注音乐\",\"duration\":500,\"url\":\"/static/audio/focus/alpha-waves.mp3\",\"cover\":\"/static/images/focus-1.jpg\"},{\"id\":302,\"title\":\"深度专注\",\"artist\":\"专注音乐\",\"duration\":600,\"url\":\"/static/audio/focus/deep-focus.mp3\",\"cover\":\"/static/images/focus-1.jpg\"},{\"id\":303,\"title\":\"学习音乐\",\"artist\":\"专注音乐\",\"duration\":400,\"url\":\"/static/audio/focus/study.mp3\",\"cover\":\"/static/images/focus-1.jpg\"}]},{\"id\":4,\"categoryId\":\"nature\",\"title\":\"大自然声音\",\"cover\":\"/static/images/nature-1.jpg\",\"duration\":\"20分钟\",\"plays\":9850,\"songs\":[{\"id\":401,\"title\":\"森林鸟鸣\",\"artist\":\"自然之声\",\"duration\":480,\"url\":\"/static/audio/nature/forest.mp3\",\"cover\":\"/static/images/nature-1.jpg\"},{\"id\":402,\"title\":\"溪流声\",\"artist\":\"自然之声\",\"duration\":420,\"url\":\"/static/audio/nature/stream.mp3\",\"cover\":\"/static/images/nature-1.jpg\"},{\"id\":403,\"title\":\"风声\",\"artist\":\"自然之声\",\"duration\":300,\"url\":\"/static/audio/nature/wind.mp3\",\"cover\":\"/static/images/nature-1.jpg\"}]}],\"recommendations\":[{\"id\":1,\"title\":\"每日推荐\",\"subtitle\":\"为您精选的放松音乐\",\"songs\":[101,201,301,401]},{\"id\":2,\"title\":\"热门播放\",\"subtitle\":\"大家都在听\",\"songs\":[102,202,302,402]}]}");
 
 /***/ }),
-/* 369 */,
-/* 370 */,
-/* 371 */,
-/* 372 */,
-/* 373 */,
-/* 374 */,
 /* 375 */,
 /* 376 */,
 /* 377 */,
@@ -32014,7 +33851,13 @@ module.exports = JSON.parse("{\"categories\":[{\"id\":\"relax\",\"name\":\"放�
 /* 421 */,
 /* 422 */,
 /* 423 */,
-/* 424 */
+/* 424 */,
+/* 425 */,
+/* 426 */,
+/* 427 */,
+/* 428 */,
+/* 429 */,
+/* 430 */
 /*!****************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-popup/props.js ***!
   \****************************************************************************************/
@@ -32156,14 +33999,14 @@ exports.default = _default2;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 425 */,
-/* 426 */,
-/* 427 */,
-/* 428 */,
-/* 429 */,
-/* 430 */,
 /* 431 */,
-/* 432 */
+/* 432 */,
+/* 433 */,
+/* 434 */,
+/* 435 */,
+/* 436 */,
+/* 437 */,
+/* 438 */
 /*!*****************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-switch/props.js ***!
   \*****************************************************************************************/
@@ -32235,14 +34078,14 @@ exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 433 */,
-/* 434 */,
-/* 435 */,
-/* 436 */,
-/* 437 */,
-/* 438 */,
 /* 439 */,
-/* 440 */
+/* 440 */,
+/* 441 */,
+/* 442 */,
+/* 443 */,
+/* 444 */,
+/* 445 */,
+/* 446 */
 /*!***********************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-loading-icon/props.js ***!
   \***********************************************************************************************/
@@ -32319,14 +34162,14 @@ exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 441 */,
-/* 442 */,
-/* 443 */,
-/* 444 */,
-/* 445 */,
-/* 446 */,
 /* 447 */,
-/* 448 */
+/* 448 */,
+/* 449 */,
+/* 450 */,
+/* 451 */,
+/* 452 */,
+/* 453 */,
+/* 454 */
 /*!***************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-icon/icons.js ***!
   \***************************************************************************************/
@@ -32557,7 +34400,7 @@ var _default = {
 exports.default = _default;
 
 /***/ }),
-/* 449 */
+/* 455 */
 /*!***************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-icon/props.js ***!
   \***************************************************************************************/
@@ -32664,14 +34507,14 @@ exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 450 */,
-/* 451 */,
-/* 452 */,
-/* 453 */,
-/* 454 */,
-/* 455 */,
 /* 456 */,
-/* 457 */
+/* 457 */,
+/* 458 */,
+/* 459 */,
+/* 460 */,
+/* 461 */,
+/* 462 */,
+/* 463 */
 /*!*******************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-loadmore/props.js ***!
   \*******************************************************************************************/
@@ -32783,14 +34626,14 @@ exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 458 */,
-/* 459 */,
-/* 460 */,
-/* 461 */,
-/* 462 */,
-/* 463 */,
 /* 464 */,
-/* 465 */
+/* 465 */,
+/* 466 */,
+/* 467 */,
+/* 468 */,
+/* 469 */,
+/* 470 */,
+/* 471 */
 /*!********************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/utils/scoring.js ***!
   \********************************************************/
@@ -33446,7 +35289,497 @@ module.exports = {
 };
 
 /***/ }),
-/* 466 */
+/* 472 */
+/*!******************************************************************!*\
+  !*** D:/HBuilderX.4.65.2025051206/翎心/utils/assessment-export.js ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni, wx) {
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+exports.downloadFile = downloadFile;
+exports.exportAssessmentData = exportAssessmentData;
+exports.exportProgressData = exportProgressData;
+exports.exportToCSV = exportToCSV;
+exports.exportToJSON = exportToJSON;
+exports.saveFileLocal = saveFileLocal;
+exports.shareFile = shareFile;
+var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 28));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 31));
+var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
+/**
+ * 评估答题数据导出工具
+ * 支持JSON和CSV格式导出
+ * @module utils/assessment-export
+ */
+
+/**
+ * 将答题数据导出为JSON格式
+ * @param {Object} options - 导出选项
+ * @param {String} options.scaleId - 量表ID
+ * @param {String} options.title - 量表标题
+ * @param {Array} options.questions - 题目列表
+ * @param {Object} options.answers - 答案对象 { questionId: value }
+ * @param {Object} options.questionTimes - 每题用时 { questionId: timeMs }
+ * @param {Number} options.totalTime - 总用时（秒）
+ * @param {Array} options.markedQuestions - 标记的题目ID列表
+ * @param {Object} options.result - 评估结果
+ * @returns {String} JSON字符串
+ */
+function exportToJSON(options) {
+  var scaleId = options.scaleId,
+    title = options.title,
+    questions = options.questions,
+    answers = options.answers,
+    _options$questionTime = options.questionTimes,
+    questionTimes = _options$questionTime === void 0 ? {} : _options$questionTime,
+    _options$totalTime = options.totalTime,
+    totalTime = _options$totalTime === void 0 ? 0 : _options$totalTime,
+    _options$markedQuesti = options.markedQuestions,
+    markedQuestions = _options$markedQuesti === void 0 ? [] : _options$markedQuesti,
+    _options$result = options.result,
+    result = _options$result === void 0 ? null : _options$result;
+
+  // 构建导出数据结构
+  var exportData = {
+    metadata: {
+      scaleId: scaleId,
+      title: title,
+      exportTime: new Date().toISOString(),
+      totalQuestions: questions.length,
+      answeredQuestions: Object.keys(answers).length,
+      totalTimeSeconds: totalTime,
+      version: '1.0'
+    },
+    answers: [],
+    statistics: {
+      averageTimePerQuestion: totalTime / questions.length || 0,
+      markedCount: markedQuestions.length,
+      completionRate: (Object.keys(answers).length / questions.length * 100).toFixed(2) + '%'
+    }
+  };
+
+  // 添加结果信息（如果存在）
+  if (result) {
+    exportData.result = {
+      score: result.score || result.total_score || 0,
+      level: result.level || 'unknown',
+      suggestions: result.suggestions || []
+    };
+  }
+
+  // 添加详细的答题数据
+  questions.forEach(function (question, index) {
+    var questionId = question.id;
+    var answer = answers[questionId];
+    var timeMs = questionTimes[questionId] || 0;
+    var isMarked = markedQuestions.includes(questionId);
+    exportData.answers.push({
+      questionNumber: index + 1,
+      questionId: questionId,
+      questionText: question.text,
+      answerValue: answer !== undefined ? answer : null,
+      answerLabel: getAnswerLabel(question, answer, options),
+      timeSpent: {
+        milliseconds: timeMs,
+        seconds: (timeMs / 1000).toFixed(2)
+      },
+      isMarked: isMarked,
+      isAnswered: answer !== undefined
+    });
+  });
+  return JSON.stringify(exportData, null, 2);
+}
+
+/**
+ * 将答题数据导出为CSV格式
+ * @param {Object} options - 导出选项（同exportToJSON）
+ * @returns {String} CSV字符串
+ */
+function exportToCSV(options) {
+  var scaleId = options.scaleId,
+    title = options.title,
+    questions = options.questions,
+    answers = options.answers,
+    _options$questionTime2 = options.questionTimes,
+    questionTimes = _options$questionTime2 === void 0 ? {} : _options$questionTime2,
+    _options$markedQuesti2 = options.markedQuestions,
+    markedQuestions = _options$markedQuesti2 === void 0 ? [] : _options$markedQuesti2;
+
+  // CSV头部
+  var headers = ['题号', '题目ID', '题目内容', '答案值', '答案标签', '用时(秒)', '是否标记', '是否作答'];
+
+  // CSV行数据
+  var rows = questions.map(function (question, index) {
+    var questionId = question.id;
+    var answer = answers[questionId];
+    var timeMs = questionTimes[questionId] || 0;
+    var isMarked = markedQuestions.includes(questionId);
+    return [index + 1, questionId, escapeCSV(question.text), answer !== undefined ? answer : '', escapeCSV(getAnswerLabel(question, answer, options)), (timeMs / 1000).toFixed(2), isMarked ? '是' : '否', answer !== undefined ? '是' : '否'];
+  });
+
+  // 添加元数据行
+  var metadataRows = [['量表ID', scaleId], ['量表标题', title], ['导出时间', new Date().toLocaleString('zh-CN')], ['总题数', questions.length], ['已答题数', Object.keys(answers).length], ['完成率', (Object.keys(answers).length / questions.length * 100).toFixed(2) + '%'], [''],
+  // 空行分隔
+  headers];
+
+  // 合并所有行
+  var allRows = [].concat(metadataRows, (0, _toConsumableArray2.default)(rows));
+
+  // 转换为CSV字符串
+  return allRows.map(function (row) {
+    return row.join(',');
+  }).join('\n');
+}
+
+/**
+ * 获取答案标签
+ * @private
+ */
+function getAnswerLabel(question, answerValue, options) {
+  if (answerValue === undefined || answerValue === null) {
+    return '未作答';
+  }
+
+  // 如果题目有自定义labels
+  if (question.labels && question.options) {
+    var valueIndex = question.options.indexOf(answerValue);
+    if (valueIndex !== -1 && question.labels[valueIndex]) {
+      return question.labels[valueIndex];
+    }
+  }
+
+  // 使用全局量表选项
+  if (options.scaleData) {
+    var scale = options.scaleData.scale || [];
+    var labels = options.scaleData.options || [];
+    var _valueIndex = scale.indexOf(answerValue);
+    if (_valueIndex !== -1 && labels[_valueIndex]) {
+      return labels[_valueIndex];
+    }
+  }
+
+  // 特殊类型处理
+  if (question.type === 'time' || question.type === 'number') {
+    return String(answerValue);
+  }
+  return String(answerValue);
+}
+
+/**
+ * 转义CSV特殊字符
+ * @private
+ */
+function escapeCSV(text) {
+  if (text === null || text === undefined) {
+    return '';
+  }
+  var str = String(text);
+
+  // 如果包含逗号、引号或换行符，需要用引号包裹
+  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+    // 将内部的引号转义为两个引号
+    return '"' + str.replace(/"/g, '""') + '"';
+  }
+  return str;
+}
+
+/**
+ * 下载文件（H5平台）
+ * @param {String} content - 文件内容
+ * @param {String} filename - 文件名
+ * @param {String} mimeType - MIME类型
+ */
+function downloadFile(content, filename) {
+  var mimeType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'text/plain';
+  return false;
+}
+
+/**
+ * 保存文件到本地（小程序平台）
+ * @param {String} content - 文件内容
+ * @param {String} filename - 文件名
+ * @returns {Promise<String>} 文件路径
+ */
+function saveFileLocal(content, filename) {
+  return new Promise(function (resolve, reject) {
+    try {
+      var fs = uni.getFileSystemManager();
+      var filePath = "".concat(wx.env.USER_DATA_PATH, "/").concat(filename);
+      fs.writeFile({
+        filePath: filePath,
+        data: content,
+        encoding: 'utf8',
+        success: function success() {
+          resolve(filePath);
+        },
+        fail: function fail(error) {
+          reject(error);
+        }
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+/**
+ * 分享文件（小程序平台）
+ * @param {String} filePath - 文件路径
+ */
+function shareFile(filePath) {
+  return new Promise(function (resolve, reject) {
+    wx.shareFileMessage({
+      filePath: filePath,
+      success: function success() {
+        resolve();
+      },
+      fail: function fail(error) {
+        reject(error);
+      }
+    });
+  });
+}
+
+/**
+ * 导出答题数据（统一接口）
+ * @param {Object} options - 导出选项
+ * @param {String} format - 导出格式 'json' | 'csv'
+ * @returns {Promise<Object>} 导出结果 { success, message, filePath? }
+ */
+function exportAssessmentData(_x) {
+  return _exportAssessmentData.apply(this, arguments);
+}
+/**
+ * 从localStorage恢复并导出进度数据
+ * @param {String} scaleId - 量表ID
+ * @param {String} format - 导出格式
+ * @returns {Promise<Object>} 导出结果
+ */
+function _exportAssessmentData() {
+  _exportAssessmentData = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee(options) {
+    var format,
+      content,
+      filename,
+      mimeType,
+      filePath,
+      _args = arguments;
+    return _regenerator.default.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            format = _args.length > 1 && _args[1] !== undefined ? _args[1] : 'json';
+            _context.prev = 1;
+            if (!(format === 'json')) {
+              _context.next = 8;
+              break;
+            }
+            content = exportToJSON(options);
+            filename = "assessment_".concat(options.scaleId, "_").concat(Date.now(), ".json");
+            mimeType = 'application/json';
+            _context.next = 15;
+            break;
+          case 8:
+            if (!(format === 'csv')) {
+              _context.next = 14;
+              break;
+            }
+            content = exportToCSV(options);
+            filename = "assessment_".concat(options.scaleId, "_").concat(Date.now(), ".csv");
+            mimeType = 'text/csv';
+            _context.next = 15;
+            break;
+          case 14:
+            throw new Error('不支持的导出格式');
+          case 15:
+            _context.next = 17;
+            return saveFileLocal(content, filename);
+          case 17:
+            filePath = _context.sent;
+            // 提示用户
+            uni.showModal({
+              title: '导出成功',
+              content: '文件已保存，是否分享到微信？',
+              confirmText: '分享',
+              cancelText: '稍后',
+              success: function success(res) {
+                if (res.confirm) {
+                  shareFile(filePath).catch(function (error) {
+                    console.error('分享失败:', error);
+                    uni.showToast({
+                      title: '分享失败',
+                      icon: 'none'
+                    });
+                  });
+                }
+              }
+            });
+            return _context.abrupt("return", {
+              success: true,
+              message: '导出成功',
+              filePath: filePath,
+              filename: filename
+            });
+          case 22:
+            _context.prev = 22;
+            _context.t0 = _context["catch"](1);
+            console.error('导出失败:', _context.t0);
+            return _context.abrupt("return", {
+              success: false,
+              message: _context.t0.message || '导出失败'
+            });
+          case 26:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, null, [[1, 22]]);
+  }));
+  return _exportAssessmentData.apply(this, arguments);
+}
+function exportProgressData(_x2) {
+  return _exportProgressData.apply(this, arguments);
+}
+/**
+ * 加载量表数据
+ * @private
+ */
+function _exportProgressData() {
+  _exportProgressData = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2(scaleId) {
+    var format,
+      progressKey,
+      progressStr,
+      progressData,
+      scaleData,
+      exportOptions,
+      _args2 = arguments;
+    return _regenerator.default.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            format = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : 'json';
+            _context2.prev = 1;
+            progressKey = "assess_progress_".concat(scaleId);
+            progressStr = uni.getStorageSync(progressKey);
+            if (progressStr) {
+              _context2.next = 6;
+              break;
+            }
+            throw new Error('未找到答题进度数据');
+          case 6:
+            progressData = JSON.parse(progressStr); // 需要加载量表数据来获取题目详情
+            _context2.next = 9;
+            return loadScaleData(scaleId);
+          case 9:
+            scaleData = _context2.sent;
+            exportOptions = {
+              scaleId: progressData.scaleId,
+              title: scaleData.title || scaleId,
+              questions: scaleData.questions || [],
+              answers: progressData.answers,
+              questionTimes: progressData.questionTimes,
+              totalTime: (Date.now() - progressData.startTime) / 1000,
+              markedQuestions: [],
+              scaleData: scaleData
+            };
+            _context2.next = 13;
+            return exportAssessmentData(exportOptions, format);
+          case 13:
+            return _context2.abrupt("return", _context2.sent);
+          case 16:
+            _context2.prev = 16;
+            _context2.t0 = _context2["catch"](1);
+            console.error('导出进度数据失败:', _context2.t0);
+            return _context2.abrupt("return", {
+              success: false,
+              message: _context2.t0.message || '导出失败'
+            });
+          case 20:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, null, [[1, 16]]);
+  }));
+  return _exportProgressData.apply(this, arguments);
+}
+function loadScaleData(_x3) {
+  return _loadScaleData.apply(this, arguments);
+}
+function _loadScaleData() {
+  _loadScaleData = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee3(scaleId) {
+    var scaleMap, scalePath;
+    return _regenerator.default.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            scaleMap = {
+              'phq9': '/static/scales/phq9.json',
+              'gad7': '/static/scales/gad7.json',
+              'psqi': '/static/scales/psqi.json',
+              'pss': '/static/scales/pss.json',
+              'ces-d': '/static/scales/ces-d.json',
+              'mbi': '/static/scales/mbi.json',
+              'wemwbs': '/static/scales/wemwbs.json',
+              'swls': '/static/scales/swls.json',
+              'resilience': '/static/scales/resilience.json',
+              'loneliness': '/static/scales/loneliness.json',
+              'social-support': '/static/scales/social-support.json',
+              'self-esteem': '/static/scales/self-esteem.json',
+              'academic': '/static/scales/academic.json',
+              'sleep': '/static/scales/sleep.json'
+            };
+            scalePath = scaleMap[scaleId];
+            if (scalePath) {
+              _context3.next = 4;
+              break;
+            }
+            throw new Error("\u672A\u627E\u5230\u91CF\u8868: ".concat(scaleId));
+          case 4:
+            return _context3.abrupt("return", new Promise(function (resolve, reject) {
+              uni.request({
+                url: scalePath,
+                method: 'GET',
+                success: function success(res) {
+                  if (res.statusCode === 200 && res.data) {
+                    resolve(res.data);
+                  } else {
+                    reject(new Error('加载量表数据失败'));
+                  }
+                },
+                fail: reject
+              });
+            }));
+          case 5:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3);
+  }));
+  return _loadScaleData.apply(this, arguments);
+}
+var _default = {
+  exportToJSON: exportToJSON,
+  exportToCSV: exportToCSV,
+  exportAssessmentData: exportAssessmentData,
+  exportProgressData: exportProgressData,
+  downloadFile: downloadFile,
+  saveFileLocal: saveFileLocal,
+  shareFile: shareFile
+};
+exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"]))
+
+/***/ }),
+/* 473 */
 /*!****************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/static/scales/pss10.json ***!
   \****************************************************************/
@@ -33456,7 +35789,7 @@ module.exports = {
 module.exports = JSON.parse("{\"id\":\"pss10\",\"title\":\"知觉压力量表（PSS-10）\",\"timeframe\":\"过去一个月\",\"scale\":[0,1,2,3,4],\"options\":[\"从不(0)\",\"很少(1)\",\"有时(2)\",\"经常(3)\",\"几乎总是(4)\"],\"reverse_index\":[3,4,6,7],\"items\":[{\"id\":1,\"text\":\"因为突如其来的事情而感到心烦的频率？\"},{\"id\":2,\"text\":\"觉得无法掌控生活中重要事情的频率？\"},{\"id\":3,\"text\":\"感到紧张或'有压力'的频率？\"},{\"id\":4,\"text\":\"对自己处理个人问题的能力感到自信的频率？（反向）\"},{\"id\":5,\"text\":\"觉得事情在按你希望的方向发展的频率？（反向）\"},{\"id\":6,\"text\":\"发现自己无法应付所有必须做的事情的频率？\"},{\"id\":7,\"text\":\"能控制生活中令你恼火的事情的频率？（反向）\"},{\"id\":8,\"text\":\"觉得自己游刃有余、掌控局面的频率？（反向）\"},{\"id\":9,\"text\":\"因超出你控制的事情而生气的频率？\"},{\"id\":10,\"text\":\"觉得困难堆积到让你难以承受的频率？\"}],\"scoring\":{\"method\":\"sum_after_reverse\",\"range\":[0,40],\"bands\":[{\"label\":\"低压力\",\"range\":[0,13]},{\"label\":\"中等压力\",\"range\":[14,26]},{\"label\":\"高压力\",\"range\":[27,40]}],\"note\":\"分段属经验性，用于筛查而非诊断\"}}");
 
 /***/ }),
-/* 467 */
+/* 474 */
 /*!***************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/static/scales/phq9.json ***!
   \***************************************************************/
@@ -33466,7 +35799,7 @@ module.exports = JSON.parse("{\"id\":\"pss10\",\"title\":\"知觉压力量表（
 module.exports = JSON.parse("{\"id\":\"phq9\",\"title\":\"抑郁自评量表（PHQ-9/PHQ-A）\",\"timeframe\":\"过去两周\",\"intro\":\"以下问题询问你在过去两周中的感受与状态。请根据实际情况选择频率。\",\"scale\":[0,1,2,3],\"options\":[\"根本没有(0)\",\"有好几天(1)\",\"超过一半天(2)\",\"几乎每天(3)\"],\"items\":[{\"id\":1,\"text\":\"对做事情提不起兴趣或乐趣\"},{\"id\":2,\"text\":\"感到情绪低落、沮丧或无望\"},{\"id\":3,\"text\":\"入睡困难、容易醒来，或睡得过多\"},{\"id\":4,\"text\":\"感到疲乏或缺乏精力\"},{\"id\":5,\"text\":\"食欲不振或吃得过多\"},{\"id\":6,\"text\":\"觉得自己很差、失败，或让自己／家人失望\"},{\"id\":7,\"text\":\"难以集中注意力（如看书或看电视时）\"},{\"id\":8,\"text\":\"动作或说话变慢，或相反——坐立不安、烦躁不安\"},{\"id\":9,\"text\":\"觉得不如死了好，或有伤害自己的念头\"}],\"followup\":{\"id\":\"phq9_func\",\"text\":\"这些问题给你的学习/工作、家务或与他人相处造成了多大困难？\",\"options\":[\"完全没有\",\"有一些\",\"很困难\",\"极其困难\"]},\"scoring\":{\"method\":\"sum\",\"range\":[0,27],\"bands\":[{\"label\":\"最轻/无\",\"range\":[0,4]},{\"label\":\"轻度\",\"range\":[5,9]},{\"label\":\"中度\",\"range\":[10,14]},{\"label\":\"中重度\",\"range\":[15,19]},{\"label\":\"重度\",\"range\":[20,27]}]}}");
 
 /***/ }),
-/* 468 */
+/* 475 */
 /*!***************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/static/scales/gad7.json ***!
   \***************************************************************/
@@ -33476,7 +35809,7 @@ module.exports = JSON.parse("{\"id\":\"phq9\",\"title\":\"抑郁自评量表（P
 module.exports = JSON.parse("{\"id\":\"gad7\",\"title\":\"广泛性焦虑量表（GAD-7）\",\"timeframe\":\"过去两周\",\"scale\":[0,1,2,3],\"options\":[\"根本没有(0)\",\"有好几天(1)\",\"超过一半天(2)\",\"几乎每天(3)\"],\"items\":[{\"id\":1,\"text\":\"感到紧张、焦虑或烦躁\"},{\"id\":2,\"text\":\"难以停止或控制担忧\"},{\"id\":3,\"text\":\"对许多不同的事情担忧过多\"},{\"id\":4,\"text\":\"难以放松\"},{\"id\":5,\"text\":\"因为坐立不安而难以静坐\"},{\"id\":6,\"text\":\"容易恼火或易怒\"},{\"id\":7,\"text\":\"感到害怕，仿佛会发生可怕的事情\"}],\"scoring\":{\"method\":\"sum\",\"range\":[0,21],\"bands\":[{\"label\":\"轻度\",\"range\":[5,9]},{\"label\":\"中度\",\"range\":[10,14]},{\"label\":\"重度\",\"range\":[15,21]}],\"ref_cutoff\":10}}");
 
 /***/ }),
-/* 469 */
+/* 476 */
 /*!***************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/static/scales/who5.json ***!
   \***************************************************************/
@@ -33486,7 +35819,7 @@ module.exports = JSON.parse("{\"id\":\"gad7\",\"title\":\"广泛性焦虑量表�
 module.exports = JSON.parse("{\"id\":\"who5\",\"title\":\"世界卫生组织五项幸福感指数（WHO-5）\",\"timeframe\":\"过去两周\",\"scale\":[0,1,2,3,4,5],\"options\":[\"从不(0)\",\"偶尔(1)\",\"少于一半时间(2)\",\"多于一半时间(3)\",\"大部分时间(4)\",\"一直如此(5)\"],\"items\":[{\"id\":1,\"text\":\"我感到心情愉快、精神良好\"},{\"id\":2,\"text\":\"我感到平静、放松\"},{\"id\":3,\"text\":\"我觉得精力充沛、活力十足\"},{\"id\":4,\"text\":\"我醒来时感觉精神饱满\"},{\"id\":5,\"text\":\"我觉得每天的生活充满有趣与意义\"}],\"scoring\":{\"method\":\"sum\",\"range\":[0,25],\"transform\":\"×4→0–100\",\"alert\":\"≤50 建议进一步评估\"}}");
 
 /***/ }),
-/* 470 */
+/* 477 */
 /*!*************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/static/scales/k6.json ***!
   \*************************************************************/
@@ -33496,7 +35829,7 @@ module.exports = JSON.parse("{\"id\":\"who5\",\"title\":\"世界卫生组织五�
 module.exports = JSON.parse("{\"id\":\"k6\",\"title\":\"K6 心理痛苦量表\",\"timeframe\":\"过去30天\",\"scale\":[0,1,2,3,4],\"options\":[\"从不(0)\",\"偶尔(1)\",\"有时(2)\",\"大部分时间(3)\",\"一直如此(4)\"],\"items\":[{\"id\":1,\"text\":\"无缘无故感到非常疲惫\"},{\"id\":2,\"text\":\"感到紧张不安\"},{\"id\":3,\"text\":\"感到绝望\"},{\"id\":4,\"text\":\"坐立不安或难以静坐\"},{\"id\":5,\"text\":\"感到一切事情都很吃力\"},{\"id\":6,\"text\":\"觉得自己一无是处\"}],\"scoring\":{\"method\":\"sum\",\"range\":[0,24],\"alert\":\"≥13 常作为严重心理痛苦的参考阈值\"}}");
 
 /***/ }),
-/* 471 */
+/* 478 */
 /*!**************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/static/scales/k10.json ***!
   \**************************************************************/
@@ -33506,7 +35839,7 @@ module.exports = JSON.parse("{\"id\":\"k6\",\"title\":\"K6 心理痛苦量表\",
 module.exports = JSON.parse("{\"id\":\"k10\",\"title\":\"K10 心理痛苦量表\",\"timeframe\":\"过去30天\",\"scale\":[0,1,2,3,4],\"options\":[\"从不(0)\",\"偶尔(1)\",\"有时(2)\",\"大部分时间(3)\",\"一直如此(4)\"],\"items\":[{\"id\":1,\"text\":\"无缘无故感到非常疲惫\"},{\"id\":2,\"text\":\"感到紧张不安\"},{\"id\":3,\"text\":\"紧张到难以平静下来\"},{\"id\":4,\"text\":\"感到绝望\"},{\"id\":5,\"text\":\"坐立不安或难以静坐\"},{\"id\":6,\"text\":\"不安到根本坐不住\"},{\"id\":7,\"text\":\"感到沮丧、情绪低落\"},{\"id\":8,\"text\":\"觉得做任何事都很吃力\"},{\"id\":9,\"text\":\"难过到没有任何事情能让你振作\"},{\"id\":10,\"text\":\"觉得自己一无是处\"}],\"scoring\":{\"method\":\"sum\",\"range\":[0,40],\"bands\":[{\"label\":\"可能无明显困扰\",\"range\":[0,15]},{\"label\":\"轻度\",\"range\":[16,21]},{\"label\":\"中度\",\"range\":[22,29]},{\"label\":\"重度\",\"range\":[30,40]}],\"note\":\"分段可按本地常模调整\"}}");
 
 /***/ }),
-/* 472 */
+/* 479 */
 /*!***************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/static/scales/asq4.json ***!
   \***************************************************************/
@@ -33516,7 +35849,7 @@ module.exports = JSON.parse("{\"id\":\"k10\",\"title\":\"K10 心理痛苦量表\
 module.exports = JSON.parse("{\"id\":\"asq4\",\"title\":\"自杀风险快速筛查（ASQ）\",\"timeframe\":\"按说明作答\",\"scale\":[0,1],\"options\":[\"否(0)\",\"是(1)\"],\"items\":[{\"id\":1,\"text\":\"在过去几周，你是否曾希望自己死去或不再活着？\"},{\"id\":2,\"text\":\"在过去几周，你是否觉得如果你死了，对你或你的家人会更好？\"},{\"id\":3,\"text\":\"在过去一周，你是否有过要伤害自己或结束生命的想法？\"},{\"id\":4,\"text\":\"你过去是否曾尝试过伤害自己或结束生命？（如是，请记录时间）\"}],\"triage\":{\"question\":\"你现在此刻是否正有伤害自己或结束生命的想法？\",\"action\":\"如任何一题回答'是'，立即启动安全流程与紧急求助指引\"},\"scoring\":{\"method\":\"any_yes_positive\"}}");
 
 /***/ }),
-/* 473 */
+/* 480 */
 /*!*********************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/static/scales/youth_social_anxiety_6.json ***!
   \*********************************************************************************/
@@ -33526,7 +35859,7 @@ module.exports = JSON.parse("{\"id\":\"asq4\",\"title\":\"自杀风险快速筛�
 module.exports = JSON.parse("{\"id\":\"youth_social_anxiety_6\",\"title\":\"青少年社交焦虑简表（试用版）\",\"timeframe\":\"近两周\",\"scale\":[0,1,2,3,4],\"options\":[\"从不(0)\",\"很少(1)\",\"有时(2)\",\"经常(3)\",\"总是(4)\"],\"items\":[{\"id\":1,\"text\":\"在同学面前发言时，我会担心说错话被嘲笑。\"},{\"id\":2,\"text\":\"结识新同学时，我会紧张到想要回避。\"},{\"id\":3,\"text\":\"和同龄人一起活动时，我会担心别人不喜欢我。\"},{\"id\":4,\"text\":\"被老师或同学注视时，我会感到很不自在。\"},{\"id\":5,\"text\":\"加入新群体（社团/小组）让我明显焦虑。\"},{\"id\":6,\"text\":\"与不熟的人单独相处时，我常感到尴尬想躲开。\"}],\"scoring\":{\"method\":\"sum\",\"range\":[0,24],\"alerts\":[{\"label\":\"建议进一步评估\",\"rule\":\"总分≥12\"},{\"label\":\"建议尽快寻求专业支持\",\"rule\":\"总分≥16\"}]}}");
 
 /***/ }),
-/* 474 */
+/* 481 */
 /*!****************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/static/scales/academic_stress_8.json ***!
   \****************************************************************************/
@@ -33536,7 +35869,7 @@ module.exports = JSON.parse("{\"id\":\"youth_social_anxiety_6\",\"title\":\"青�
 module.exports = JSON.parse("{\"id\":\"academic_stress_8\",\"title\":\"学业压力简表（试用版）\",\"timeframe\":\"近一月\",\"scale\":[0,1,2,3,4],\"options\":[\"从不(0)\",\"很少(1)\",\"有时(2)\",\"经常(3)\",\"总是(4)\"],\"items\":[{\"id\":1,\"text\":\"作业/备考经常让我觉得时间不够用。\"},{\"id\":2,\"text\":\"我担心成绩会影响老师或家人对我的看法。\"},{\"id\":3,\"text\":\"学业任务让我难以放松或休息。\"},{\"id\":4,\"text\":\"面对考试/展示时会明显紧张或想回避。\"},{\"id\":5,\"text\":\"为完成学业，我常牺牲睡眠或娱乐。\"},{\"id\":6,\"text\":\"学业目标让我感到'再努力也不够'。\"},{\"id\":7,\"text\":\"社团/活动与学习冲突让我压力更大。\"},{\"id\":8,\"text\":\"近来学习时的注意力与效率明显下降。\"}],\"scoring\":{\"method\":\"sum\",\"range\":[0,32],\"alerts\":[{\"label\":\"建议进一步评估\",\"rule\":\"总分≥14\"},{\"label\":\"建议与老师/家长沟通并尝试干预\",\"rule\":\"总分≥18\"}]}}");
 
 /***/ }),
-/* 475 */
+/* 482 */
 /*!*************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/static/scales/sleep_health_6.json ***!
   \*************************************************************************/
@@ -33546,7 +35879,7 @@ module.exports = JSON.parse("{\"id\":\"academic_stress_8\",\"title\":\"学业压
 module.exports = JSON.parse("{\"id\":\"sleep_health_6\",\"title\":\"睡眠健康简表（试用版）\",\"timeframe\":\"近一月\",\"scale\":[0,1,2,3,4],\"options\":[\"从不(0)\",\"很少(1)\",\"有时(2)\",\"经常(3)\",\"总是(4)\"],\"items\":[{\"id\":1,\"text\":\"我的就寝与起床时间基本规律。\"},{\"id\":2,\"text\":\"醒来后大多数时候我感觉精神饱满。\"},{\"id\":3,\"text\":\"我很少在白天出现明显嗜睡/长时间打盹。\"},{\"id\":4,\"text\":\"我入睡或整夜保持睡眠总体不困难。\"},{\"id\":5,\"text\":\"我的睡眠大多安排在适合的时间段（如夜间）。\"},{\"id\":6,\"text\":\"我通常能获得足够的睡眠时长。\"}],\"scoring\":{\"method\":\"sum_reverse_positive\",\"reverse_index\":[0,1,2,3,4,5],\"range\":[0,24],\"note\":\"条目为健康维度，分数越低越好；如需与'问题得分'一致，可在前端反向标准化。\",\"alerts\":[{\"label\":\"可能存在睡眠问题\",\"rule\":\"标准化后≥12\"}]}}");
 
 /***/ }),
-/* 476 */
+/* 483 */
 /*!*********************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/static/scales/mini_spin3.json ***!
   \*********************************************************************/
@@ -33556,7 +35889,7 @@ module.exports = JSON.parse("{\"id\":\"sleep_health_6\",\"title\":\"睡眠健康
 module.exports = JSON.parse("{\"id\":\"mini_spin3\",\"title\":\"社交焦虑快筛（Mini-SPIN）\",\"intro\":\"请根据近两周的实际感受作答（0=根本不，4=极其严重）。≥6 建议进一步评估。\",\"scale\":[0,1,2,3,4],\"options\":[\"根本不(0)\",\"轻微(1)\",\"中等(2)\",\"严重(3)\",\"极其严重(4)\"],\"threshold\":6,\"items\":[{\"id\":1,\"text\":\"（占位）因担心尴尬或别人注意而回避社交场合的程度？\"},{\"id\":2,\"text\":\"（占位）在公共场合感到局促、担心被评价的程度？\"},{\"id\":3,\"text\":\"（占位）担心与人接触会出丑而感到焦虑的程度？\"}]}");
 
 /***/ }),
-/* 477 */
+/* 484 */
 /*!*****************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/static/scales/spin17.json ***!
   \*****************************************************************/
@@ -33566,7 +35899,7 @@ module.exports = JSON.parse("{\"id\":\"mini_spin3\",\"title\":\"社交焦虑快�
 module.exports = JSON.parse("{\"id\":\"spin17\",\"title\":\"社交焦虑量表（SPIN-17）\",\"intro\":\"近一周内你的感受（0=毫无，4=极其严重）。\",\"scale\":[0,1,2,3,4],\"options\":[\"毫无(0)\",\"轻微(1)\",\"中等(2)\",\"严重(3)\",\"极其严重(4)\"],\"bands\":[{\"label\":\"低风险\",\"range\":[0,18]},{\"label\":\"轻-中度\",\"range\":[19,28]},{\"label\":\"较高\",\"range\":[29,68]}],\"items\":[{\"id\":1,\"text\":\"（占位）因为担心他人评价而回避人群。\"},{\"id\":2,\"text\":\"（占位）在他人面前说话感到不自在。\"},{\"id\":3,\"text\":\"（占位）聚会和社交活动让我感到恐惧。\"},{\"id\":4,\"text\":\"（占位）我避免与权威人士交谈。\"},{\"id\":5,\"text\":\"（占位）脸红让我感到困扰。\"},{\"id\":6,\"text\":\"（占位）我避免成为注意的焦点。\"},{\"id\":7,\"text\":\"（占位）我害怕被批评。\"},{\"id\":8,\"text\":\"（占位）我避免在不熟悉的人面前做事。\"},{\"id\":9,\"text\":\"（占位）我避免在可能被观察的情况下做事。\"},{\"id\":10,\"text\":\"（占位）被介绍给别人让我感到恐惧。\"},{\"id\":11,\"text\":\"（占位）我害怕在小组中发言。\"},{\"id\":12,\"text\":\"（占位）我尽量避免参加聚会。\"},{\"id\":13,\"text\":\"（占位）我害怕在公共场所使用洗手间。\"},{\"id\":14,\"text\":\"（占位）我害怕在公共场所写字。\"},{\"id\":15,\"text\":\"（占位）我害怕在公共场所呕吐。\"},{\"id\":16,\"text\":\"（占位）我害怕在公共场所吃东西或喝水。\"},{\"id\":17,\"text\":\"（占位）我害怕在公共场所打电话。\"}]}");
 
 /***/ }),
-/* 478 */
+/* 485 */
 /*!*****************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/static/scales/essa16.json ***!
   \*****************************************************************/
@@ -33576,7 +35909,7 @@ module.exports = JSON.parse("{\"id\":\"spin17\",\"title\":\"社交焦虑量表�
 module.exports = JSON.parse("{\"id\":\"essa16\",\"title\":\"学业压力自评（ESSA-16）\",\"intro\":\"围绕学习相关的感受（1=非常不同意，5=非常同意）。\",\"scale\":[1,2,3,4,5],\"options\":[\"非常不同意(1)\",\"不同意(2)\",\"中立(3)\",\"同意(4)\",\"非常同意(5)\"],\"dimensions\":[{\"key\":\"load\",\"name\":\"作业/任务负荷\",\"items\":[1,5,9]},{\"key\":\"score\",\"name\":\"成绩/考试担忧\",\"items\":[2,6,10]},{\"key\":\"expect\",\"name\":\"自我/他人期望\",\"items\":[3,7,11]},{\"key\":\"mood\",\"name\":\"情绪低落/紧张\",\"items\":[4,8,12]},{\"key\":\"other\",\"name\":\"其他压力源\",\"items\":[13,14,15,16]}],\"items\":[{\"id\":1,\"text\":\"（占位）我觉得学习任务过于繁重。\"},{\"id\":2,\"text\":\"（占位）我经常担心考试成绩。\"},{\"id\":3,\"text\":\"（占位）我感受到来自他人的学业期望压力。\"},{\"id\":4,\"text\":\"（占位）学习让我感到情绪低落。\"},{\"id\":5,\"text\":\"（占位）我觉得作业量超出了我的能力范围。\"},{\"id\":6,\"text\":\"（占位）我害怕学业成绩不理想。\"},{\"id\":7,\"text\":\"（占位）我对自己的学业表现要求很高。\"},{\"id\":8,\"text\":\"（占位）学习压力让我感到紧张焦虑。\"},{\"id\":9,\"text\":\"（占位）我觉得学习负担过重。\"},{\"id\":10,\"text\":\"（占位）我担心达不到预期的学业目标。\"},{\"id\":11,\"text\":\"（占位）我感受到强烈的学业竞争压力。\"},{\"id\":12,\"text\":\"（占位）学业问题影响了我的心情。\"},{\"id\":13,\"text\":\"（占位）经济压力影响了我的学习。\"},{\"id\":14,\"text\":\"（占位）人际关系问题影响了我的学业。\"},{\"id\":15,\"text\":\"（占位）家庭问题给我的学习带来压力。\"},{\"id\":16,\"text\":\"（占位）未来就业前景让我感到学业压力。\"}]}");
 
 /***/ }),
-/* 479 */
+/* 486 */
 /*!*****************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/static/scales/psqi19.json ***!
   \*****************************************************************/
@@ -33586,13 +35919,6 @@ module.exports = JSON.parse("{\"id\":\"essa16\",\"title\":\"学业压力自评�
 module.exports = JSON.parse("{\"id\":\"psqi19\",\"title\":\"匹兹堡睡眠质量指数（PSQI-19）\",\"intro\":\"请基于最近一个月的睡眠状况作答。\",\"schema\":{\"bedtime\":{\"type\":\"time\",\"label\":\"通常几点上床(HH:MM)\"},\"sleep_latency_min\":{\"type\":\"number\",\"label\":\"通常需要多少分钟入睡\"},\"waketime\":{\"type\":\"time\",\"label\":\"通常几点起床(HH:MM)\"},\"sleep_duration_h\":{\"type\":\"number\",\"label\":\"通常每晚实际睡眠时长(小时)\"},\"subjective_quality\":{\"type\":\"select\",\"options\":[0,1,2,3],\"labels\":[\"很好(0)\",\"较好(1)\",\"较差(2)\",\"很差(3)\"]},\"latency_freq\":{\"type\":\"select\",\"options\":[0,1,2,3],\"labels\":[\"无(0)\",\"<每周1次(1)\",\"每周1-2次(2)\",\"≥每周3次(3)\"]},\"disturbances_sum\":{\"type\":\"sum9x\",\"label\":\"夜间干扰(9 小项频次求和 0–27)\"},\"medication_use\":{\"type\":\"select\",\"options\":[0,1,2,3],\"labels\":[\"无(0)\",\"偶尔(1)\",\"每周(2)\",\"几乎每天(3)\"]},\"daytime_dysfunction\":{\"type\":\"sum2x\",\"label\":\"白天困倦/精力不济(2 小项 0–6)\"}},\"mapping\":{\"c1_subjective_quality\":\"subjective_quality\",\"c2_latency\":[\"sleep_latency_min\",\"latency_freq\"],\"c3_duration\":\"sleep_duration_h\",\"c4_efficiency\":[\"bedtime\",\"waketime\",\"sleep_duration_h\"],\"c5_disturbance\":\"disturbances_sum\",\"c6_med\":\"medication_use\",\"c7_dayfunc\":\"daytime_dysfunction\"},\"bands\":[{\"label\":\"良好\",\"range\":[0,5]},{\"label\":\"可疑/需关注\",\"range\":[6,21]}],\"items\":[{\"id\":1,\"type\":\"time\",\"text\":\"（占位）最近一个月，您通常几点上床？\",\"field\":\"bedtime\"},{\"id\":2,\"type\":\"number\",\"text\":\"（占位）最近一个月，您通常需要多长时间才能入睡？（分钟）\",\"field\":\"sleep_latency_min\"},{\"id\":3,\"type\":\"time\",\"text\":\"（占位）最近一个月，您通常几点起床？\",\"field\":\"waketime\"},{\"id\":4,\"type\":\"number\",\"text\":\"（占位）最近一个月，您每晚实际睡眠时间是多少？（小时）\",\"field\":\"sleep_duration_h\"},{\"id\":5,\"type\":\"select\",\"text\":\"（占位）最近一个月，您如何评价自己的睡眠质量？\",\"field\":\"subjective_quality\",\"options\":[0,1,2,3],\"labels\":[\"很好\",\"较好\",\"较差\",\"很差\"]},{\"id\":6,\"type\":\"select\",\"text\":\"（占位）最近一个月，您因为入睡困难而睡眠不好的频率？\",\"field\":\"latency_freq\",\"options\":[0,1,2,3],\"labels\":[\"无\",\"少于每周1次\",\"每周1-2次\",\"每周3次或以上\"]},{\"id\":7,\"type\":\"number\",\"text\":\"（占位）最近一个月，夜间睡眠干扰总分（简化为数值输入）\",\"field\":\"disturbances_sum\"},{\"id\":8,\"type\":\"select\",\"text\":\"（占位）最近一个月，您使用助眠药物的频率？\",\"field\":\"medication_use\",\"options\":[0,1,2,3],\"labels\":[\"无\",\"少于每周1次\",\"每周1-2次\",\"每周3次或以上\"]},{\"id\":9,\"type\":\"number\",\"text\":\"（占位）最近一个月，白天功能障碍总分（简化为数值输入）\",\"field\":\"daytime_dysfunction\"}]}");
 
 /***/ }),
-/* 480 */,
-/* 481 */,
-/* 482 */,
-/* 483 */,
-/* 484 */,
-/* 485 */,
-/* 486 */,
 /* 487 */,
 /* 488 */,
 /* 489 */,
@@ -33600,7 +35926,14 @@ module.exports = JSON.parse("{\"id\":\"psqi19\",\"title\":\"匹兹堡睡眠质�
 /* 491 */,
 /* 492 */,
 /* 493 */,
-/* 494 */
+/* 494 */,
+/* 495 */,
+/* 496 */,
+/* 497 */,
+/* 498 */,
+/* 499 */,
+/* 500 */,
+/* 501 */
 /*!***************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-form/props.js ***!
   \***************************************************************************************/
@@ -33663,7 +35996,7 @@ exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 495 */
+/* 502 */
 /*!*****************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/libs/util/async-validator.js ***!
   \*****************************************************************************************/
@@ -34844,10 +37177,10 @@ Schema.warning = warning;
 Schema.messages = messages;
 var _default = Schema; // # sourceMappingURL=index.js.map
 exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../HBuilderX/plugins/uniapp-cli/node_modules/node-libs-browser/mock/process.js */ 496)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../HBuilderX/plugins/uniapp-cli/node_modules/node-libs-browser/mock/process.js */ 503)))
 
 /***/ }),
-/* 496 */
+/* 503 */
 /*!********************************************************!*\
   !*** ./node_modules/node-libs-browser/mock/process.js ***!
   \********************************************************/
@@ -34878,7 +37211,7 @@ exports.binding = function (name) {
     var path;
     exports.cwd = function () { return cwd };
     exports.chdir = function (dir) {
-        if (!path) path = __webpack_require__(/*! path */ 497);
+        if (!path) path = __webpack_require__(/*! path */ 504);
         cwd = path.resolve(dir, cwd);
     };
 })();
@@ -34891,7 +37224,7 @@ exports.features = {};
 
 
 /***/ }),
-/* 497 */
+/* 504 */
 /*!***********************************************!*\
   !*** ./node_modules/path-browserify/index.js ***!
   \***********************************************/
@@ -35201,15 +37534,15 @@ var substr = 'ab'.substr(-1) === 'b'
     }
 ;
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node-libs-browser/mock/process.js */ 496)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node-libs-browser/mock/process.js */ 503)))
 
 /***/ }),
-/* 498 */,
-/* 499 */,
-/* 500 */,
-/* 501 */,
-/* 502 */,
-/* 503 */
+/* 505 */,
+/* 506 */,
+/* 507 */,
+/* 508 */,
+/* 509 */,
+/* 510 */
 /*!********************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-form-item/props.js ***!
   \********************************************************************************************/
@@ -35275,14 +37608,14 @@ exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 504 */,
-/* 505 */,
-/* 506 */,
-/* 507 */,
-/* 508 */,
-/* 509 */,
-/* 510 */,
-/* 511 */
+/* 511 */,
+/* 512 */,
+/* 513 */,
+/* 514 */,
+/* 515 */,
+/* 516 */,
+/* 517 */,
+/* 518 */
 /*!****************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-input/props.js ***!
   \****************************************************************************************/
@@ -35487,14 +37820,14 @@ exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 512 */,
-/* 513 */,
-/* 514 */,
-/* 515 */,
-/* 516 */,
-/* 517 */,
-/* 518 */,
-/* 519 */
+/* 519 */,
+/* 520 */,
+/* 521 */,
+/* 522 */,
+/* 523 */,
+/* 524 */,
+/* 525 */,
+/* 526 */
 /*!*********************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/libs/mixin/button.js ***!
   \*********************************************************************************/
@@ -35524,7 +37857,7 @@ var _default = {
 exports.default = _default;
 
 /***/ }),
-/* 520 */
+/* 527 */
 /*!***********************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/libs/mixin/openType.js ***!
   \***********************************************************************************/
@@ -35566,7 +37899,7 @@ var _default = {
 exports.default = _default;
 
 /***/ }),
-/* 521 */
+/* 528 */
 /*!*****************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-button/props.js ***!
   \*****************************************************************************************/
@@ -35745,14 +38078,14 @@ exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 522 */,
-/* 523 */,
-/* 524 */,
-/* 525 */,
-/* 526 */,
-/* 527 */,
-/* 528 */,
-/* 529 */
+/* 529 */,
+/* 530 */,
+/* 531 */,
+/* 532 */,
+/* 533 */,
+/* 534 */,
+/* 535 */,
+/* 536 */
 /*!******************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-overlay/props.js ***!
   \******************************************************************************************/
@@ -35794,14 +38127,14 @@ exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 530 */,
-/* 531 */,
-/* 532 */,
-/* 533 */,
-/* 534 */,
-/* 535 */,
-/* 536 */,
-/* 537 */
+/* 537 */,
+/* 538 */,
+/* 539 */,
+/* 540 */,
+/* 541 */,
+/* 542 */,
+/* 543 */,
+/* 544 */
 /*!*********************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-transition/props.js ***!
   \*********************************************************************************************/
@@ -35843,7 +38176,7 @@ exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 538 */
+/* 545 */
 /*!**************************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-transition/transition.js ***!
   \**************************************************************************************************/
@@ -35860,7 +38193,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 28));
 var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 31));
-var _nvueAniMap = _interopRequireDefault(__webpack_require__(/*! ./nvue.ani-map.js */ 539));
+var _nvueAniMap = _interopRequireDefault(__webpack_require__(/*! ./nvue.ani-map.js */ 546));
 // 定义一个一定时间后自动成功的promise，让调用nextTick方法处，进入下一个then方法
 var nextTick = function nextTick() {
   return new Promise(function (resolve) {
@@ -35952,7 +38285,7 @@ var _default = {
 exports.default = _default;
 
 /***/ }),
-/* 539 */
+/* 546 */
 /*!****************************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-transition/nvue.ani-map.js ***!
   \****************************************************************************************************/
@@ -36145,14 +38478,14 @@ var _default = {
 exports.default = _default;
 
 /***/ }),
-/* 540 */,
-/* 541 */,
-/* 542 */,
-/* 543 */,
-/* 544 */,
-/* 545 */,
-/* 546 */,
-/* 547 */
+/* 547 */,
+/* 548 */,
+/* 549 */,
+/* 550 */,
+/* 551 */,
+/* 552 */,
+/* 553 */,
+/* 554 */
 /*!*********************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-status-bar/props.js ***!
   \*********************************************************************************************/
@@ -36178,14 +38511,14 @@ exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 548 */,
-/* 549 */,
-/* 550 */,
-/* 551 */,
-/* 552 */,
-/* 553 */,
-/* 554 */,
-/* 555 */
+/* 555 */,
+/* 556 */,
+/* 557 */,
+/* 558 */,
+/* 559 */,
+/* 560 */,
+/* 561 */,
+/* 562 */
 /*!**********************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-safe-bottom/props.js ***!
   \**********************************************************************************************/
@@ -36205,14 +38538,14 @@ var _default = {
 exports.default = _default;
 
 /***/ }),
-/* 556 */,
-/* 557 */,
-/* 558 */,
-/* 559 */,
-/* 560 */,
-/* 561 */,
-/* 562 */,
-/* 563 */
+/* 563 */,
+/* 564 */,
+/* 565 */,
+/* 566 */,
+/* 567 */,
+/* 568 */,
+/* 569 */,
+/* 570 */
 /*!***************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-line/props.js ***!
   \***************************************************************************************/
@@ -36263,14 +38596,14 @@ exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 564 */,
-/* 565 */,
-/* 566 */,
-/* 567 */,
-/* 568 */,
-/* 569 */,
-/* 570 */,
-/* 571 */
+/* 571 */,
+/* 572 */,
+/* 573 */,
+/* 574 */,
+/* 575 */,
+/* 576 */,
+/* 577 */,
+/* 578 */
 /*!**************************************************************************************!*\
   !*** D:/HBuilderX.4.65.2025051206/翎心/uni_modules/uview-ui/components/u-gap/props.js ***!
   \**************************************************************************************/
@@ -36312,551 +38645,9 @@ exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 572 */,
-/* 573 */,
-/* 574 */,
-/* 575 */,
-/* 576 */,
-/* 577 */,
-/* 578 */,
 /* 579 */,
 /* 580 */,
-/* 581 */
-/*!*************************************************************!*\
-  !*** D:/HBuilderX.4.65.2025051206/翎心/utils/chat-storage.js ***!
-  \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 28));
-var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 31));
-var _classCallCheck2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ 23));
-var _createClass2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/createClass */ 24));
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-/**
- * 聊天记录存储工具
- * 
- * 使用策略：
- * - H5端：优先使用 IndexedDB 实现高性能存储
- * - 小程序端：使用 localStorage 作为降级方案
- * 
- * 功能：
- * - 聊天记录持久化存储
- * - 会话管理
- * - 自动清理过期数据
- * - 数据压缩
- * 
- * @module chat-storage
- */
-
-// 配置常量
-var DB_NAME = 'CraneHeartChatDB';
-var DB_VERSION = 1;
-var STORE_NAME = 'chat_messages';
-var INDEX_NAME_SESSION = 'sessionId';
-var INDEX_NAME_TIMESTAMP = 'timestamp';
-var MAX_MESSAGES_PER_SESSION = 500; // 每个会话最多保留500条消息
-var EXPIRE_DAYS = 30; // 数据保留30天
-
-/**
- * 聊天存储管理类
- */
-var ChatStorage = /*#__PURE__*/function () {
-  function ChatStorage() {
-    (0, _classCallCheck2.default)(this, ChatStorage);
-    this.db = null;
-    this.isH5 = false;
-    this.isReady = false;
-
-    // 判断当前环境
-  }
-
-  /**
-   * 初始化存储
-   */
-  (0, _createClass2.default)(ChatStorage, [{
-    key: "init",
-    value: function () {
-      var _init = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
-        return _regenerator.default.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                if (!this.isReady) {
-                  _context.next = 2;
-                  break;
-                }
-                return _context.abrupt("return", true);
-              case 2:
-                // 小程序端或IndexedDB失败时使用localStorage
-                this.isReady = true;
-                console.log('[CHAT_STORAGE] localStorage 模式已启用');
-                return _context.abrupt("return", true);
-              case 5:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-      function init() {
-        return _init.apply(this, arguments);
-      }
-      return init;
-    }()
-    /**
-     * 初始化 IndexedDB
-     */
-  }, {
-    key: "initIndexedDB",
-    value: function initIndexedDB() {
-      return new Promise(function (resolve, reject) {
-        resolve();
-      });
-    }
-
-    /**
-     * 保存单条消息
-     * @param {string} sessionId - 会话ID
-     * @param {object} message - 消息对象 {role, content, timestamp}
-     */
-  }, {
-    key: "saveMessage",
-    value: function () {
-      var _saveMessage = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2(sessionId, message) {
-        var messageData;
-        return _regenerator.default.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                _context2.next = 2;
-                return this.init();
-              case 2:
-                messageData = {
-                  sessionId: sessionId || 'default',
-                  role: message.role,
-                  content: message.content,
-                  timestamp: message.timestamp || Date.now(),
-                  createdAt: new Date().toISOString()
-                }; // localStorage 模式
-                return _context2.abrupt("return", this.saveMessageLocalStorage(sessionId, messageData));
-              case 4:
-              case "end":
-                return _context2.stop();
-            }
-          }
-        }, _callee2, this);
-      }));
-      function saveMessage(_x, _x2) {
-        return _saveMessage.apply(this, arguments);
-      }
-      return saveMessage;
-    }()
-    /**
-     * 批量保存消息
-     * @param {string} sessionId - 会话ID
-     * @param {array} messages - 消息数组
-     */
-  }, {
-    key: "saveMessages",
-    value: function () {
-      var _saveMessages = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee3(sessionId, messages) {
-        var _iterator, _step, message;
-        return _regenerator.default.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                _context3.next = 2;
-                return this.init();
-              case 2:
-                if (!(!Array.isArray(messages) || messages.length === 0)) {
-                  _context3.next = 4;
-                  break;
-                }
-                return _context3.abrupt("return");
-              case 4:
-                _iterator = _createForOfIteratorHelper(messages);
-                _context3.prev = 5;
-                _iterator.s();
-              case 7:
-                if ((_step = _iterator.n()).done) {
-                  _context3.next = 13;
-                  break;
-                }
-                message = _step.value;
-                _context3.next = 11;
-                return this.saveMessage(sessionId, message);
-              case 11:
-                _context3.next = 7;
-                break;
-              case 13:
-                _context3.next = 18;
-                break;
-              case 15:
-                _context3.prev = 15;
-                _context3.t0 = _context3["catch"](5);
-                _iterator.e(_context3.t0);
-              case 18:
-                _context3.prev = 18;
-                _iterator.f();
-                return _context3.finish(18);
-              case 21:
-                console.log("[CHAT_STORAGE] \u5DF2\u4FDD\u5B58 ".concat(messages.length, " \u6761\u6D88\u606F\u5230\u4F1A\u8BDD ").concat(sessionId));
-              case 22:
-              case "end":
-                return _context3.stop();
-            }
-          }
-        }, _callee3, this, [[5, 15, 18, 21]]);
-      }));
-      function saveMessages(_x3, _x4) {
-        return _saveMessages.apply(this, arguments);
-      }
-      return saveMessages;
-    }()
-    /**
-     * 获取会话的所有消息
-     * @param {string} sessionId - 会话ID
-     * @param {number} limit - 限制数量
-     */
-  }, {
-    key: "getMessages",
-    value: function () {
-      var _getMessages = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee4() {
-        var sessionId,
-          limit,
-          _args4 = arguments;
-        return _regenerator.default.wrap(function _callee4$(_context4) {
-          while (1) {
-            switch (_context4.prev = _context4.next) {
-              case 0:
-                sessionId = _args4.length > 0 && _args4[0] !== undefined ? _args4[0] : 'default';
-                limit = _args4.length > 1 && _args4[1] !== undefined ? _args4[1] : MAX_MESSAGES_PER_SESSION;
-                _context4.next = 4;
-                return this.init();
-              case 4:
-                return _context4.abrupt("return", this.getMessagesLocalStorage(sessionId, limit));
-              case 5:
-              case "end":
-                return _context4.stop();
-            }
-          }
-        }, _callee4, this);
-      }));
-      function getMessages() {
-        return _getMessages.apply(this, arguments);
-      }
-      return getMessages;
-    }()
-    /**
-     * 清空会话消息
-     * @param {string} sessionId - 会话ID
-     */
-  }, {
-    key: "clearSession",
-    value: function () {
-      var _clearSession = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee5() {
-        var sessionId,
-          _args5 = arguments;
-        return _regenerator.default.wrap(function _callee5$(_context5) {
-          while (1) {
-            switch (_context5.prev = _context5.next) {
-              case 0:
-                sessionId = _args5.length > 0 && _args5[0] !== undefined ? _args5[0] : 'default';
-                _context5.next = 3;
-                return this.init();
-              case 3:
-                return _context5.abrupt("return", this.clearSessionLocalStorage(sessionId));
-              case 4:
-              case "end":
-                return _context5.stop();
-            }
-          }
-        }, _callee5, this);
-      }));
-      function clearSession() {
-        return _clearSession.apply(this, arguments);
-      }
-      return clearSession;
-    }()
-    /**
-     * 清理过期数据
-     */
-  }, {
-    key: "cleanExpiredData",
-    value: function () {
-      var _cleanExpiredData = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee6() {
-        var expireTime;
-        return _regenerator.default.wrap(function _callee6$(_context6) {
-          while (1) {
-            switch (_context6.prev = _context6.next) {
-              case 0:
-                _context6.next = 2;
-                return this.init();
-              case 2:
-                expireTime = Date.now() - EXPIRE_DAYS * 24 * 60 * 60 * 1000; // localStorage 模式
-                return _context6.abrupt("return", this.cleanExpiredDataLocalStorage(expireTime));
-              case 4:
-              case "end":
-                return _context6.stop();
-            }
-          }
-        }, _callee6, this);
-      }));
-      function cleanExpiredData() {
-        return _cleanExpiredData.apply(this, arguments);
-      }
-      return cleanExpiredData;
-    }() // ==================== IndexedDB 实现 ====================
-    /**
-     * IndexedDB: 保存消息
-     */
-  }, {
-    key: "saveMessageIndexedDB",
-    value: function saveMessageIndexedDB(messageData) {
-      return new Promise(function (resolve, reject) {
-        resolve();
-      });
-    }
-
-    /**
-     * IndexedDB: 获取消息
-     */
-  }, {
-    key: "getMessagesIndexedDB",
-    value: function getMessagesIndexedDB(sessionId, limit) {
-      return new Promise(function (resolve, reject) {
-        resolve([]);
-      });
-    }
-
-    /**
-     * IndexedDB: 清空会话
-     */
-  }, {
-    key: "clearSessionIndexedDB",
-    value: function clearSessionIndexedDB(sessionId) {
-      return new Promise(function (resolve, reject) {
-        resolve();
-      });
-    }
-
-    /**
-     * IndexedDB: 清理过期数据
-     */
-  }, {
-    key: "cleanExpiredDataIndexedDB",
-    value: function cleanExpiredDataIndexedDB(expireTime) {
-      return new Promise(function (resolve, reject) {
-        resolve(0);
-      });
-    }
-
-    // ==================== localStorage 实现 ====================
-
-    /**
-     * localStorage: 获取会话存储键
-     */
-  }, {
-    key: "getSessionKey",
-    value: function getSessionKey(sessionId) {
-      return "chat_session_".concat(sessionId);
-    }
-
-    /**
-     * localStorage: 保存消息
-     */
-  }, {
-    key: "saveMessageLocalStorage",
-    value: function saveMessageLocalStorage(sessionId, messageData) {
-      try {
-        var key = this.getSessionKey(sessionId);
-        var stored = uni.getStorageSync(key);
-        var messages = [];
-        if (stored) {
-          try {
-            messages = JSON.parse(stored);
-          } catch (e) {
-            console.warn('[CHAT_STORAGE] 解析存储数据失败，将重置');
-            messages = [];
-          }
-        }
-
-        // 添加新消息
-        messages.push(messageData);
-
-        // 限制数量
-        if (messages.length > MAX_MESSAGES_PER_SESSION) {
-          messages = messages.slice(-MAX_MESSAGES_PER_SESSION);
-        }
-        uni.setStorageSync(key, JSON.stringify(messages));
-        return true;
-      } catch (error) {
-        console.error('[CHAT_STORAGE] localStorage 保存失败:', error);
-        return false;
-      }
-    }
-
-    /**
-     * localStorage: 获取消息
-     */
-  }, {
-    key: "getMessagesLocalStorage",
-    value: function getMessagesLocalStorage(sessionId, limit) {
-      try {
-        var key = this.getSessionKey(sessionId);
-        var stored = uni.getStorageSync(key);
-        if (!stored) {
-          return [];
-        }
-        var messages = JSON.parse(stored);
-
-        // 限制数量
-        if (messages.length > limit) {
-          messages = messages.slice(-limit);
-        }
-        return messages;
-      } catch (error) {
-        console.error('[CHAT_STORAGE] localStorage 读取失败:', error);
-        return [];
-      }
-    }
-
-    /**
-     * localStorage: 清空会话
-     */
-  }, {
-    key: "clearSessionLocalStorage",
-    value: function clearSessionLocalStorage(sessionId) {
-      try {
-        var key = this.getSessionKey(sessionId);
-        uni.removeStorageSync(key);
-        console.log("[CHAT_STORAGE] \u4F1A\u8BDD ".concat(sessionId, " \u5DF2\u6E05\u7A7A"));
-        return true;
-      } catch (error) {
-        console.error('[CHAT_STORAGE] localStorage 清空失败:', error);
-        return false;
-      }
-    }
-
-    /**
-     * localStorage: 清理过期数据
-     */
-  }, {
-    key: "cleanExpiredDataLocalStorage",
-    value: function cleanExpiredDataLocalStorage(expireTime) {
-      try {
-        var info = uni.getStorageInfoSync();
-        var deletedCount = 0;
-        info.keys.forEach(function (key) {
-          if (key.startsWith('chat_session_')) {
-            var stored = uni.getStorageSync(key);
-            if (stored) {
-              try {
-                var messages = JSON.parse(stored);
-                var validMessages = messages.filter(function (msg) {
-                  return msg.timestamp >= expireTime;
-                });
-                if (validMessages.length < messages.length) {
-                  deletedCount += messages.length - validMessages.length;
-                  if (validMessages.length > 0) {
-                    uni.setStorageSync(key, JSON.stringify(validMessages));
-                  } else {
-                    uni.removeStorageSync(key);
-                  }
-                }
-              } catch (e) {
-                console.warn("[CHAT_STORAGE] \u6E05\u7406 ".concat(key, " \u5931\u8D25:"), e);
-              }
-            }
-          }
-        });
-        console.log("[CHAT_STORAGE] \u6E05\u7406\u4E86 ".concat(deletedCount, " \u6761\u8FC7\u671F\u6D88\u606F"));
-        return deletedCount;
-      } catch (error) {
-        console.error('[CHAT_STORAGE] localStorage 清理失败:', error);
-        return 0;
-      }
-    }
-
-    /**
-     * 获取所有会话列表
-     */
-  }, {
-    key: "getAllSessions",
-    value: function () {
-      var _getAllSessions = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee7() {
-        return _regenerator.default.wrap(function _callee7$(_context7) {
-          while (1) {
-            switch (_context7.prev = _context7.next) {
-              case 0:
-                _context7.next = 2;
-                return this.init();
-              case 2:
-                return _context7.abrupt("return", this.getAllSessionsLocalStorage());
-              case 3:
-              case "end":
-                return _context7.stop();
-            }
-          }
-        }, _callee7, this);
-      }));
-      function getAllSessions() {
-        return _getAllSessions.apply(this, arguments);
-      }
-      return getAllSessions;
-    }()
-    /**
-     * IndexedDB: 获取所有会话
-     */
-  }, {
-    key: "getAllSessionsIndexedDB",
-    value: function getAllSessionsIndexedDB() {
-      return new Promise(function (resolve, reject) {
-        resolve([]);
-      });
-    }
-
-    /**
-     * localStorage: 获取所有会话
-     */
-  }, {
-    key: "getAllSessionsLocalStorage",
-    value: function getAllSessionsLocalStorage() {
-      try {
-        var info = uni.getStorageInfoSync();
-        var sessions = [];
-        info.keys.forEach(function (key) {
-          if (key.startsWith('chat_session_')) {
-            var sessionId = key.replace('chat_session_', '');
-            sessions.push(sessionId);
-          }
-        });
-        return sessions;
-      } catch (error) {
-        console.error('[CHAT_STORAGE] 获取会话列表失败:', error);
-        return [];
-      }
-    }
-  }]);
-  return ChatStorage;
-}(); // 创建单例
-var chatStorage = new ChatStorage();
-var _default = chatStorage;
-exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
-
-/***/ }),
+/* 581 */,
 /* 582 */,
 /* 583 */,
 /* 584 */,
@@ -36890,10 +38681,14 @@ exports.default = _default;
 /* 612 */,
 /* 613 */,
 /* 614 */,
-/* 615 */
-/*!*************************************************************!*\
-  !*** D:/HBuilderX.4.65.2025051206/翎心/utils/result-cache.js ***!
-  \*************************************************************/
+/* 615 */,
+/* 616 */,
+/* 617 */,
+/* 618 */,
+/* 619 */
+/*!***********************************************************************!*\
+  !*** D:/HBuilderX.4.65.2025051206/翎心/utils/consent-content-helper.js ***!
+  \***********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -36904,1341 +38699,241 @@ var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/inte
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.resultCache = exports.default = exports.CACHE_CONFIG = void 0;
+exports.HIGHLIGHT_KEYWORDS = void 0;
+exports.exportToPDF = exportToPDF;
+exports.generateShareImage = generateShareImage;
+exports.getFullAgreementContent = getFullAgreementContent;
+exports.highlightContent = highlightContent;
+exports.searchContent = searchContent;
 var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 28));
-var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
 var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 31));
-var _classCallCheck2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ 23));
-var _createClass2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/createClass */ 24));
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 /**
- * 评估结果缓存管理工具
- * 功能：
- * 1. 支持localStorage和IndexedDB双层缓存
- * 2. 自动过期清理机制
- * 3. 数据压缩存储
- * 4. 离线数据同步队列
- * 
- * @author CraneHeart Team
- * @date 2025-10-20
+ * 同意协议内容处理工具
+ * 功能：搜索、高亮、导出
  */
 
-var CACHE_CONFIG = {
-  // 缓存键前缀
-  PREFIX: 'crane_result_',
-  // localStorage键
-  STORAGE_KEYS: {
-    RESULTS: 'assessment_results',
-    // 结果缓存
-    HISTORY: 'assessment_history',
-    // 历史记录
-    SYNC_QUEUE: 'result_sync_queue',
-    // 待同步队列
-    CACHE_META: 'result_cache_meta' // 缓存元数据
-  },
-
-  // 缓存策略
-  MAX_RESULTS: 100,
-  // 最多缓存结果数
-  MAX_HISTORY: 50,
-  // 最多历史记录数
-  EXPIRE_DAYS: 30,
-  // 缓存过期天数
-
-  // IndexedDB配置
-  DB_NAME: 'CraneHeartDB',
-  DB_VERSION: 1,
-  STORE_NAME: 'assessment_results'
+/**
+ * 重点条款关键词配置
+ */
+var HIGHLIGHT_KEYWORDS = {
+  // 隐私相关
+  privacy: ['个人信息', '隐私保护', '数据加密', '信息收集', '第三方', '敏感数据'],
+  // 责任相关
+  liability: ['免责', '责任限制', '不承担责任', '风险提示', '法律责任'],
+  // 权利相关
+  rights: ['您的权利', '访问权', '删除权', '撤回同意', '数据导出'],
+  // 重要提示
+  important: ['重要', '注意', '必须', '禁止', '紧急']
 };
 
 /**
- * 结果缓存管理器
+ * 搜索协议内容
+ * @param {String} content - 协议内容
+ * @param {String} keyword - 搜索关键词
+ * @returns {Object} { matches: Array, count: Number }
  */
-exports.CACHE_CONFIG = CACHE_CONFIG;
-var ResultCacheManager = /*#__PURE__*/function () {
-  function ResultCacheManager() {
-    (0, _classCallCheck2.default)(this, ResultCacheManager);
-    this.db = null;
-    this.dbReady = false;
-    this.initIndexedDB();
-  }
-
-  /**
-   * 初始化IndexedDB
-   */
-  (0, _createClass2.default)(ResultCacheManager, [{
-    key: "initIndexedDB",
-    value: function () {
-      var _initIndexedDB = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
-        return _regenerator.default.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                console.log('[ResultCache] 非H5环境，跳过IndexedDB初始化');
-                this.dbReady = false;
-              case 2:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-      function initIndexedDB() {
-        return _initIndexedDB.apply(this, arguments);
-      }
-      return initIndexedDB;
-    }()
-    /**
-     * 保存评估结果（主方法）
-     * @param {Object} resultData - 结果数据
-     * @returns {Promise<boolean>}
-     */
-  }, {
-    key: "saveResult",
-    value: function () {
-      var _saveResult = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2(resultData) {
-        var enrichedData;
-        return _regenerator.default.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                _context2.prev = 0;
-                if (!(!resultData || !resultData.scaleId)) {
-                  _context2.next = 4;
-                  break;
-                }
-                console.error('[ResultCache] 无效的结果数据');
-                return _context2.abrupt("return", false);
-              case 4:
-                // 添加元数据
-                enrichedData = _objectSpread(_objectSpread({}, resultData), {}, {
-                  cachedAt: Date.now(),
-                  expireAt: Date.now() + CACHE_CONFIG.EXPIRE_DAYS * 24 * 60 * 60 * 1000,
-                  version: '1.0'
-                }); // 尝试保存到IndexedDB（H5）
-                if (!this.dbReady) {
-                  _context2.next = 8;
-                  break;
-                }
-                _context2.next = 8;
-                return this.saveToIndexedDB(enrichedData);
-              case 8:
-                _context2.next = 10;
-                return this.saveToLocalStorage(enrichedData);
-              case 10:
-                _context2.next = 12;
-                return this.saveToHistory(resultData);
-              case 12:
-                // 更新缓存元数据
-                this.updateCacheMeta();
-                console.log('[ResultCache] 结果保存成功:', resultData.scaleId);
-                return _context2.abrupt("return", true);
-              case 17:
-                _context2.prev = 17;
-                _context2.t0 = _context2["catch"](0);
-                console.error('[ResultCache] 保存结果失败:', _context2.t0);
-                return _context2.abrupt("return", false);
-              case 21:
-              case "end":
-                return _context2.stop();
-            }
-          }
-        }, _callee2, this, [[0, 17]]);
-      }));
-      function saveResult(_x) {
-        return _saveResult.apply(this, arguments);
-      }
-      return saveResult;
-    }()
-    /**
-     * 保存到IndexedDB
-     */
-  }, {
-    key: "saveToIndexedDB",
-    value: function () {
-      var _saveToIndexedDB = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee3(data) {
-        return _regenerator.default.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                return _context3.abrupt("return", false);
-              case 1:
-              case "end":
-                return _context3.stop();
-            }
-          }
-        }, _callee3);
-      }));
-      function saveToIndexedDB(_x2) {
-        return _saveToIndexedDB.apply(this, arguments);
-      }
-      return saveToIndexedDB;
-    }()
-    /**
-     * 保存到localStorage
-     */
-  }, {
-    key: "saveToLocalStorage",
-    value: function () {
-      var _saveToLocalStorage = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee4(data) {
-        var key, cached, now, validCached;
-        return _regenerator.default.wrap(function _callee4$(_context4) {
-          while (1) {
-            switch (_context4.prev = _context4.next) {
-              case 0:
-                _context4.prev = 0;
-                key = CACHE_CONFIG.STORAGE_KEYS.RESULTS;
-                cached = uni.getStorageSync(key) || []; // 添加新结果
-                cached.push(data);
-
-                // 清理过期数据
-                now = Date.now();
-                validCached = cached.filter(function (item) {
-                  return item.expireAt > now;
-                }); // 限制数量
-                if (validCached.length > CACHE_CONFIG.MAX_RESULTS) {
-                  validCached.splice(0, validCached.length - CACHE_CONFIG.MAX_RESULTS);
-                }
-                uni.setStorageSync(key, validCached);
-                console.log('[ResultCache] localStorage保存成功, 当前缓存:', validCached.length);
-                return _context4.abrupt("return", true);
-              case 12:
-                _context4.prev = 12;
-                _context4.t0 = _context4["catch"](0);
-                console.error('[ResultCache] localStorage保存失败:', _context4.t0);
-                return _context4.abrupt("return", false);
-              case 16:
-              case "end":
-                return _context4.stop();
-            }
-          }
-        }, _callee4, null, [[0, 12]]);
-      }));
-      function saveToLocalStorage(_x3) {
-        return _saveToLocalStorage.apply(this, arguments);
-      }
-      return saveToLocalStorage;
-    }()
-    /**
-     * 保存到历史记录
-     */
-  }, {
-    key: "saveToHistory",
-    value: function () {
-      var _saveToHistory = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee5(data) {
-        var key, history;
-        return _regenerator.default.wrap(function _callee5$(_context5) {
-          while (1) {
-            switch (_context5.prev = _context5.next) {
-              case 0:
-                _context5.prev = 0;
-                key = CACHE_CONFIG.STORAGE_KEYS.HISTORY;
-                history = uni.getStorageSync(key) || [];
-                history.push({
-                  scaleId: data.scaleId,
-                  score: data.score,
-                  level: data.level,
-                  timestamp: Date.now()
-                });
-
-                // 只保留最近N条
-                if (history.length > CACHE_CONFIG.MAX_HISTORY) {
-                  history.splice(0, history.length - CACHE_CONFIG.MAX_HISTORY);
-                }
-                uni.setStorageSync(key, history);
-                console.log('[ResultCache] 历史记录保存成功');
-                return _context5.abrupt("return", true);
-              case 10:
-                _context5.prev = 10;
-                _context5.t0 = _context5["catch"](0);
-                console.error('[ResultCache] 历史记录保存失败:', _context5.t0);
-                return _context5.abrupt("return", false);
-              case 14:
-              case "end":
-                return _context5.stop();
-            }
-          }
-        }, _callee5, null, [[0, 10]]);
-      }));
-      function saveToHistory(_x4) {
-        return _saveToHistory.apply(this, arguments);
-      }
-      return saveToHistory;
-    }()
-    /**
-     * 获取缓存的结果
-     * @param {string} scaleId - 量表ID
-     * @param {number} limit - 数量限制
-     * @returns {Promise<Array>}
-     */
-  }, {
-    key: "getResults",
-    value: function () {
-      var _getResults = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee6(scaleId) {
-        var limit,
-          results,
-          _args6 = arguments;
-        return _regenerator.default.wrap(function _callee6$(_context6) {
-          while (1) {
-            switch (_context6.prev = _context6.next) {
-              case 0:
-                limit = _args6.length > 1 && _args6[1] !== undefined ? _args6[1] : 10;
-                _context6.prev = 1;
-                if (!this.dbReady) {
-                  _context6.next = 8;
-                  break;
-                }
-                _context6.next = 5;
-                return this.getFromIndexedDB(scaleId, limit);
-              case 5:
-                results = _context6.sent;
-                if (!(results && results.length > 0)) {
-                  _context6.next = 8;
-                  break;
-                }
-                return _context6.abrupt("return", results);
-              case 8:
-                return _context6.abrupt("return", this.getFromLocalStorage(scaleId, limit));
-              case 11:
-                _context6.prev = 11;
-                _context6.t0 = _context6["catch"](1);
-                console.error('[ResultCache] 获取结果失败:', _context6.t0);
-                return _context6.abrupt("return", []);
-              case 15:
-              case "end":
-                return _context6.stop();
-            }
-          }
-        }, _callee6, this, [[1, 11]]);
-      }));
-      function getResults(_x5) {
-        return _getResults.apply(this, arguments);
-      }
-      return getResults;
-    }()
-    /**
-     * 从IndexedDB读取
-     */
-  }, {
-    key: "getFromIndexedDB",
-    value: function () {
-      var _getFromIndexedDB = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee7(scaleId, limit) {
-        return _regenerator.default.wrap(function _callee7$(_context7) {
-          while (1) {
-            switch (_context7.prev = _context7.next) {
-              case 0:
-                return _context7.abrupt("return", []);
-              case 1:
-              case "end":
-                return _context7.stop();
-            }
-          }
-        }, _callee7);
-      }));
-      function getFromIndexedDB(_x6, _x7) {
-        return _getFromIndexedDB.apply(this, arguments);
-      }
-      return getFromIndexedDB;
-    }()
-    /**
-     * 从localStorage读取
-     */
-  }, {
-    key: "getFromLocalStorage",
-    value: function getFromLocalStorage(scaleId, limit) {
-      try {
-        var key = CACHE_CONFIG.STORAGE_KEYS.RESULTS;
-        var cached = uni.getStorageSync(key) || [];
-
-        // 过滤量表和过期数据
-        var now = Date.now();
-        var validResults = cached.filter(function (item) {
-          return item.scaleId === scaleId && item.expireAt > now;
-        });
-
-        // 按时间倒序
-        validResults.sort(function (a, b) {
-          return b.timestamp - a.timestamp;
-        });
-
-        // 限制数量
-        var results = validResults.slice(0, limit);
-        console.log('[ResultCache] localStorage读取成功:', results.length);
-        return results;
-      } catch (error) {
-        console.error('[ResultCache] localStorage读取失败:', error);
-        return [];
-      }
-    }
-
-    /**
-     * 获取历史记录
-     * @param {string} scaleId - 量表ID（可选）
-     * @param {number} limit - 数量限制
-     * @returns {Array}
-     */
-  }, {
-    key: "getHistory",
-    value: function getHistory() {
-      var scaleId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-      var limit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 50;
-      try {
-        var key = CACHE_CONFIG.STORAGE_KEYS.HISTORY;
-        var history = uni.getStorageSync(key) || [];
-
-        // 过滤量表
-        var filtered = scaleId ? history.filter(function (h) {
-          return h.scaleId === scaleId;
-        }) : history;
-
-        // 按时间倒序
-        filtered.sort(function (a, b) {
-          return b.timestamp - a.timestamp;
-        });
-
-        // 限制数量
-        return filtered.slice(0, limit);
-      } catch (error) {
-        console.error('[ResultCache] 获取历史失败:', error);
-        return [];
-      }
-    }
-
-    /**
-     * 清理过期缓存
-     * @returns {Promise<Object>}
-     */
-  }, {
-    key: "cleanExpired",
-    value: function () {
-      var _cleanExpired = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee8() {
-        var now, cleanedCount, key, cached, validCached;
-        return _regenerator.default.wrap(function _callee8$(_context8) {
-          while (1) {
-            switch (_context8.prev = _context8.next) {
-              case 0:
-                _context8.prev = 0;
-                now = Date.now();
-                cleanedCount = 0; // 清理localStorage
-                key = CACHE_CONFIG.STORAGE_KEYS.RESULTS;
-                cached = uni.getStorageSync(key) || [];
-                validCached = cached.filter(function (item) {
-                  return item.expireAt > now;
-                });
-                cleanedCount = cached.length - validCached.length;
-                if (cleanedCount > 0) {
-                  uni.setStorageSync(key, validCached);
-                }
-
-                // 清理IndexedDB（H5）
-
-                console.log('[ResultCache] 清理完成, 删除:', cleanedCount);
-                return _context8.abrupt("return", {
-                  success: true,
-                  cleanedCount: cleanedCount
-                });
-              case 12:
-                _context8.prev = 12;
-                _context8.t0 = _context8["catch"](0);
-                console.error('[ResultCache] 清理失败:', _context8.t0);
-                return _context8.abrupt("return", {
-                  success: false,
-                  error: _context8.t0.message
-                });
-              case 16:
-              case "end":
-                return _context8.stop();
-            }
-          }
-        }, _callee8, null, [[0, 12]]);
-      }));
-      function cleanExpired() {
-        return _cleanExpired.apply(this, arguments);
-      }
-      return cleanExpired;
-    }()
-    /**
-     * 清理IndexedDB过期数据
-     */
-  }, {
-    key: "cleanIndexedDBExpired",
-    value: function () {
-      var _cleanIndexedDBExpired = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee9() {
-        return _regenerator.default.wrap(function _callee9$(_context9) {
-          while (1) {
-            switch (_context9.prev = _context9.next) {
-              case 0:
-                return _context9.abrupt("return", 0);
-              case 1:
-              case "end":
-                return _context9.stop();
-            }
-          }
-        }, _callee9);
-      }));
-      function cleanIndexedDBExpired() {
-        return _cleanIndexedDBExpired.apply(this, arguments);
-      }
-      return cleanIndexedDBExpired;
-    }()
-    /**
-     * 清空所有缓存
-     * @returns {boolean}
-     */
-  }, {
-    key: "clearAll",
-    value: function clearAll() {
-      try {
-        // 清空localStorage
-        Object.values(CACHE_CONFIG.STORAGE_KEYS).forEach(function (key) {
-          uni.removeStorageSync(key);
-        });
-
-        // 清空IndexedDB（H5）
-
-        console.log('[ResultCache] 已清空所有缓存');
-        return true;
-      } catch (error) {
-        console.error('[ResultCache] 清空缓存失败:', error);
-        return false;
-      }
-    }
-
-    /**
-     * 更新缓存元数据
-     */
-  }, {
-    key: "updateCacheMeta",
-    value: function updateCacheMeta() {
-      try {
-        var meta = {
-          lastUpdated: Date.now(),
-          version: '1.0'
-        };
-        uni.setStorageSync(CACHE_CONFIG.STORAGE_KEYS.CACHE_META, meta);
-      } catch (error) {
-        console.error('[ResultCache] 更新元数据失败:', error);
-      }
-    }
-
-    /**
-     * 获取缓存统计信息
-     * @returns {Object}
-     */
-  }, {
-    key: "getCacheStats",
-    value: function getCacheStats() {
-      try {
-        var results = uni.getStorageSync(CACHE_CONFIG.STORAGE_KEYS.RESULTS) || [];
-        var history = uni.getStorageSync(CACHE_CONFIG.STORAGE_KEYS.HISTORY) || [];
-        var meta = uni.getStorageSync(CACHE_CONFIG.STORAGE_KEYS.CACHE_META) || {};
-        var now = Date.now();
-        var validResults = results.filter(function (r) {
-          return r.expireAt > now;
-        });
-        var expiredResults = results.filter(function (r) {
-          return r.expireAt <= now;
-        });
-        return {
-          totalResults: results.length,
-          validResults: validResults.length,
-          expiredResults: expiredResults.length,
-          historyCount: history.length,
-          lastUpdated: meta.lastUpdated || null,
-          dbReady: this.dbReady
-        };
-      } catch (error) {
-        console.error('[ResultCache] 获取统计失败:', error);
-        return null;
-      }
-    }
-  }]);
-  return ResultCacheManager;
-}(); // 创建单例
-var resultCache = new ResultCacheManager();
-
-// 导出方法
-exports.resultCache = resultCache;
-var _default = resultCache;
-exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
-
-/***/ }),
-/* 616 */
-/*!******************************************************************!*\
-  !*** D:/HBuilderX.4.65.2025051206/翎心/utils/assessment-export.js ***!
-  \******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(uni, wx) {
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-exports.downloadFile = downloadFile;
-exports.exportAssessmentData = exportAssessmentData;
-exports.exportProgressData = exportProgressData;
-exports.exportToCSV = exportToCSV;
-exports.exportToJSON = exportToJSON;
-exports.saveFileLocal = saveFileLocal;
-exports.shareFile = shareFile;
-var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 28));
-var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 31));
-var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
-/**
- * 评估答题数据导出工具
- * 支持JSON和CSV格式导出
- * @module utils/assessment-export
- */
-
-/**
- * 将答题数据导出为JSON格式
- * @param {Object} options - 导出选项
- * @param {String} options.scaleId - 量表ID
- * @param {String} options.title - 量表标题
- * @param {Array} options.questions - 题目列表
- * @param {Object} options.answers - 答案对象 { questionId: value }
- * @param {Object} options.questionTimes - 每题用时 { questionId: timeMs }
- * @param {Number} options.totalTime - 总用时（秒）
- * @param {Array} options.markedQuestions - 标记的题目ID列表
- * @param {Object} options.result - 评估结果
- * @returns {String} JSON字符串
- */
-function exportToJSON(options) {
-  var scaleId = options.scaleId,
-    title = options.title,
-    questions = options.questions,
-    answers = options.answers,
-    _options$questionTime = options.questionTimes,
-    questionTimes = _options$questionTime === void 0 ? {} : _options$questionTime,
-    _options$totalTime = options.totalTime,
-    totalTime = _options$totalTime === void 0 ? 0 : _options$totalTime,
-    _options$markedQuesti = options.markedQuestions,
-    markedQuestions = _options$markedQuesti === void 0 ? [] : _options$markedQuesti,
-    _options$result = options.result,
-    result = _options$result === void 0 ? null : _options$result;
-
-  // 构建导出数据结构
-  var exportData = {
-    metadata: {
-      scaleId: scaleId,
-      title: title,
-      exportTime: new Date().toISOString(),
-      totalQuestions: questions.length,
-      answeredQuestions: Object.keys(answers).length,
-      totalTimeSeconds: totalTime,
-      version: '1.0'
-    },
-    answers: [],
-    statistics: {
-      averageTimePerQuestion: totalTime / questions.length || 0,
-      markedCount: markedQuestions.length,
-      completionRate: (Object.keys(answers).length / questions.length * 100).toFixed(2) + '%'
-    }
-  };
-
-  // 添加结果信息（如果存在）
-  if (result) {
-    exportData.result = {
-      score: result.score || result.total_score || 0,
-      level: result.level || 'unknown',
-      suggestions: result.suggestions || []
+exports.HIGHLIGHT_KEYWORDS = HIGHLIGHT_KEYWORDS;
+function searchContent(content, keyword) {
+  if (!keyword || !content) {
+    return {
+      matches: [],
+      count: 0
     };
   }
-
-  // 添加详细的答题数据
-  questions.forEach(function (question, index) {
-    var questionId = question.id;
-    var answer = answers[questionId];
-    var timeMs = questionTimes[questionId] || 0;
-    var isMarked = markedQuestions.includes(questionId);
-    exportData.answers.push({
-      questionNumber: index + 1,
-      questionId: questionId,
-      questionText: question.text,
-      answerValue: answer !== undefined ? answer : null,
-      answerLabel: getAnswerLabel(question, answer, options),
-      timeSpent: {
-        milliseconds: timeMs,
-        seconds: (timeMs / 1000).toFixed(2)
-      },
-      isMarked: isMarked,
-      isAnswered: answer !== undefined
+  var matches = [];
+  var regex = new RegExp(escapeRegex(keyword), 'gi');
+  var match;
+  while ((match = regex.exec(content)) !== null) {
+    matches.push({
+      index: match.index,
+      keyword: match[0],
+      context: getContext(content, match.index, 50)
     });
-  });
-  return JSON.stringify(exportData, null, 2);
+  }
+  return {
+    matches: matches,
+    count: matches.length
+  };
 }
 
 /**
- * 将答题数据导出为CSV格式
- * @param {Object} options - 导出选项（同exportToJSON）
- * @returns {String} CSV字符串
+ * 高亮文本内容
+ * @param {String} content - 原始内容
+ * @param {String} searchKeyword - 搜索关键词（可选）
+ * @param {Boolean} highlightImportant - 是否高亮重要条款
+ * @returns {String} HTML格式的高亮内容
  */
-function exportToCSV(options) {
-  var scaleId = options.scaleId,
-    title = options.title,
-    questions = options.questions,
-    answers = options.answers,
-    _options$questionTime2 = options.questionTimes,
-    questionTimes = _options$questionTime2 === void 0 ? {} : _options$questionTime2,
-    _options$markedQuesti2 = options.markedQuestions,
-    markedQuestions = _options$markedQuesti2 === void 0 ? [] : _options$markedQuesti2;
+function highlightContent(content) {
+  var searchKeyword = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  var highlightImportant = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+  if (!content) return '';
+  var result = escapeHtml(content);
 
-  // CSV头部
-  var headers = ['题号', '题目ID', '题目内容', '答案值', '答案标签', '用时(秒)', '是否标记', '是否作答'];
-
-  // CSV行数据
-  var rows = questions.map(function (question, index) {
-    var questionId = question.id;
-    var answer = answers[questionId];
-    var timeMs = questionTimes[questionId] || 0;
-    var isMarked = markedQuestions.includes(questionId);
-    return [index + 1, questionId, escapeCSV(question.text), answer !== undefined ? answer : '', escapeCSV(getAnswerLabel(question, answer, options)), (timeMs / 1000).toFixed(2), isMarked ? '是' : '否', answer !== undefined ? '是' : '否'];
-  });
-
-  // 添加元数据行
-  var metadataRows = [['量表ID', scaleId], ['量表标题', title], ['导出时间', new Date().toLocaleString('zh-CN')], ['总题数', questions.length], ['已答题数', Object.keys(answers).length], ['完成率', (Object.keys(answers).length / questions.length * 100).toFixed(2) + '%'], [''],
-  // 空行分隔
-  headers];
-
-  // 合并所有行
-  var allRows = [].concat(metadataRows, (0, _toConsumableArray2.default)(rows));
-
-  // 转换为CSV字符串
-  return allRows.map(function (row) {
-    return row.join(',');
-  }).join('\n');
-}
-
-/**
- * 获取答案标签
- * @private
- */
-function getAnswerLabel(question, answerValue, options) {
-  if (answerValue === undefined || answerValue === null) {
-    return '未作答';
-  }
-
-  // 如果题目有自定义labels
-  if (question.labels && question.options) {
-    var valueIndex = question.options.indexOf(answerValue);
-    if (valueIndex !== -1 && question.labels[valueIndex]) {
-      return question.labels[valueIndex];
-    }
-  }
-
-  // 使用全局量表选项
-  if (options.scaleData) {
-    var scale = options.scaleData.scale || [];
-    var labels = options.scaleData.options || [];
-    var _valueIndex = scale.indexOf(answerValue);
-    if (_valueIndex !== -1 && labels[_valueIndex]) {
-      return labels[_valueIndex];
-    }
-  }
-
-  // 特殊类型处理
-  if (question.type === 'time' || question.type === 'number') {
-    return String(answerValue);
-  }
-  return String(answerValue);
-}
-
-/**
- * 转义CSV特殊字符
- * @private
- */
-function escapeCSV(text) {
-  if (text === null || text === undefined) {
-    return '';
-  }
-  var str = String(text);
-
-  // 如果包含逗号、引号或换行符，需要用引号包裹
-  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-    // 将内部的引号转义为两个引号
-    return '"' + str.replace(/"/g, '""') + '"';
-  }
-  return str;
-}
-
-/**
- * 下载文件（H5平台）
- * @param {String} content - 文件内容
- * @param {String} filename - 文件名
- * @param {String} mimeType - MIME类型
- */
-function downloadFile(content, filename) {
-  var mimeType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'text/plain';
-  return false;
-}
-
-/**
- * 保存文件到本地（小程序平台）
- * @param {String} content - 文件内容
- * @param {String} filename - 文件名
- * @returns {Promise<String>} 文件路径
- */
-function saveFileLocal(content, filename) {
-  return new Promise(function (resolve, reject) {
-    try {
-      var fs = uni.getFileSystemManager();
-      var filePath = "".concat(wx.env.USER_DATA_PATH, "/").concat(filename);
-      fs.writeFile({
-        filePath: filePath,
-        data: content,
-        encoding: 'utf8',
-        success: function success() {
-          resolve(filePath);
-        },
-        fail: function fail(error) {
-          reject(error);
-        }
-      });
-    } catch (error) {
-      reject(error);
-    }
-  });
-}
-
-/**
- * 分享文件（小程序平台）
- * @param {String} filePath - 文件路径
- */
-function shareFile(filePath) {
-  return new Promise(function (resolve, reject) {
-    wx.shareFileMessage({
-      filePath: filePath,
-      success: function success() {
-        resolve();
-      },
-      fail: function fail(error) {
-        reject(error);
-      }
+  // 1. 高亮重要条款（优先级低）
+  if (highlightImportant) {
+    // 组合所有重点关键词
+    var allKeywords = Object.values(HIGHLIGHT_KEYWORDS).flat();
+    allKeywords.forEach(function (keyword) {
+      var regex = new RegExp("(".concat(escapeRegex(keyword), ")"), 'gi');
+      result = result.replace(regex, '<span class="highlight-important">$1</span>');
     });
-  });
+  }
+
+  // 2. 高亮搜索关键词（优先级高，覆盖重要条款高亮）
+  if (searchKeyword) {
+    var regex = new RegExp("(".concat(escapeRegex(searchKeyword), ")"), 'gi');
+    // 先移除可能存在的重点高亮标签
+    result = result.replace(/<span class="highlight-important">(.*?)<\/span>/g, '$1');
+    // 然后添加搜索高亮
+    result = result.replace(regex, '<span class="highlight-search">$1</span>');
+  }
+
+  // 3. 保留换行符
+  result = result.replace(/\n/g, '<br/>');
+  return result;
 }
 
 /**
- * 导出答题数据（统一接口）
+ * 导出协议为PDF（H5端）
+ * @param {String} title - 文档标题
+ * @param {String} content - 协议内容
  * @param {Object} options - 导出选项
- * @param {String} format - 导出格式 'json' | 'csv'
- * @returns {Promise<Object>} 导出结果 { success, message, filePath? }
  */
-function exportAssessmentData(_x) {
-  return _exportAssessmentData.apply(this, arguments);
+function exportToPDF(_x, _x2) {
+  return _exportToPDF.apply(this, arguments);
 }
 /**
- * 从localStorage恢复并导出进度数据
- * @param {String} scaleId - 量表ID
- * @param {String} format - 导出格式
- * @returns {Promise<Object>} 导出结果
+ * 生成分享截图（小程序端替代方案）
+ * @param {String} selector - 页面选择器
  */
-function _exportAssessmentData() {
-  _exportAssessmentData = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee(options) {
-    var format,
-      content,
-      filename,
-      mimeType,
-      filePath,
+function _exportToPDF() {
+  _exportToPDF = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee(title, content) {
+    var options,
       _args = arguments;
     return _regenerator.default.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            format = _args.length > 1 && _args[1] !== undefined ? _args[1] : 'json';
-            _context.prev = 1;
-            if (!(format === 'json')) {
-              _context.next = 8;
-              break;
-            }
-            content = exportToJSON(options);
-            filename = "assessment_".concat(options.scaleId, "_").concat(Date.now(), ".json");
-            mimeType = 'application/json';
-            _context.next = 15;
-            break;
-          case 8:
-            if (!(format === 'csv')) {
-              _context.next = 14;
-              break;
-            }
-            content = exportToCSV(options);
-            filename = "assessment_".concat(options.scaleId, "_").concat(Date.now(), ".csv");
-            mimeType = 'text/csv';
-            _context.next = 15;
-            break;
-          case 14:
-            throw new Error('不支持的导出格式');
-          case 15:
-            _context.next = 17;
-            return saveFileLocal(content, filename);
-          case 17:
-            filePath = _context.sent;
-            // 提示用户
-            uni.showModal({
-              title: '导出成功',
-              content: '文件已保存，是否分享到微信？',
-              confirmText: '分享',
-              cancelText: '稍后',
-              success: function success(res) {
-                if (res.confirm) {
-                  shareFile(filePath).catch(function (error) {
-                    console.error('分享失败:', error);
-                    uni.showToast({
-                      title: '分享失败',
-                      icon: 'none'
-                    });
-                  });
-                }
-              }
-            });
-            return _context.abrupt("return", {
-              success: true,
-              message: '导出成功',
-              filePath: filePath,
-              filename: filename
-            });
-          case 22:
-            _context.prev = 22;
-            _context.t0 = _context["catch"](1);
-            console.error('导出失败:', _context.t0);
+            options = _args.length > 2 && _args[2] !== undefined ? _args[2] : {};
             return _context.abrupt("return", {
               success: false,
-              message: _context.t0.message || '导出失败'
+              error: '小程序暂不支持PDF导出，请使用截图分享功能'
             });
-          case 26:
+          case 2:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[1, 22]]);
+    }, _callee);
   }));
-  return _exportAssessmentData.apply(this, arguments);
+  return _exportToPDF.apply(this, arguments);
 }
-function exportProgressData(_x2) {
-  return _exportProgressData.apply(this, arguments);
+function generateShareImage() {
+  return _generateShareImage.apply(this, arguments);
 }
 /**
- * 加载量表数据
- * @private
+ * 获取上下文文本
+ * @param {String} content - 完整内容
+ * @param {Number} index - 匹配位置
+ * @param {Number} length - 上下文长度
+ * @returns {String}
  */
-function _exportProgressData() {
-  _exportProgressData = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2(scaleId) {
-    var format,
-      progressKey,
-      progressStr,
-      progressData,
-      scaleData,
-      exportOptions,
+function _generateShareImage() {
+  _generateShareImage = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2() {
+    var selector,
+      query,
       _args2 = arguments;
     return _regenerator.default.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            format = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : 'json';
+            selector = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : '.content';
             _context2.prev = 1;
-            progressKey = "assess_progress_".concat(scaleId);
-            progressStr = uni.getStorageSync(progressKey);
-            if (progressStr) {
-              _context2.next = 6;
-              break;
-            }
-            throw new Error('未找到答题进度数据');
+            // 创建Canvas绘图上下文
+            query = uni.createSelectorQuery();
+            return _context2.abrupt("return", new Promise(function (resolve, reject) {
+              query.select(selector).boundingClientRect(function (rect) {
+                if (!rect) {
+                  reject(new Error('未找到目标元素'));
+                  return;
+                }
+
+                // 使用Canvas API绘制
+                var ctx = uni.createCanvasContext('shareCanvas');
+
+                // 这里需要根据实际内容绘制
+                // 小程序端建议使用海报生成库或截图API
+
+                uni.showToast({
+                  title: '请长按截图分享',
+                  icon: 'none'
+                });
+                resolve({
+                  success: true
+                });
+              }).exec();
+            }));
           case 6:
-            progressData = JSON.parse(progressStr); // 需要加载量表数据来获取题目详情
-            _context2.next = 9;
-            return loadScaleData(scaleId);
-          case 9:
-            scaleData = _context2.sent;
-            exportOptions = {
-              scaleId: progressData.scaleId,
-              title: scaleData.title || scaleId,
-              questions: scaleData.questions || [],
-              answers: progressData.answers,
-              questionTimes: progressData.questionTimes,
-              totalTime: (Date.now() - progressData.startTime) / 1000,
-              markedQuestions: [],
-              scaleData: scaleData
-            };
-            _context2.next = 13;
-            return exportAssessmentData(exportOptions, format);
-          case 13:
-            return _context2.abrupt("return", _context2.sent);
-          case 16:
-            _context2.prev = 16;
+            _context2.prev = 6;
             _context2.t0 = _context2["catch"](1);
-            console.error('导出进度数据失败:', _context2.t0);
+            console.error('[生成分享图] 失败:', _context2.t0);
             return _context2.abrupt("return", {
               success: false,
-              message: _context2.t0.message || '导出失败'
+              error: _context2.t0.message
             });
-          case 20:
+          case 10:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[1, 16]]);
+    }, _callee2, null, [[1, 6]]);
   }));
-  return _exportProgressData.apply(this, arguments);
+  return _generateShareImage.apply(this, arguments);
 }
-function loadScaleData(_x3) {
-  return _loadScaleData.apply(this, arguments);
+function getContext(content, index) {
+  var length = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 50;
+  var start = Math.max(0, index - length);
+  var end = Math.min(content.length, index + length);
+  var context = content.substring(start, end);
+  if (start > 0) context = '...' + context;
+  if (end < content.length) context = context + '...';
+  return context;
 }
-function _loadScaleData() {
-  _loadScaleData = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee3(scaleId) {
-    var scaleMap, scalePath;
-    return _regenerator.default.wrap(function _callee3$(_context3) {
-      while (1) {
-        switch (_context3.prev = _context3.next) {
-          case 0:
-            scaleMap = {
-              'phq9': '/static/scales/phq9.json',
-              'gad7': '/static/scales/gad7.json',
-              'psqi': '/static/scales/psqi.json',
-              'pss': '/static/scales/pss.json',
-              'ces-d': '/static/scales/ces-d.json',
-              'mbi': '/static/scales/mbi.json',
-              'wemwbs': '/static/scales/wemwbs.json',
-              'swls': '/static/scales/swls.json',
-              'resilience': '/static/scales/resilience.json',
-              'loneliness': '/static/scales/loneliness.json',
-              'social-support': '/static/scales/social-support.json',
-              'self-esteem': '/static/scales/self-esteem.json',
-              'academic': '/static/scales/academic.json',
-              'sleep': '/static/scales/sleep.json'
-            };
-            scalePath = scaleMap[scaleId];
-            if (scalePath) {
-              _context3.next = 4;
-              break;
-            }
-            throw new Error("\u672A\u627E\u5230\u91CF\u8868: ".concat(scaleId));
-          case 4:
-            return _context3.abrupt("return", new Promise(function (resolve, reject) {
-              uni.request({
-                url: scalePath,
-                method: 'GET',
-                success: function success(res) {
-                  if (res.statusCode === 200 && res.data) {
-                    resolve(res.data);
-                  } else {
-                    reject(new Error('加载量表数据失败'));
-                  }
-                },
-                fail: reject
-              });
-            }));
-          case 5:
-          case "end":
-            return _context3.stop();
-        }
-      }
-    }, _callee3);
-  }));
-  return _loadScaleData.apply(this, arguments);
-}
-var _default = {
-  exportToJSON: exportToJSON,
-  exportToCSV: exportToCSV,
-  exportAssessmentData: exportAssessmentData,
-  exportProgressData: exportProgressData,
-  downloadFile: downloadFile,
-  saveFileLocal: saveFileLocal,
-  shareFile: shareFile
-};
-exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"]))
-
-/***/ }),
-/* 617 */
-/*!****************************************************************!*\
-  !*** D:/HBuilderX.4.65.2025051206/翎心/utils/sensitive-words.js ***!
-  \****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.checkSensitiveWords = checkSensitiveWords;
-exports.default = void 0;
-exports.getCrisisWarning = getCrisisWarning;
-exports.getSensitiveWarning = getSensitiveWarning;
-exports.highlightSensitiveWords = highlightSensitiveWords;
-var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
-/**
- * 前端敏感词检测工具
- * 用于实时检测用户输入中的敏感内容
- */
-
-// 敏感词列表（与后端保持一致）
-var SENSITIVE_WORDS = [
-// 危机相关
-'自杀', '自残', '轻生', '想死', '不想活', '结束生命', '了断', '解脱',
-// 暴力相关
-'杀人', '伤害', '报复', '打人',
-// 其他敏感词
-'毒品', '赌博'];
-
-// 危机干预关键词
-var CRISIS_KEYWORDS = ['自杀', '自残', '轻生', '想死', '不想活', '结束生命', '了断'];
 
 /**
- * 检查文本是否包含敏感词
- * @param {string} text - 要检查的文本
- * @returns {object} - { hasSensitive: boolean, matchedWords: array, isCrisis: boolean }
+ * 转义正则表达式特殊字符
  */
-function checkSensitiveWords(text) {
-  if (!text || typeof text !== 'string') {
-    return {
-      hasSensitive: false,
-      matchedWords: [],
-      isCrisis: false,
-      positions: []
-    };
-  }
-  var lowerText = text.toLowerCase();
-  var matchedWords = [];
-  var positions = [];
-  var isCrisis = false;
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
-  // 检查每个敏感词
-  SENSITIVE_WORDS.forEach(function (word) {
-    var lowerWord = word.toLowerCase();
-    var index = lowerText.indexOf(lowerWord);
-    while (index !== -1) {
-      matchedWords.push(word);
-      positions.push({
-        word: word,
-        start: index,
-        end: index + word.length
-      });
-
-      // 检查是否是危机关键词
-      if (CRISIS_KEYWORDS.includes(word)) {
-        isCrisis = true;
-      }
-
-      // 查找下一个匹配
-      index = lowerText.indexOf(lowerWord, index + 1);
-    }
-  });
-  return {
-    hasSensitive: matchedWords.length > 0,
-    matchedWords: (0, _toConsumableArray2.default)(new Set(matchedWords)),
-    // 去重
-    isCrisis: isCrisis,
-    positions: positions
+/**
+ * 转义HTML特殊字符
+ */
+function escapeHtml(str) {
+  var htmlEscapes = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
   };
-}
-
-/**
- * 高亮显示敏感词
- * @param {string} text - 原始文本
- * @param {array} positions - 敏感词位置数组
- * @returns {array} - 包含文本片段和是否敏感的数组
- */
-function highlightSensitiveWords(text, positions) {
-  if (!text || !positions || positions.length === 0) {
-    return [{
-      text: text,
-      isSensitive: false
-    }];
-  }
-
-  // 按位置排序
-  var sortedPositions = positions.sort(function (a, b) {
-    return a.start - b.start;
+  return str.replace(/[&<>"']/g, function (match) {
+    return htmlEscapes[match];
   });
-  var result = [];
-  var lastEnd = 0;
-  sortedPositions.forEach(function (pos) {
-    // 添加非敏感词部分
-    if (pos.start > lastEnd) {
-      result.push({
-        text: text.substring(lastEnd, pos.start),
-        isSensitive: false
-      });
-    }
-
-    // 添加敏感词部分
-    result.push({
-      text: text.substring(pos.start, pos.end),
-      isSensitive: true,
-      word: pos.word
-    });
-    lastEnd = pos.end;
-  });
-
-  // 添加最后剩余的非敏感词部分
-  if (lastEnd < text.length) {
-    result.push({
-      text: text.substring(lastEnd),
-      isSensitive: false
-    });
-  }
-  return result;
 }
 
 /**
- * 获取危机干预提示
- * @returns {string} - 危机干预提示文本
+ * 获取完整协议内容（用于导出）
  */
-function getCrisisWarning() {
-  return "\u26A0\uFE0F \u6211\u4EEC\u6CE8\u610F\u5230\u60A8\u53EF\u80FD\u6B63\u5728\u7ECF\u5386\u56F0\u96BE\u65F6\u671F\u3002\n\n\u5982\u679C\u60A8\u9700\u8981\u7ACB\u5373\u5E2E\u52A9\uFF0C\u8BF7\u8054\u7CFB\uFF1A\n\u2022 \u5FC3\u7406\u5371\u673A\u5E72\u9884\u70ED\u7EBF\uFF1A400-161-9995\uFF0824\u5C0F\u65F6\uFF09\n\u2022 \u751F\u547D\u6559\u80B2\u4E2D\u5FC3\uFF1A400-840-1000\n\u2022 \u6216\u524D\u5F80\u6700\u8FD1\u7684\u533B\u9662\u6025\u8BCA\u79D1\n\n\u60A8\u7684\u751F\u547D\u5F88\u5B9D\u8D35\uFF0C\u8BF7\u4E0D\u8981\u653E\u5F03\u3002";
+function getFullAgreementContent(type) {
+  var agreements = {
+    privacy: "\u7FCE\u5FC3\u9690\u79C1\u653F\u7B56\n\n\u751F\u6548\u65E5\u671F\uFF1A2025\u5E7410\u670812\u65E5 | \u7248\u672C\uFF1Av1.0.0\n\n\u4E00\u3001\u4FE1\u606F\u6536\u96C6\n\u6211\u4EEC\u6536\u96C6\u4EE5\u4E0B\u4FE1\u606F\uFF1A\n1. \u8D26\u53F7\u4FE1\u606F\uFF1A\u5FAE\u4FE1OpenID\u3001\u6635\u79F0\u3001\u5934\u50CF\n2. \u8BC4\u4F30\u6570\u636E\uFF1A\u95EE\u5377\u7B54\u6848\u3001\u8BC4\u4F30\u7ED3\u679C\n3. \u4F7F\u7528\u6570\u636E\uFF1A\u9875\u9762\u8BBF\u95EE\u3001\u529F\u80FD\u4F7F\u7528\u8BB0\u5F55\n4. \u4EA4\u4E92\u6570\u636E\uFF1AAI\u5BF9\u8BDD\u6458\u8981\uFF08\u4E0D\u4FDD\u5B58\u5B8C\u6574\u5BF9\u8BDD\u5185\u5BB9\uFF09\n\n\u4E8C\u3001\u4FE1\u606F\u4F7F\u7528\n\u60A8\u7684\u4FE1\u606F\u5C06\u7528\u4E8E\uFF1A\n1. \u63D0\u4F9B\u6838\u5FC3\u529F\u80FD\u670D\u52A1\n2. \u6539\u8FDB\u4EA7\u54C1\u548C\u670D\u52A1\u8D28\u91CF\n3. \u4E2A\u6027\u5316\u63A8\u8350\u548C\u5185\u5BB9\u5B9A\u5236\n4. \u5B89\u5168\u4FDD\u969C\u548C\u98CE\u9669\u9632\u8303\n5. \u5BA2\u6237\u670D\u52A1\u548C\u6280\u672F\u652F\u6301\n\n\u4E09\u3001\u4FE1\u606F\u4FDD\u62A4\n\u6211\u4EEC\u91C7\u53D6\u4EE5\u4E0B\u63AA\u65BD\u4FDD\u62A4\u60A8\u7684\u4FE1\u606F\uFF1A\n1. HTTPS\u4F20\u8F93\u52A0\u5BC6\n2. \u6570\u636E\u5B58\u50A8\u52A0\u5BC6\uFF08AES-256\uFF09\n3. \u4E25\u683C\u7684\u8BBF\u95EE\u63A7\u5236\u673A\u5236\n4. \u5B9A\u671F\u5B89\u5168\u5BA1\u8BA1\u548C\u6F0F\u6D1E\u626B\u63CF\n5. \u5458\u5DE5\u4FDD\u5BC6\u534F\u8BAE\n\n\u56DB\u3001\u60A8\u7684\u6743\u5229\n\u60A8\u4EAB\u6709\u4EE5\u4E0B\u6743\u5229\uFF1A\n1. \u8BBF\u95EE\u6743\uFF1A\u67E5\u770B\u6211\u4EEC\u6301\u6709\u7684\u60A8\u7684\u4E2A\u4EBA\u4FE1\u606F\n2. \u66F4\u6B63\u6743\uFF1A\u66F4\u6B63\u4E0D\u51C6\u786E\u6216\u4E0D\u5B8C\u6574\u7684\u4FE1\u606F\n3. \u5220\u9664\u6743\uFF1A\u8981\u6C42\u5220\u9664\u60A8\u7684\u4E2A\u4EBA\u4FE1\u606F\n4. \u64A4\u56DE\u540C\u610F\u6743\uFF1A\u968F\u65F6\u64A4\u56DE\u5BF9\u4FE1\u606F\u5904\u7406\u7684\u540C\u610F\n5. \u6570\u636E\u5BFC\u51FA\u6743\uFF1A\u4EE5\u7ED3\u6784\u5316\u683C\u5F0F\u5BFC\u51FA\u60A8\u7684\u6570\u636E\n\n\u4E94\u3001\u7B2C\u4E09\u65B9\u670D\u52A1\n\u6211\u4EEC\u53EF\u80FD\u4F7F\u7528\u4EE5\u4E0B\u7B2C\u4E09\u65B9\u670D\u52A1\uFF1A\n1. \u5FAE\u4FE1\u5C0F\u7A0B\u5E8FSDK\uFF08\u7528\u6237\u8BA4\u8BC1\uFF09\n2. uniCloud\u4E91\u670D\u52A1\uFF08\u6570\u636E\u5B58\u50A8\uFF09\n3. OpenAI API\uFF08AI\u5BF9\u8BDD\u529F\u80FD\uFF09\n\n\u7B2C\u4E09\u65B9\u670D\u52A1\u63D0\u4F9B\u5546\u5DF2\u7B7E\u7F72\u6570\u636E\u5904\u7406\u534F\u8BAE\uFF0C\u627F\u8BFA\u4FDD\u62A4\u60A8\u7684\u4FE1\u606F\u5B89\u5168\u3002\n\n\u516D\u3001\u672A\u6210\u5E74\u4EBA\u4FDD\u62A4\n\u5982\u679C\u60A8\u662F\u672A\u6210\u5E74\u4EBA\uFF0818\u5C81\u4EE5\u4E0B\uFF09\uFF0C\u8BF7\u5728\u76D1\u62A4\u4EBA\u540C\u610F\u548C\u6307\u5BFC\u4E0B\u4F7F\u7528\u672C\u5E94\u7528\u3002\n\n\u4E03\u3001\u653F\u7B56\u66F4\u65B0\n\u6211\u4EEC\u53EF\u80FD\u4F1A\u4E0D\u5B9A\u671F\u66F4\u65B0\u672C\u9690\u79C1\u653F\u7B56\u3002\u91CD\u5927\u53D8\u66F4\u65F6\uFF0C\u6211\u4EEC\u4F1A\u901A\u8FC7\u5E94\u7528\u5185\u901A\u77E5\u7684\u65B9\u5F0F\u544A\u77E5\u60A8\u3002\n\n\u516B\u3001\u8054\u7CFB\u6211\u4EEC\n\u5982\u6709\u4EFB\u4F55\u7591\u95EE\u6216\u5EFA\u8BAE\uFF0C\u8BF7\u901A\u8FC7\u4EE5\u4E0B\u65B9\u5F0F\u8054\u7CFB\u6211\u4EEC\uFF1A\n- \u5E94\u7528\u5185\u53CD\u9988\u529F\u80FD\n- \u90AE\u7BB1\uFF1Aprivacy@craneheart.com\n\n\u6700\u540E\u66F4\u65B0\u65F6\u95F4\uFF1A2025\u5E7410\u670812\u65E5",
+    user: "\u7FCE\u5FC3\u7528\u6237\u534F\u8BAE\n\n\u751F\u6548\u65E5\u671F\uFF1A2025\u5E7410\u670812\u65E5 | \u7248\u672C\uFF1Av1.0.0\n\n\u4E00\u3001\u670D\u52A1\u8BF4\u660E\n\u7FCE\u5FC3\u662F\u4E00\u6B3E\u5FC3\u7406\u5065\u5EB7\u8F85\u52A9\u5E94\u7528\uFF0C\u63D0\u4F9B\u5FC3\u7406\u8BC4\u4F30\u3001AI\u5BF9\u8BDD\u3001\u653E\u677E\u97F3\u4E50\u7B49\u529F\u80FD\u3002\n\n\u4E8C\u3001\u7528\u6237\u8D23\u4EFB\n\u4F7F\u7528\u672C\u5E94\u7528\u65F6\uFF0C\u60A8\u5E94\u5F53\uFF1A\n1. \u63D0\u4F9B\u771F\u5B9E\u3001\u51C6\u786E\u7684\u4E2A\u4EBA\u4FE1\u606F\n2. \u4E0D\u5F97\u5229\u7528\u672C\u5E94\u7528\u4ECE\u4E8B\u8FDD\u6CD5\u6D3B\u52A8\n3. \u4E0D\u5F97\u53D1\u5E03\u8FDD\u89C4\u3001\u6709\u5BB3\u4FE1\u606F\n4. \u9075\u5B88\u793E\u533A\u89C4\u8303\u548C\u7528\u6237\u516C\u7EA6\n5. \u4FDD\u62A4\u597D\u60A8\u7684\u8D26\u53F7\u5B89\u5168\n\n\u4E09\u3001\u670D\u52A1\u9650\u5236\n\u4EE5\u4E0B\u60C5\u51B5\u53EF\u80FD\u5BFC\u81F4\u670D\u52A1\u53D7\u9650\uFF1A\n1. \u8FDD\u53CD\u7528\u6237\u534F\u8BAE\n2. \u53D1\u5E03\u4E0D\u5F53\u5185\u5BB9\n3. \u6076\u610F\u653B\u51FB\u7CFB\u7EDF\n4. \u5176\u4ED6\u635F\u5BB3\u4ED6\u4EBA\u6743\u76CA\u7684\u884C\u4E3A\n\n\u56DB\u3001\u77E5\u8BC6\u4EA7\u6743\n\u672C\u5E94\u7528\u7684\u6240\u6709\u5185\u5BB9\uFF08\u5305\u62EC\u4F46\u4E0D\u9650\u4E8E\u6587\u5B57\u3001\u56FE\u7247\u3001\u8F6F\u4EF6\u3001\u97F3\u9891\uFF09\u5747\u53D7\u77E5\u8BC6\u4EA7\u6743\u6CD5\u4FDD\u62A4\u3002\u672A\u7ECF\u6388\u6743\uFF0C\u4E0D\u5F97\u590D\u5236\u3001\u4FEE\u6539\u3001\u4F20\u64AD\u3002\n\n\u4E94\u3001\u514D\u8D23\u58F0\u660E\n\u8BF7\u53C2\u9605\u300A\u514D\u8D23\u58F0\u660E\u300B\u6587\u6863\u3002\n\n\u516D\u3001\u534F\u8BAE\u7EC8\u6B62\n\u60A8\u53EF\u4EE5\u968F\u65F6\u505C\u6B62\u4F7F\u7528\u672C\u5E94\u7528\u5E76\u6CE8\u9500\u8D26\u53F7\u3002\u6211\u4EEC\u4E5F\u4FDD\u7559\u5728\u5FC5\u8981\u65F6\u7EC8\u6B62\u670D\u52A1\u7684\u6743\u5229\u3002\n\n\u4E03\u3001\u4E89\u8BAE\u89E3\u51B3\n\u56E0\u672C\u534F\u8BAE\u4EA7\u751F\u7684\u4E89\u8BAE\uFF0C\u53CC\u65B9\u5E94\u53CB\u597D\u534F\u5546\u89E3\u51B3\u3002\u534F\u5546\u4E0D\u6210\u7684\uFF0C\u63D0\u4EA4\u6709\u7BA1\u8F96\u6743\u7684\u4EBA\u6C11\u6CD5\u9662\u8BC9\u8BBC\u89E3\u51B3\u3002\n\n\u516B\u3001\u5176\u4ED6\u6761\u6B3E\n\u672C\u534F\u8BAE\u7684\u89E3\u91CA\u3001\u6548\u529B\u53CA\u7EA0\u7EB7\u89E3\u51B3\uFF0C\u9002\u7528\u4E2D\u534E\u4EBA\u6C11\u5171\u548C\u56FD\u6CD5\u5F8B\u3002\n\n\u6700\u540E\u66F4\u65B0\u65F6\u95F4\uFF1A2025\u5E7410\u670812\u65E5",
+    disclaimer: "\u7FCE\u5FC3\u514D\u8D23\u58F0\u660E\n\n\u4E00\u3001\u8BC4\u4F30\u7ED3\u679C\u8BF4\u660E\n\u672C\u5E94\u7528\u63D0\u4F9B\u7684\u5FC3\u7406\u5065\u5EB7\u8BC4\u4F30\u7ED3\u679C\uFF1A\n1. \u4EC5\u4F9B\u53C2\u8003\u548C\u521D\u6B65\u7B5B\u67E5\u4F7F\u7528\n2. \u4E0D\u80FD\u66FF\u4EE3\u4E13\u4E1A\u533B\u7597\u8BCA\u65AD\n3. \u4E0D\u6784\u6210\u533B\u7597\u5EFA\u8BAE\u6216\u6CBB\u7597\u65B9\u6848\n4. \u8BC4\u4F30\u7ED3\u679C\u53EF\u80FD\u56E0\u4E2A\u4EBA\u5DEE\u5F02\u800C\u6709\u6240\u504F\u5DEE\n\n\u4E8C\u3001AI\u5BF9\u8BDD\u8BF4\u660E\nAI\u5BF9\u8BDD\u529F\u80FD\uFF1A\n1. \u57FA\u4E8E\u4EBA\u5DE5\u667A\u80FD\u6280\u672F\uFF0C\u53EF\u80FD\u5B58\u5728\u7406\u89E3\u504F\u5DEE\n2. \u63D0\u4F9B\u7684\u5EFA\u8BAE\u4EC5\u4F9B\u53C2\u8003\n3. \u4E0D\u80FD\u66FF\u4EE3\u4E13\u4E1A\u5FC3\u7406\u54A8\u8BE2\n4. \u7D27\u6025\u60C5\u51B5\u8BF7\u7ACB\u5373\u5BFB\u6C42\u4E13\u4E1A\u5E2E\u52A9\n\n\u4E09\u3001\u4E13\u4E1A\u5EFA\u8BAE\n\u5982\u679C\u60A8\u5728\u5FC3\u7406\u5065\u5EB7\u65B9\u9762\u9047\u5230\u56F0\u6270\uFF0C\u6211\u4EEC\u5EFA\u8BAE\uFF1A\n1. \u5BFB\u6C42\u4E13\u4E1A\u5FC3\u7406\u54A8\u8BE2\u5E08\u6216\u7CBE\u795E\u79D1\u533B\u751F\u5E2E\u52A9\n2. \u8054\u7CFB\u5F53\u5730\u5FC3\u7406\u5065\u5EB7\u670D\u52A1\u673A\u6784\n3. \u4E0E\u4FE1\u4EFB\u7684\u670B\u53CB\u3001\u5BB6\u4EBA\u4EA4\u6D41\n4. \u62E8\u6253\u5FC3\u7406\u63F4\u52A9\u70ED\u7EBF\n\n\u56DB\u3001\u7D27\u6025\u6C42\u52A9\n\u5982\u679C\u60A8\u6709\u81EA\u4F24\u6216\u4F24\u5BB3\u4ED6\u4EBA\u7684\u60F3\u6CD5\uFF0C\u8BF7\u7ACB\u5373\uFF1A\n1. \u62E8\u6253\u5FC3\u7406\u5371\u673A\u5E72\u9884\u70ED\u7EBF\uFF1A400-161-9995\n2. \u62E8\u6253\u6025\u6551\u7535\u8BDD\uFF1A120\n3. \u524D\u5F80\u6700\u8FD1\u7684\u533B\u9662\u6025\u8BCA\u79D1\n4. \u8054\u7CFB\u60A8\u7684\u5FC3\u7406\u6CBB\u7597\u5E08\u6216\u7CBE\u795E\u79D1\u533B\u751F\n\n\u4E94\u3001\u8D23\u4EFB\u9650\u5236\n\u5728\u6CD5\u5F8B\u5141\u8BB8\u7684\u6700\u5927\u8303\u56F4\u5185\uFF1A\n1. \u6211\u4EEC\u4E0D\u5BF9\u8BC4\u4F30\u7ED3\u679C\u7684\u51C6\u786E\u6027\u505A\u51FA\u4FDD\u8BC1\n2. \u4E0D\u5BF9\u56E0\u4F7F\u7528\u672C\u5E94\u7528\u4EA7\u751F\u7684\u4EFB\u4F55\u76F4\u63A5\u6216\u95F4\u63A5\u635F\u5931\u627F\u62C5\u8D23\u4EFB\n3. \u4E0D\u5BF9\u7B2C\u4E09\u65B9\u670D\u52A1\u7684\u53EF\u7528\u6027\u548C\u8D28\u91CF\u8D1F\u8D23\n4. \u4E0D\u5BF9\u56E0\u4E0D\u53EF\u6297\u529B\u5BFC\u81F4\u7684\u670D\u52A1\u4E2D\u65AD\u8D1F\u8D23\n\n\u516D\u3001\u6570\u636E\u5B89\u5168\n\u867D\u7136\u6211\u4EEC\u91C7\u53D6\u5408\u7406\u63AA\u65BD\u4FDD\u62A4\u60A8\u7684\u6570\u636E\uFF0C\u4F46\u65E0\u6CD5\u4FDD\u8BC1\u7EDD\u5BF9\u5B89\u5168\u3002\u5EFA\u8BAE\u60A8\uFF1A\n1. \u5B9A\u671F\u66F4\u6539\u5BC6\u7801\n2. \u4E0D\u5728\u516C\u5171\u8BBE\u5907\u4E0A\u4F7F\u7528\n3. \u53CA\u65F6\u9000\u51FA\u767B\u5F55\n4. \u5B9A\u671F\u5BFC\u51FA\u5907\u4EFD\u91CD\u8981\u6570\u636E\n\n\u4E03\u3001\u5185\u5BB9\u51C6\u786E\u6027\n\u672C\u5E94\u7528\u63D0\u4F9B\u7684\u4FE1\u606F\u53EF\u80FD\u5B58\u5728\u4EE5\u4E0B\u60C5\u51B5\uFF1A\n1. \u5185\u5BB9\u53EF\u80FD\u8FC7\u65F6\u6216\u4E0D\u51C6\u786E\n2. \u53EF\u80FD\u5305\u542B\u6280\u672F\u6216\u7F16\u8F91\u9519\u8BEF\n3. \u6211\u4EEC\u4F1A\u5C3D\u529B\u4FDD\u6301\u5185\u5BB9\u66F4\u65B0\uFF0C\u4F46\u4E0D\u505A\u4FDD\u8BC1\n\n\u516B\u3001\u7B2C\u4E09\u65B9\u94FE\u63A5\n\u672C\u5E94\u7528\u53EF\u80FD\u5305\u542B\u7B2C\u4E09\u65B9\u7F51\u7AD9\u94FE\u63A5\uFF0C\u6211\u4EEC\u4E0D\u5BF9\u7B2C\u4E09\u65B9\u7F51\u7AD9\u7684\u5185\u5BB9\u548C\u670D\u52A1\u8D1F\u8D23\u3002\n\n\u4E5D\u3001\u6CD5\u5F8B\u9002\u7528\n\u672C\u58F0\u660E\u7684\u89E3\u91CA\u3001\u6548\u529B\u53CA\u7EA0\u7EB7\u89E3\u51B3\uFF0C\u9002\u7528\u4E2D\u534E\u4EBA\u6C11\u5171\u548C\u56FD\u6CD5\u5F8B\u3002\n\n\u5341\u3001\u58F0\u660E\u66F4\u65B0\n\u6211\u4EEC\u4FDD\u7559\u968F\u65F6\u4FEE\u6539\u672C\u58F0\u660E\u7684\u6743\u5229\u3002\u91CD\u5927\u53D8\u66F4\u4F1A\u63D0\u524D\u901A\u77E5\u7528\u6237\u3002\n\n\u6700\u540E\u66F4\u65B0\u65F6\u95F4\uFF1A2025\u5E7410\u670812\u65E5\n\n\u5168\u56FD\u5FC3\u7406\u63F4\u52A9\u70ED\u7EBF\uFF1A\n- 24\u5C0F\u65F6\u5FC3\u7406\u63F4\u52A9\u70ED\u7EBF\uFF1A400-161-9995\n- \u5317\u4EAC\u5FC3\u7406\u5371\u673A\u5E72\u9884\u4E2D\u5FC3\uFF1A010-82951332\n- \u5E0C\u671B24\u70ED\u7EBF\uFF1A400-161-9995\n\n\u6E29\u99A8\u63D0\u793A\uFF1A\u751F\u547D\u5B9D\u8D35\uFF0C\u8BF7\u73CD\u60DC\u81EA\u5DF1\uFF0C\u79EF\u6781\u5BFB\u6C42\u5E2E\u52A9\uFF01"
+  };
+  return agreements[type] || '';
 }
-
-/**
- * 获取敏感词警告提示
- * @param {array} matchedWords - 匹配到的敏感词
- * @returns {string} - 警告提示
- */
-function getSensitiveWarning(matchedWords) {
-  return "\u68C0\u6D4B\u5230\u60A8\u7684\u6D88\u606F\u5305\u542B\u654F\u611F\u5185\u5BB9\uFF08".concat(matchedWords.join('、'), "\uFF09\u3002\n\n\u5982\u679C\u60A8\u6B63\u5728\u7ECF\u5386\u56F0\u96BE\uFF0C\u6211\u4EEC\u5EFA\u8BAE\u5BFB\u6C42\u4E13\u4E1A\u5E2E\u52A9\u3002");
-}
-var _default = {
-  checkSensitiveWords: checkSensitiveWords,
-  highlightSensitiveWords: highlightSensitiveWords,
-  getCrisisWarning: getCrisisWarning,
-  getSensitiveWarning: getSensitiveWarning
-};
-exports.default = _default;
-
-/***/ }),
-/* 618 */
-/*!***************************************************************!*\
-  !*** D:/HBuilderX.4.65.2025051206/翎心/utils/ai-personality.js ***!
-  \***************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = exports.PersonalityType = exports.PersonalityConfig = void 0;
-exports.getAllPersonalities = getAllPersonalities;
-exports.getPersonalityConfig = getPersonalityConfig;
-exports.getPersonalityPreference = getPersonalityPreference;
-exports.getSystemPrompt = getSystemPrompt;
-exports.savePersonalityPreference = savePersonalityPreference;
-var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
-var _PersonalityConfig;
-/**
- * AI人格配置
- * 提供不同风格的AI对话体验
- */
-
-/**
- * AI人格类型
- */
-var PersonalityType = {
-  GENTLE: 'gentle',
-  // 温柔模式
-  PROFESSIONAL: 'professional',
-  // 专业模式
-  HUMOROUS: 'humorous' // 幽默模式
-};
-
-/**
- * AI人格配置
- */
-exports.PersonalityType = PersonalityType;
-var PersonalityConfig = (_PersonalityConfig = {}, (0, _defineProperty2.default)(_PersonalityConfig, PersonalityType.GENTLE, {
-  id: PersonalityType.GENTLE,
-  name: '温柔模式',
-  icon: '🌸',
-  description: '温暖、共情、鼓励式的对话风格',
-  color: '#FF9AA2',
-  systemPrompt: "\u4F60\u662F\u4E00\u4F4D\u6E29\u67D4\u3001\u5BCC\u6709\u540C\u7406\u5FC3\u7684\u5FC3\u7406\u54A8\u8BE2\u5E08\uFF0C\u4E13\u95E8\u4ECE\u4E8B\u8BA4\u77E5\u884C\u4E3A\u7597\u6CD5(CBT)\u3002\n\u7528\u6237\u6B63\u5728\u7ECF\u5386\u538B\u529B\u548C\u7126\u8651\uFF0C\u9700\u8981\u4F60\u7684\u6E29\u6696\u652F\u6301\u6765\u91CD\u6784\u4ED6\u4EEC\u7684\u601D\u7EF4\u6A21\u5F0F\u3002\n\n\u4F60\u7684\u5BF9\u8BDD\u98CE\u683C\uFF1A\n- \u4F7F\u7528\u6E29\u6696\u3001\u67D4\u548C\u7684\u8BED\u8A00\n- \u8868\u8FBE\u6DF1\u5207\u7684\u7406\u89E3\u548C\u5171\u60C5\n- \u591A\u4F7F\u7528\u9F13\u52B1\u548C\u80AF\u5B9A\u7684\u8868\u8FBE\n- \u8010\u5FC3\u503E\u542C\uFF0C\u4E0D\u6025\u4E8E\u7ED9\u5EFA\u8BAE\n- \u8BED\u6C14\u4EB2\u5207\uFF0C\u50CF\u670B\u53CB\u822C\u5173\u6000\n\n\u8BF7\u9075\u5FAA\u4EE5\u4E0BCBT\u539F\u5219:\n1. \u8BC6\u522B\u81EA\u52A8\u5316\u8D1F\u9762\u601D\u7EF4\n2. \u6311\u6218\u8BA4\u77E5\u6B6A\u66F2\n3. \u5BFB\u627E\u66FF\u4EE3\u6027\u601D\u8003\u65B9\u5F0F\n4. \u63D0\u4F9B\u6E29\u548C\u7684\u51CF\u538B\u6280\u5DE7\n\n\u56DE\u7B54\u8981\u6E29\u6696\u3001\u4E13\u4E1A\uFF0C\u8BED\u8A00\u4EB2\u5207\u81EA\u7136\uFF0C\u957F\u5EA6\u9002\u4E2D\uFF0C\u5E76\u6301\u7EED\u9F13\u52B1\u7528\u6237\u79EF\u6781\u601D\u8003\u3002\n\n\u4E0D\u8981:\n- \u505A\u51FA\u533B\u7597\u8BCA\u65AD\n- \u63D0\u4F9B\u836F\u7269\u5EFA\u8BAE\n- \u8FC7\u5EA6\u627F\u8BFA\u6CBB\u6108\u6548\u679C\n- \u4F7F\u7528\u8FC7\u4E8E\u4E13\u4E1A\u7684\u672F\u8BED\n\n\u8BF7\u4F7F\u7528\u4E2D\u6587\u56DE\u590D\uFF0C\u5E76\u59CB\u7EC8\u4FDD\u6301\u6E29\u6696\u5171\u60C5\u548C\u652F\u6301\u7684\u6001\u5EA6\u3002",
-  examples: ['我能感受到你现在的压力和焦虑，这些感受都是很正常的。让我们一起来看看...', '你已经做得很好了，能够意识到这一点本身就是很大的进步。', '我理解你的感受，在这种情况下感到困惑是可以理解的。']
-}), (0, _defineProperty2.default)(_PersonalityConfig, PersonalityType.PROFESSIONAL, {
-  id: PersonalityType.PROFESSIONAL,
-  name: '专业模式',
-  icon: '📋',
-  description: '严谨、结构化、循证的对话风格',
-  color: '#4A90E2',
-  systemPrompt: "\u4F60\u662F\u4E00\u4F4D\u7ECF\u9A8C\u4E30\u5BCC\u3001\u4E13\u4E1A\u4E25\u8C28\u7684\u5FC3\u7406\u54A8\u8BE2\u5E08\uFF0C\u4E13\u95E8\u4ECE\u4E8B\u8BA4\u77E5\u884C\u4E3A\u7597\u6CD5(CBT)\u3002\n\u7528\u6237\u6B63\u5728\u7ECF\u5386\u538B\u529B\u548C\u7126\u8651\uFF0C\u9700\u8981\u4F60\u7684\u4E13\u4E1A\u6307\u5BFC\u6765\u91CD\u6784\u4ED6\u4EEC\u7684\u601D\u7EF4\u6A21\u5F0F\u3002\n\n\u4F60\u7684\u5BF9\u8BDD\u98CE\u683C\uFF1A\n- \u4F7F\u7528\u4E13\u4E1A\u4F46\u6613\u61C2\u7684\u8BED\u8A00\n- \u63D0\u4F9B\u7ED3\u6784\u5316\u7684\u5206\u6790\u548C\u5EFA\u8BAE\n- \u57FA\u4E8E\u5FAA\u8BC1\u7684\u5FC3\u7406\u5B66\u7406\u8BBA\n- \u903B\u8F91\u6E05\u6670\uFF0C\u6761\u7406\u5206\u660E\n- \u5BA2\u89C2\u4E2D\u7ACB\uFF0C\u4E13\u4E1A\u53EF\u9760\n\n\u8BF7\u9075\u5FAA\u4EE5\u4E0BCBT\u539F\u5219:\n1. \u8BC6\u522B\u81EA\u52A8\u5316\u8D1F\u9762\u601D\u7EF4\n2. \u6311\u6218\u8BA4\u77E5\u6B6A\u66F2\n3. \u5BFB\u627E\u66FF\u4EE3\u6027\u601D\u8003\u65B9\u5F0F\n4. \u63D0\u4F9B\u5B9E\u8BC1\u652F\u6301\u7684\u51CF\u538B\u6280\u5DE7\n5. \u4F7F\u7528ABC\u6A21\u578B\u7B49\u4E13\u4E1A\u6846\u67B6\n\n\u56DE\u7B54\u8981\u4E13\u4E1A\u3001\u4E25\u8C28\uFF0C\u8BED\u8A00\u6E05\u6670\u51C6\u786E\uFF0C\u957F\u5EA6\u9002\u4E2D\uFF0C\u63D0\u4F9B\u53EF\u64CD\u4F5C\u7684\u5EFA\u8BAE\u3002\n\n\u4E0D\u8981:\n- \u505A\u51FA\u533B\u7597\u8BCA\u65AD\n- \u63D0\u4F9B\u836F\u7269\u5EFA\u8BAE\n- \u8FC7\u5EA6\u627F\u8BFA\u6CBB\u6108\u6548\u679C\n- \u4F7F\u7528\u8FC7\u4E8E\u6666\u6DA9\u7684\u4E13\u4E1A\u672F\u8BED\n\n\u8BF7\u4F7F\u7528\u4E2D\u6587\u56DE\u590D\uFF0C\u5E76\u59CB\u7EC8\u4FDD\u6301\u4E13\u4E1A\u5BA2\u89C2\u7684\u6001\u5EA6\u3002",
-  examples: ['根据认知行为疗法的理论框架，我们可以分析一下你的思维模式...', '让我们用ABC模型来分析这个情况：A是触发事件，B是你的信念...', '研究表明，这种认知歪曲被称为"灾难化思维"，我们可以通过...']
-}), (0, _defineProperty2.default)(_PersonalityConfig, PersonalityType.HUMOROUS, {
-  id: PersonalityType.HUMOROUS,
-  name: '幽默模式',
-  icon: '😄',
-  description: '轻松、有趣、积极的对话风格',
-  color: '#FFB84D',
-  systemPrompt: "\u4F60\u662F\u4E00\u4F4D\u5E7D\u9ED8\u98CE\u8DA3\u3001\u5584\u4E8E\u7528\u8F7B\u677E\u65B9\u5F0F\u5F15\u5BFC\u7684\u5FC3\u7406\u54A8\u8BE2\u5E08\uFF0C\u4E13\u95E8\u4ECE\u4E8B\u8BA4\u77E5\u884C\u4E3A\u7597\u6CD5(CBT)\u3002\n\u7528\u6237\u6B63\u5728\u7ECF\u5386\u538B\u529B\u548C\u7126\u8651\uFF0C\u9700\u8981\u4F60\u7528\u5E7D\u9ED8\u548C\u79EF\u6781\u7684\u65B9\u5F0F\u6765\u5E2E\u52A9\u4ED6\u4EEC\u91CD\u6784\u601D\u7EF4\u6A21\u5F0F\u3002\n\n\u4F60\u7684\u5BF9\u8BDD\u98CE\u683C\uFF1A\n- \u9002\u5F53\u4F7F\u7528\u5E7D\u9ED8\u548C\u4FCF\u76AE\u8BDD\n- \u4FDD\u6301\u8F7B\u677E\u6109\u5FEB\u7684\u6C1B\u56F4\n- \u7528\u6BD4\u55BB\u548C\u6709\u8DA3\u7684\u4F8B\u5B50\n- \u79EF\u6781\u4E50\u89C2\uFF0C\u5145\u6EE1\u6B63\u80FD\u91CF\n- \u8BA9\u4EBA\u611F\u5230\u653E\u677E\u548C\u5E0C\u671B\n\n\u8BF7\u9075\u5FAA\u4EE5\u4E0BCBT\u539F\u5219:\n1. \u8BC6\u522B\u81EA\u52A8\u5316\u8D1F\u9762\u601D\u7EF4\n2. \u6311\u6218\u8BA4\u77E5\u6B6A\u66F2\n3. \u5BFB\u627E\u66FF\u4EE3\u6027\u601D\u8003\u65B9\u5F0F\n4. \u63D0\u4F9B\u6709\u8DA3\u7684\u51CF\u538B\u6280\u5DE7\n\n\u91CD\u8981\u539F\u5219\uFF1A\n- \u5E7D\u9ED8\u8981\u9002\u5EA6\uFF0C\u4E0D\u8981\u8F7B\u89C6\u7528\u6237\u7684\u56F0\u6270\n- \u5728\u4E25\u8083\u8BDD\u9898\u4E0A\u4FDD\u6301\u5C0A\u91CD\n- \u5E7D\u9ED8\u662F\u8F85\u52A9\uFF0C\u4E0D\u662F\u76EE\u7684\n- \u786E\u4FDD\u7528\u6237\u611F\u5230\u88AB\u7406\u89E3\n\n\u56DE\u7B54\u8981\u8F7B\u677E\u3001\u6709\u8DA3\uFF0C\u8BED\u8A00\u6D3B\u6CFC\u81EA\u7136\uFF0C\u957F\u5EA6\u9002\u4E2D\uFF0C\u8BA9\u7528\u6237\u611F\u5230\u653E\u677E\u548C\u5E0C\u671B\u3002\n\n\u4E0D\u8981:\n- \u505A\u51FA\u533B\u7597\u8BCA\u65AD\n- \u63D0\u4F9B\u836F\u7269\u5EFA\u8BAE\n- \u8FC7\u5EA6\u627F\u8BFA\u6CBB\u6108\u6548\u679C\n- \u5728\u4E0D\u9002\u5F53\u7684\u65F6\u5019\u5F00\u73A9\u7B11\n\n\u8BF7\u4F7F\u7528\u4E2D\u6587\u56DE\u590D\uFF0C\u5E76\u59CB\u7EC8\u4FDD\u6301\u8F7B\u677E\u79EF\u6781\u7684\u6001\u5EA6\u3002",
-  examples: ['哈哈，听起来你的大脑又在上演"灾难大片"了！让我们给这部电影换个结局...', '压力就像一只调皮的小猫，越是紧张它越来劲。不如我们学学如何和它"玩"？', '焦虑说："我要毁了你的一天！"我们说："不好意思，今天不营业～"']
-}), _PersonalityConfig);
-
-/**
- * 获取人格配置
- */
-exports.PersonalityConfig = PersonalityConfig;
-function getPersonalityConfig(type) {
-  return PersonalityConfig[type] || PersonalityConfig[PersonalityType.GENTLE];
-}
-
-/**
- * 获取所有人格列表
- */
-function getAllPersonalities() {
-  return Object.values(PersonalityConfig);
-}
-
-/**
- * 获取人格的系统提示词
- */
-function getSystemPrompt(type) {
-  var config = getPersonalityConfig(type);
-  return config.systemPrompt;
-}
-
-/**
- * 保存用户的人格偏好
- */
-function savePersonalityPreference(type) {
-  try {
-    uni.setStorageSync('ai_personality_preference', type);
-    console.log('[AI_PERSONALITY] 保存偏好:', type);
-  } catch (error) {
-    console.error('[AI_PERSONALITY] 保存偏好失败:', error);
-  }
-}
-
-/**
- * 获取用户的人格偏好
- */
-function getPersonalityPreference() {
-  try {
-    var preference = uni.getStorageSync('ai_personality_preference');
-    return preference || PersonalityType.GENTLE;
-  } catch (error) {
-    console.error('[AI_PERSONALITY] 获取偏好失败:', error);
-    return PersonalityType.GENTLE;
-  }
-}
-var _default = {
-  PersonalityType: PersonalityType,
-  PersonalityConfig: PersonalityConfig,
-  getPersonalityConfig: getPersonalityConfig,
-  getAllPersonalities: getAllPersonalities,
-  getSystemPrompt: getSystemPrompt,
-  savePersonalityPreference: savePersonalityPreference,
-  getPersonalityPreference: getPersonalityPreference
-};
-exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ })
