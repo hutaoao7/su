@@ -1,6 +1,16 @@
 <template>
   <view class="policy-page">
-    <scroll-view class="content-scroll" scroll-y>
+    <!-- 顶部安全区域 -->
+    <view class="safe-area-top"></view>
+    
+    <scroll-view 
+      class="content-scroll" 
+      scroll-y
+      :enable-back-to-top="true"
+      :scroll-with-animation="true"
+      :enhanced="true"
+      :bounces="true"
+    >
       <view class="content">
         <text class="page-title">翎心隐私政策</text>
         <text class="page-meta">生效日期：2025年10月12日 | 版本：v1.0.0</text>
@@ -55,10 +65,19 @@ export default {
 .policy-page {
   min-height: 100vh;
   background: #F0F0F5;
+  /* 顶部安全区域 */
+  padding-top: constant(safe-area-inset-top);
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-top {
+  height: constant(safe-area-inset-top);
+  height: env(safe-area-inset-top);
 }
 
 .content-scroll {
-  height: calc(100vh - 120rpx);
+  height: calc(100vh - 120rpx - constant(safe-area-inset-top));
+  height: calc(100vh - 120rpx - env(safe-area-inset-top));
 }
 
 .content {
@@ -105,7 +124,11 @@ export default {
   left: 0;
   right: 0;
   padding: 32rpx;
+  /* 底部安全区域 */
+  padding-bottom: calc(32rpx + constant(safe-area-inset-bottom));
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
   background: #FFFFFF;
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.05);
 }
 
 .action-button {

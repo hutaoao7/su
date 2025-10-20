@@ -55,13 +55,31 @@
       </view>
     </view>
 
+    <!-- 倒计时提示 -->
+    <view v-if="!canAgree" class="countdown-tip">
+      <text class="countdown-text">请仔细阅读协议内容</text>
+      <text class="countdown-number">{{ countdown }}秒后可同意</text>
+    </view>
+
     <view class="consent-checkbox-section">
-      <view class="checkbox-container" @tap="toggleAgree">
-        <view class="checkbox" :class="{ checked: agreed }">
+      <view 
+        class="checkbox-container" 
+        :class="{ disabled: !canAgree }"
+        @tap="toggleAgree"
+      >
+        <view class="checkbox" :class="{ checked: agreed, disabled: !canAgree }">
           <text v-if="agreed" class="check-icon">✓</text>
         </view>
-        <text class="checkbox-text">
+        <text class="checkbox-text" :class="{ disabled: !canAgree }">
           我已仔细阅读并同意以上全部协议
+        </text>
+      </view>
+      
+      <!-- 版本更新提示 -->
+      <view v-if="hasNewVersion" class="version-update-tip">
+        <text class="update-icon">🔄</text>
+        <text class="update-text">
+          协议已从 v{{ currentUserVersion }} 更新至 v{{ consentVersion }}，请重新阅读并同意
         </text>
       </view>
     </view>
@@ -69,11 +87,11 @@
     <view class="buttons-section">
       <button 
         class="agree-button"
-        :class="{ disabled: !agreed || saving }"
-        :disabled="!agreed || saving"
+        :class="{ disabled: !agreed || saving || !canAgree }"
+        :disabled="!agreed || saving || !canAgree"
         @tap="handleAgree"
       >
-        {{ saving ? '处理中...' : '同意并继续' }}
+        {{ saving ? '处理中...' : (canAgree ? '同意并继续' : `${countdown}秒后可同意`) }}
       </button>
 
       <view class="decline-section">
@@ -99,14 +117,22 @@ export default {
       agreed: false,
       saving: false,
       consentVersion: '1.0.0',
-      fromPage: ''
+      fromPage: '',
+      countdown: 5,
+      canAgree: false,
+      timer: null,
+      hasNewVersion: false,
+      currentUserVersion: ''
     };
   },
   
   onLoad(options) {
     console.log('[CONSENT] 页面加载');
     
-    if (hasConsent()) {
+    // 检查协议版本
+    this.checkConsentVersion();
+    
+    if (hasConsent() && !this.hasNewVersion) {
       console.log('[CONSENT] 已同意，跳转首页');
       uni.showToast({
         title: '您已同意协议',
@@ -121,10 +147,83 @@ export default {
     if (options.from) {
       this.fromPage = decodeURIComponent(options.from);
     }
+    
+    // 启动倒计时
+    this.startCountdown();
+  },
+  
+  onUnload() {
+    // 清除定时器
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
   },
   
   methods: {
+    // 检查协议版本
+    async checkConsentVersion() {
+      try {
+        const consentData = uni.getStorageSync('user_consent');
+        if (consentData) {
+          const parsed = typeof consentData === 'string' ? JSON.parse(consentData) : consentData;
+          this.currentUserVersion = parsed.version || '0.0.0';
+          
+          // 比较版本号
+          if (this.compareVersion(this.consentVersion, this.currentUserVersion) > 0) {
+            this.hasNewVersion = true;
+            uni.showToast({
+              title: '协议已更新，请重新阅读',
+              icon: 'none',
+              duration: 2000
+            });
+          }
+        }
+      } catch (error) {
+        console.error('[CONSENT] 版本检查失败:', error);
+      }
+    },
+    
+    // 比较版本号 (a > b 返回1, a < b 返回-1, a = b 返回0)
+    compareVersion(v1, v2) {
+      const arr1 = v1.split('.').map(Number);
+      const arr2 = v2.split('.').map(Number);
+      
+      for (let i = 0; i < Math.max(arr1.length, arr2.length); i++) {
+        const num1 = arr1[i] || 0;
+        const num2 = arr2[i] || 0;
+        
+        if (num1 > num2) return 1;
+        if (num1 < num2) return -1;
+      }
+      
+      return 0;
+    },
+    
+    // 启动倒计时
+    startCountdown() {
+      this.countdown = 5;
+      this.canAgree = false;
+      
+      this.timer = setInterval(() => {
+        if (this.countdown > 0) {
+          this.countdown--;
+        } else {
+          this.canAgree = true;
+          clearInterval(this.timer);
+          this.timer = null;
+        }
+      }, 1000);
+    },
+    
     toggleAgree() {
+      if (!this.canAgree) {
+        uni.showToast({
+          title: `请等待 ${this.countdown} 秒后再同意`,
+          icon: 'none'
+        });
+        return;
+      }
       this.agreed = !this.agreed;
     },
     
@@ -139,6 +238,14 @@ export default {
     },
     
     async handleAgree() {
+      if (!this.canAgree) {
+        uni.showToast({
+          title: `请等待 ${this.countdown} 秒后再同意`,
+          icon: 'none'
+        });
+        return;
+      }
+      
       if (!this.agreed || this.saving) {
         return;
       }
@@ -426,6 +533,68 @@ export default {
 .tip-text {
   font-size: 24rpx;
   color: rgba(255, 255, 255, 0.7);
+}
+
+/* 倒计时提示 */
+.countdown-tip {
+  background: rgba(255, 152, 0, 0.95);
+  border-radius: 20rpx;
+  padding: 24rpx 32rpx;
+  margin-bottom: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.countdown-text {
+  font-size: 28rpx;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+.countdown-number {
+  font-size: 32rpx;
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+/* 禁用状态 */
+.checkbox-container.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.checkbox.disabled {
+  border-color: #E5E5EA;
+  background: #F9FAFB;
+}
+
+.checkbox-text.disabled {
+  color: #8E8E93;
+}
+
+/* 版本更新提示 */
+.version-update-tip {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-top: 16rpx;
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+  border-left: 6rpx solid #FF9500;
+}
+
+.update-icon {
+  font-size: 32rpx;
+  flex-shrink: 0;
+}
+
+.update-text {
+  flex: 1;
+  font-size: 24rpx;
+  color: #FF9500;
+  line-height: 1.6;
 }
 </style>
 
