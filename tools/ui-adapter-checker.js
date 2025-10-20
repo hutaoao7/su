@@ -159,6 +159,90 @@ const config = {
         }
         return { passed: true };
       }
+    },
+    screenSizeBoundary: {
+      name: '屏幕尺寸边界检测',
+      level: 'warning',
+      check: (content) => {
+        // 检测固定宽度/高度值（可能在小屏幕上溢出）
+        const fixedLargeSize = content.match(/(?:width|height)\s*:\s*(?:[5-9]\d{2,}|[1-9]\d{3,})(?:px|rpx)/g);
+        
+        if (fixedLargeSize && fixedLargeSize.length > 2) {
+          return {
+            passed: false,
+            message: '检测到多个大尺寸固定宽高值，可能在小屏幕上溢出',
+            details: fixedLargeSize.slice(0, 3).join(', ')
+          };
+        }
+        return { passed: true };
+      }
+    },
+    landscapeAdaptation: {
+      name: '横屏适配检测',
+      level: 'info',
+      check: (content) => {
+        const hasComplexLayout = /flex|grid|position\s*:\s*(?:fixed|absolute)/.test(content);
+        const hasLandscapeMedia = /@media.*orientation.*landscape/.test(content);
+        const hasLandscapeStyle = /\/\*.*横屏.*\*\//.test(content);
+        
+        if (hasComplexLayout && !hasLandscapeMedia && !hasLandscapeStyle && content.length > 1500) {
+          return {
+            passed: false,
+            message: '复杂布局但未检测到横屏适配，建议添加横屏模式样式'
+          };
+        }
+        return { passed: true };
+      }
+    },
+    darkModeSupport: {
+      name: '暗黑模式检测',
+      level: 'info',
+      check: (content) => {
+        const hasColorValues = /color\s*:\s*#[0-9a-fA-F]{3,8}|background(?:-color)?\s*:\s*#[0-9a-fA-F]{3,8}/.test(content);
+        const hasDarkModeMedia = /@media.*prefers-color-scheme.*dark/.test(content);
+        const hasDarkModeClass = /\.dark|dark-mode|theme-dark/.test(content);
+        
+        if (hasColorValues && !hasDarkModeMedia && !hasDarkModeClass && content.length > 1000) {
+          return {
+            passed: false,
+            message: '检测到硬编码颜色值，建议添加暗黑模式支持'
+          };
+        }
+        return { passed: true };
+      }
+    },
+    fontAccessibility: {
+      name: '字体可访问性检测',
+      level: 'warning',
+      check: (content) => {
+        // 检测过小的字体
+        const smallFontMatch = content.match(/font-size\s*:\s*(?:[0-9]|1[0-1])(?:px|rpx)/g);
+        
+        if (smallFontMatch && smallFontMatch.length > 0) {
+          return {
+            passed: false,
+            message: '检测到过小的字体（小于12px/24rpx），可能影响可读性',
+            details: smallFontMatch.slice(0, 3).join(', ')
+          };
+        }
+        return { passed: true };
+      }
+    },
+    colorContrast: {
+      name: '颜色对比度检测（WCAG）',
+      level: 'info',
+      check: (content) => {
+        // 检测浅色背景 + 浅色文字的组合（简单启发式）
+        const lightBackgroundLightTextPattern = /background(?:-color)?\s*:\s*#(?:[fF]{2}[a-fA-F0-9]{4}|[fF]{3}).*color\s*:\s*#(?:[cdefCDEF]{2}[a-fA-F0-9]{4}|[cdefCDEF]{3})/s;
+        
+        if (lightBackgroundLightTextPattern.test(content)) {
+          return {
+            passed: false,
+            message: '可能存在浅色背景配浅色文字，对比度不足（WCAG建议至少4.5:1）'
+          };
+        }
+        return { passed: true };
+      }
     }
   }
 };
