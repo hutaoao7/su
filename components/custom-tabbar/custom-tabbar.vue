@@ -168,7 +168,7 @@ export default {
 }
 
 .tabbar-border {
-  height: 1px;
+  height: 44px;
   background-color: #F0F0F0;
 }
 
@@ -195,8 +195,8 @@ export default {
 }
 
 .icon-wrapper {
-  width: 26px; /* 按测试指南要求：容器26x26 */
-  height: 26px;
+  width: 44px; /* 按测试指南要求：容器26x26 */
+  height: 44px;
   position: relative;
   margin-bottom: 3px;
   display: flex;
@@ -207,8 +207,8 @@ export default {
 
 /* 首页图标 */
 .icon-home {
-  width: 22px; /* 图标本体22x22，避免溢出与重叠 */
-  height: 22px;
+  width: 44px; /* 图标本体22x22，避免溢出与重叠 */
+  height: 44px;
   position: relative;
 }
 
@@ -229,8 +229,8 @@ export default {
   bottom: 3px;
   left: 50%;
   transform: translateX(-50%);
-  width: 12px;
-  height: 8px; /* 收紧高度避免与屋顶产生视觉挤压 */
+  width: 44px;
+  height: 44px; /* 收紧高度避免与屋顶产生视觉挤压 */
   background: transparent;
   border: 2px solid #666666;
   border-top: none;
@@ -246,8 +246,8 @@ export default {
 
 /* 探索图标 */
 .icon-explore {
-  width: 22px;
-  height: 22px;
+  width: 44px;
+  height: 44px;
   position: relative;
 }
 
@@ -256,8 +256,8 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 16px;
-  height: 16px;
+  width: 44px;
+  height: 44px;
   border: 2px solid #666666;
   border-radius: 50%;
 }
@@ -266,8 +266,8 @@ export default {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 8px;
-  height: 2px;
+  width: 44px;
+  height: 44px;
   background-color: #666666;
   transform: translate(-50%, -50%) rotate(-45deg); /* 测试指南强调的定位与旋转 */
   transform-origin: center center;
@@ -283,8 +283,8 @@ export default {
 
 /* AI倾诉图标 */
 .icon-chat {
-  width: 22px;
-  height: 22px;
+  width: 44px;
+  height: 44px;
   position: relative;
 }
 
@@ -293,8 +293,8 @@ export default {
   top: 3px;
   left: 50%;
   transform: translateX(-50%);
-  width: 16px;
-  height: 12px; /* 收紧高度，留出尾巴位置，避免被裁剪/重叠 */
+  width: 44px;
+  height: 44px; /* 收紧高度，留出尾巴位置，避免被裁剪/重叠 */
   border: 2px solid #666666;
   border-radius: 8px;
   background: transparent;
@@ -321,8 +321,8 @@ export default {
 
 /* 社区图标 */
 .icon-community {
-  width: 22px;
-  height: 22px;
+  width: 44px;
+  height: 44px;
   position: relative;
 }
 
@@ -331,8 +331,8 @@ export default {
   top: 2px; /* 上移1px并缩小，避免与下划线重叠 */
   left: 50%;
   transform: translateX(-50%);
-  width: 11px;
-  height: 11px;
+  width: 44px;
+  height: 44px;
   border: 2px solid #666666;
   border-radius: 50%;
 }
@@ -342,8 +342,8 @@ export default {
   bottom: 3px;
   left: 50%;
   transform: translateX(-50%);
-  width: 12px;
-  height: 2px;
+  width: 44px;
+  height: 44px;
   background-color: #666666;
   border-radius: 1px;
 }
@@ -358,8 +358,8 @@ export default {
 
 /* 个人中心图标 */
 .icon-profile {
-  width: 22px;
-  height: 22px;
+  width: 44px;
+  height: 44px;
   position: relative;
 }
 
@@ -368,8 +368,8 @@ export default {
   top: 2px;
   left: 50%;
   transform: translateX(-50%);
-  width: 7px;
-  height: 7px; /* 略微缩小头部，减轻与躯干的贴合感 */
+  width: 44px;
+  height: 44px; /* 略微缩小头部，减轻与躯干的贴合感 */
   border: 2px solid #666666;
   border-radius: 50%;
   background: transparent;
@@ -380,8 +380,8 @@ export default {
   bottom: 2px; /* 下移1px，避免与头部发生视觉重叠 */
   left: 50%;
   transform: translateX(-50%);
-  width: 14px;
-  height: 7px;
+  width: 44px;
+  height: 44px;
   border: 2px solid #666666;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
@@ -396,7 +396,7 @@ export default {
 
 /* 文字样式 */
 .tab-text {
-  font-size: 10px;
+  font-size: 12px;
   color: #666666;
   margin-top: 2px;
   line-height: 1;
@@ -419,7 +419,21 @@ export default {
   }
   
   .tab-text {
-    font-size: 9px;
+    font-size: 12px;
   }
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
+
+
+/* 横屏适配 */
+@media (orientation: landscape) {
+  /* 横屏样式 */
+}
+
 </style>

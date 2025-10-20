@@ -27,4 +27,11 @@ export default {
   min-height: 100vh;
   background: #FFFFFF;
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>

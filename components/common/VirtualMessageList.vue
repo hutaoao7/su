@@ -412,22 +412,22 @@ export default {
   height: 100%;
   position: relative;
   overflow: hidden;
-}
+; max-width: 750rpx}
 
 .scroll-container {
   width: 100%;
   height: 100%;
   overflow-y: auto;
-}
+; max-width: 750rpx}
 
 .placeholder-top,
 .placeholder-bottom {
   width: 100%;
-}
+; max-width: 750rpx}
 
 .message-wrapper {
   width: 100%;
-}
+; max-width: 750rpx}
 
 .load-more {
   display: flex;
@@ -439,8 +439,8 @@ export default {
 }
 
 .loading-spinner {
-  width: 32rpx;
-  height: 32rpx;
+  width: 44px;
+  height: 44px;
   border: 4rpx solid #E5E5EA;
   border-top-color: #007AFF;
   border-radius: 50%;
@@ -458,5 +458,31 @@ export default {
   font-size: 24rpx;
   color: #8E8E93;
 }
+
+
+/* 响应式布局 - 平板设备 */
+@media (min-width: 768px) {
+  /* 平板设备样式 */
+}
+
+/* 响应式布局 - 大屏设备 */
+@media (min-width: 1024px) {
+  /* 大屏设备样式 */
+}
+
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
+
+
+/* 横屏适配 */
+@media (orientation: landscape) {
+  /* 横屏样式 */
+}
+
 </style>
 

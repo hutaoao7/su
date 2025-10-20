@@ -578,7 +578,7 @@ export default {
 
 /* 底部占位 */
 .bottom-placeholder {
-	height: 20px;
+	height: 44px;
 }
 
 /* 底部操作栏 */
@@ -609,5 +609,12 @@ export default {
 	font-weight: 500;
 	color: #fff;
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>
 

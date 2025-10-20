@@ -57,6 +57,27 @@
         "navigationStyle": "default",
         "navigationBarTitleText": "AI倾诉"
       }
+    },
+    {
+      "path": "pages/user/account-deletion",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "账号注销"
+      }
+    },
+    {
+      "path": "pages/user/data-deletion-confirm",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "数据删除确认"
+      }
+    },
+    {
+      "path": "pages/user/audit-log",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "撤回记录审计"
+      }
     }
   ],
   "easycom": {
@@ -247,6 +268,12 @@
           "path": "detail",
           "style": {
             "navigationBarTitleText": "话题详情"
+          }
+        },
+        {
+          "path": "mentions",
+          "style": {
+            "navigationBarTitleText": "提醒中心"
           }
         }
       ]

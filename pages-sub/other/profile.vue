@@ -831,4 +831,11 @@ export default {
   color: #007AFF;
   font-weight: 600;
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>

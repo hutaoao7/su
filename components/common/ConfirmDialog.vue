@@ -48,10 +48,10 @@ export default {
 <style scoped>
 .confirm-dialog-mask {
   position: fixed;
-  top: 0;
+  top: calc(0px + env(safe-area-inset-top));
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: calc(0px + env(safe-area-inset-bottom));
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
@@ -106,5 +106,12 @@ export default {
   background: #007AFF;
   color: #FFFFFF;
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>
 

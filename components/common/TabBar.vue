@@ -150,7 +150,7 @@ export default {
       image {
         width: 44rpx;
         height: 44rpx;
-      }
+      ; overflow: hidden}
     }
     
     .tab-text {
@@ -193,4 +193,11 @@ export default {
     }
   }
 }
+
+
+/* 横屏适配 */
+@media (orientation: landscape) {
+  /* 横屏样式 */
+}
+
 </style>

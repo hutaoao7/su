@@ -12,7 +12,7 @@ export default {
 }
 </script>
 <style scoped>
-.safe-nav{ position:fixed; top:0; left:0; right:0; height:88rpx; z-index:10;
+.safe-nav{ position:fixed; top: calc(0px + env(safe-area-inset-top)); left:0; right:0; height:88rpx; z-index:10;
   display:flex; align-items:center; padding:0 24rpx; box-sizing:border-box; }
 .left{ width:80rpx; font-size:40rpx; line-height:88rpx; text-align:left; }
 .title{ flex:1; text-align:center; font-weight:600; }

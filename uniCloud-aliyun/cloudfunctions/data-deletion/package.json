@@ -1,0 +1,9 @@
+{
+  "name": "data-deletion",
+  "version": "1.0.0",
+  "description": "数据删除云函数 - 处理用户数据删除、撤销等操作",
+  "main": "index.js",
+  "dependencies": {},
+  "extensions": {}
+}
+

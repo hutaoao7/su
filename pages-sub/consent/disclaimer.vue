@@ -100,7 +100,7 @@ export default {
 
 .bottom-action {
   position: fixed;
-  bottom: 0;
+  bottom: calc(0px + env(safe-area-inset-bottom));
   left: 0;
   right: 0;
   padding: 32rpx;
@@ -115,6 +115,32 @@ export default {
   border: none;
   border-radius: 44rpx;
   font-size: 32rpx;
+; max-width: 750rpx; overflow: hidden}
+
+
+/* 响应式布局 - 平板设备 */
+@media (min-width: 768px) {
+  /* 平板设备样式 */
 }
+
+/* 响应式布局 - 大屏设备 */
+@media (min-width: 1024px) {
+  /* 大屏设备样式 */
+}
+
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
+
+
+/* 横屏适配 */
+@media (orientation: landscape) {
+  /* 横屏样式 */
+}
+
 </style>
 

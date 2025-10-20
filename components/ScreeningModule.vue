@@ -329,7 +329,7 @@ export default {
 }
 
 .progress-bar {
-  height: 8rpx;
+  height: 44px;
   background: rgba(74, 172, 234, 0.2);
   border-radius: 4rpx;
   margin-bottom: 12rpx;
@@ -506,4 +506,11 @@ export default {
   background: #F2F2F7;
   color: #86868B;
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>

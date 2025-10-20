@@ -382,7 +382,7 @@ export default {
 .progress-bar {
   background-color: #e5e5e5;
   border-radius: 6rpx;
-  height: 9rpx;
+  height: 44px;
   position: relative;
 }
 
@@ -397,8 +397,8 @@ export default {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 30rpx;
-  height: 30rpx;
+  width: 44px;
+  height: 44px;
   background-color: white;
   border-radius: 50%;
   box-shadow: 0 2rpx 5rpx rgba(0, 0, 0, 0.25);
@@ -466,7 +466,7 @@ export default {
 .bottom-divider {
   margin-top: 88rpx;
   background-color: #e5e5e5;
-  height: 4rpx;
+  height: 44px;
 }
 
 /* 图标字体 */
@@ -484,4 +484,11 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>

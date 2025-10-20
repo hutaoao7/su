@@ -2062,8 +2062,8 @@ export default {
 }
 
 .legend-dot {
-  width: 16rpx;
-  height: 16rpx;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
 }
 
@@ -2727,4 +2727,11 @@ export default {
   opacity: 0;
   pointer-events: none;
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>

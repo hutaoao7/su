@@ -55,22 +55,49 @@
           <text class="menu-text">个人资料</text>
           <text class="menu-arrow">›</text>
         </view>
-        
+
         <view class="menu-item" @tap="navigateTo('/pages-sub/other/settings/settings')">
           <view class="menu-icon">⚙️</view>
           <text class="menu-text">应用设置</text>
           <text class="menu-arrow">›</text>
         </view>
-        
+
         <view class="menu-item" @tap="showSubscriptionSettings">
           <view class="menu-icon">🔔</view>
           <text class="menu-text">订阅设置</text>
           <text class="menu-arrow">›</text>
         </view>
-        
+
         <view class="menu-item" @tap="showFeedback">
           <view class="menu-icon">💬</view>
           <text class="menu-text">意见反馈</text>
+          <text class="menu-arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 同意管理菜单 -->
+    <view class="menu-section">
+      <view class="menu-title">
+        <text class="title-text">同意管理</text>
+      </view>
+
+      <view class="menu-list">
+        <view class="menu-item" @tap="navigateTo('/pages/user/audit-log')">
+          <view class="menu-icon">📋</view>
+          <text class="menu-text">撤回记录审计</text>
+          <text class="menu-arrow">›</text>
+        </view>
+
+        <view class="menu-item" @tap="navigateTo('/pages/user/data-deletion-confirm')">
+          <view class="menu-icon">🗑️</view>
+          <text class="menu-text">数据删除</text>
+          <text class="menu-arrow">›</text>
+        </view>
+
+        <view class="menu-item" @tap="navigateTo('/pages/user/account-deletion')">
+          <view class="menu-icon">❌</view>
+          <text class="menu-text">账号注销</text>
           <text class="menu-arrow">›</text>
         </view>
       </view>
@@ -425,14 +452,14 @@ export default {
 
 .skeleton-name {
   width: 200rpx;
-  height: 36rpx;
+  height: 44px;
   border-radius: 8rpx;
   background: #E5E5EA;
 }
 
 .skeleton-status {
   width: 160rpx;
-  height: 26rpx;
+  height: 44px;
   border-radius: 8rpx;
   background: #E5E5EA;
 }
@@ -808,4 +835,18 @@ export default {
   font-size: 30rpx;
   color: #333;
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
+
+
+/* 横屏适配 */
+@media (orientation: landscape) {
+  /* 横屏样式 */
+}
+
 </style>
