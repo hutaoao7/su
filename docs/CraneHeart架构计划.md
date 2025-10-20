@@ -111,7 +111,7 @@ graph TB
   - husky: Git hooks
 
 运行端：
-  - mp-weixin
+  - 微信开发者工具：mp-weixin
 
 ```
 
