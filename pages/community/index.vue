@@ -25,9 +25,20 @@
       :refresher-enabled="true"
       :refresher-triggered="isRefreshing"
       @refresherrefresh="onRefresh"
+      :enable-back-to-top="true"
+      :scroll-with-animation="true"
     >
+      <!-- 骨架屏加载 -->
+      <view v-if="loading && page === 1" class="skeleton-loading">
+        <view v-for="n in 3" :key="n" class="skeleton-topic-item">
+          <view class="skeleton-title"></view>
+          <view class="skeleton-content"></view>
+          <view class="skeleton-footer"></view>
+        </view>
+      </view>
+      
       <!-- 空状态 -->
-      <view v-if="!loading && topics.length === 0" class="empty-state">
+      <view v-else-if="!loading && topics.length === 0" class="empty-state">
         <u-icon name="chat" size="64" color="#C7C7CC"></u-icon>
         <text class="empty-text">暂无话题</text>
         <text class="empty-hint">快来发布第一个话题吧</text>
@@ -58,6 +69,7 @@
             class="author-avatar" 
             :src="topic.author_avatar || '/static/images/default-avatar.png'"
             mode="aspectFill"
+            lazy-load
           />
           <text class="author-name">{{ topic.author_name }}</text>
           <text class="publish-time">{{ formatTime(topic.created_at) }}</text>
@@ -373,6 +385,53 @@ export default {
   margin-top: 16rpx;
 }
 
+/* 骨架屏加载 */
+.skeleton-loading {
+  padding: 24rpx;
+}
+
+.skeleton-topic-item {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.skeleton-title,
+.skeleton-content,
+.skeleton-footer {
+  height: 32rpx;
+  background: linear-gradient(90deg, #F0F0F5 25%, #E5E5EA 50%, #F0F0F5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.skeleton-title {
+  width: 70%;
+  height: 40rpx;
+}
+
+.skeleton-content {
+  width: 100%;
+  height: 64rpx;
+}
+
+.skeleton-footer {
+  width: 50%;
+  height: 32rpx;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
 /* 话题项 */
 .topic-item {
   background: #FFFFFF;
@@ -467,7 +526,9 @@ export default {
 .publish-btn {
   position: fixed;
   right: 32rpx;
-  bottom: 120rpx;
+  /* 底部安全区域适配 - TabBar高度(50px ≈ 100rpx) + 间距(20rpx) + 安全区域 */
+  bottom: calc(120rpx + constant(safe-area-inset-bottom));
+  bottom: calc(120rpx + env(safe-area-inset-bottom));
   width: 112rpx;
   height: 112rpx;
   border-radius: 50%;

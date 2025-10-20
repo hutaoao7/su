@@ -277,7 +277,12 @@ export default {
 .detail-page {
   min-height: 100vh;
   background: #F5F5F7;
-  padding-bottom: 120rpx;
+  /* 顶部安全区域 */
+  padding-top: constant(safe-area-inset-top);
+  padding-top: env(safe-area-inset-top);
+  /* 底部安全区域 - 评论输入栏高度 + 安全区域 */
+  padding-bottom: calc(120rpx + constant(safe-area-inset-bottom));
+  padding-bottom: calc(120rpx + env(safe-area-inset-bottom));
 }
 
 .loading-state {
