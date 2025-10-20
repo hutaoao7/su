@@ -57,6 +57,20 @@
         "navigationStyle": "default",
         "navigationBarTitleText": "AI倾诉"
       }
+    },
+    {
+      "path": "pages/admin/error-dashboard",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "错误监控看板"
+      }
+    },
+    {
+      "path": "pages/admin/metrics",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "指标看板"
+      }
     }
   ],
   "easycom": {
