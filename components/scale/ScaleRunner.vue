@@ -1,5 +1,5 @@
 <template>
-  <view class="scale-runner">
+  <view class="scale-runner" :class="{ 'dark-mode': isDarkMode }">
     <!-- 顶部进度条 -->
     <view class="progress-bar">
       <view class="progress-fill" :style="{ width: progressPercent + '%' }"></view>
@@ -15,8 +15,16 @@
         <text class="info-label">用时</text>
         <text class="info-value">{{ formattedTime }}</text>
       </view>
-      <view class="pause-btn" @tap="handleTogglePause">
-        <u-icon :name="isPaused ? 'play-circle' : 'pause-circle'" size="20" color="#007AFF"></u-icon>
+      <view class="action-group">
+        <view class="font-size-btn" @tap="cycleFontSize">
+          <text class="font-size-text">{{ fontSizeLabel }}</text>
+        </view>
+        <view class="theme-btn" @tap="toggleTheme">
+          <u-icon :name="isDarkMode ? 'sun' : 'moon'" size="20" :color="isDarkMode ? '#FFD60A' : '#007AFF'"></u-icon>
+        </view>
+        <view class="pause-btn" @tap="handleTogglePause">
+          <u-icon :name="isPaused ? 'play-circle' : 'pause-circle'" size="20" color="#007AFF"></u-icon>
+        </view>
       </view>
     </view>
     
@@ -30,7 +38,7 @@
     </view>
     
     <!-- 题目卡片 -->
-    <view class="question-card" v-if="currentQuestion && !loadError">
+    <view class="question-card" :class="'font-size-' + fontSize" v-if="currentQuestion && !loadError">
       <view class="question-header">
         <view class="header-left">
           <text class="question-number">{{ currentIndex + 1 }}/{{ questions.length }}</text>
@@ -174,7 +182,11 @@ export default {
       // 题目标记
       markedQuestions: [],  // 被标记的题目ID列表
       // 历史回顾模式
-      isReviewMode: false
+      isReviewMode: false,
+      // 主题模式
+      isDarkMode: false,
+      // 字体大小
+      fontSize: 'medium'  // small, medium, large
     }
   },
   computed: {
@@ -211,11 +223,25 @@ export default {
     },
     isQuestionMarked() {
       return this.currentQuestion && this.markedQuestions.includes(this.currentQuestion.id)
+    },
+    fontSizeLabel() {
+      const labels = {
+        small: '小',
+        medium: '中',
+        large: '大'
+      };
+      return labels[this.fontSize] || '中';
     }
   },
   mounted() {
     // 设置进度保存key
     this.progressSaveKey = `scale_progress_${this.scaleId}`;
+    
+    // 加载主题偏好
+    this.loadThemePreference();
+    
+    // 加载字体大小偏好
+    this.loadFontSizePreference();
     
     // 加载量表
     this.loadScale();
@@ -259,6 +285,88 @@ export default {
   },
   
   methods: {
+    /**
+     * 加载主题偏好
+     */
+    loadThemePreference() {
+      try {
+        const savedTheme = uni.getStorageSync('scale_theme_preference');
+        if (savedTheme) {
+          this.isDarkMode = savedTheme === 'dark';
+        } else {
+          // 根据系统时间自动判断（晚上8点到早上7点使用夜间模式）
+          const hour = new Date().getHours();
+          this.isDarkMode = hour >= 20 || hour < 7;
+        }
+        console.log(`[THEME] 加载主题偏好: ${this.isDarkMode ? '夜间' : '日间'}模式`);
+      } catch (e) {
+        console.error('[THEME] 加载主题偏好失败:', e);
+        this.isDarkMode = false;
+      }
+    },
+    
+    /**
+     * 切换主题
+     */
+    toggleTheme() {
+      this.isDarkMode = !this.isDarkMode;
+      
+      // 保存主题偏好
+      try {
+        uni.setStorageSync('scale_theme_preference', this.isDarkMode ? 'dark' : 'light');
+        uni.showToast({
+          title: this.isDarkMode ? '已切换到夜间模式' : '已切换到日间模式',
+          icon: 'none',
+          duration: 1500
+        });
+        console.log(`[THEME] 切换主题: ${this.isDarkMode ? '夜间' : '日间'}模式`);
+      } catch (e) {
+        console.error('[THEME] 保存主题偏好失败:', e);
+      }
+    },
+    
+    /**
+     * 加载字体大小偏好
+     */
+    loadFontSizePreference() {
+      try {
+        const savedSize = uni.getStorageSync('scale_font_size_preference');
+        if (savedSize && ['small', 'medium', 'large'].includes(savedSize)) {
+          this.fontSize = savedSize;
+        } else {
+          this.fontSize = 'medium';
+        }
+        console.log(`[FONT] 加载字体大小偏好: ${this.fontSize}`);
+      } catch (e) {
+        console.error('[FONT] 加载字体大小偏好失败:', e);
+        this.fontSize = 'medium';
+      }
+    },
+    
+    /**
+     * 循环切换字体大小
+     */
+    cycleFontSize() {
+      const sizes = ['small', 'medium', 'large'];
+      const currentIndex = sizes.indexOf(this.fontSize);
+      const nextIndex = (currentIndex + 1) % sizes.length;
+      this.fontSize = sizes[nextIndex];
+      
+      // 保存字体大小偏好
+      try {
+        uni.setStorageSync('scale_font_size_preference', this.fontSize);
+        const labels = { small: '小', medium: '中', large: '大' };
+        uni.showToast({
+          title: `字体大小：${labels[this.fontSize]}`,
+          icon: 'none',
+          duration: 1500
+        });
+        console.log(`[FONT] 切换字体大小: ${this.fontSize}`);
+      } catch (e) {
+        console.error('[FONT] 保存字体大小偏好失败:', e);
+      }
+    },
+    
     /**
      * 启动计时器
      */
@@ -394,6 +502,45 @@ export default {
           icon: 'none'
         });
       }
+    },
+    
+    /**
+     * 显示标记题目分析（提交前）
+     */
+    showMarkedQuestionsAnalysis() {
+      const markedCount = this.markedQuestions.length;
+      const markedDetails = this.markedQuestions.map((qid, index) => {
+        const question = this.questions.find(q => q.id === qid);
+        const questionIndex = this.questions.findIndex(q => q.id === qid);
+        return `${index + 1}. 第${questionIndex + 1}题`;
+      }).join('\n');
+      
+      const content = `
+您标记了${markedCount}个需要关注的题目：
+
+${markedDetails}
+
+这些题目可能值得在日常生活中多加关注。是否继续提交评估？
+      `.trim();
+      
+      uni.showModal({
+        title: '📋 标记题目分析',
+        content: content,
+        confirmText: '提交评估',
+        cancelText: '返回修改',
+        success: (res) => {
+          if (res.confirm) {
+            // 用户确认提交
+            this.clearProgress();
+            this.calculateResult();
+          } else {
+            // 用户选择返回修改，跳转到第一个标记的题目
+            this.jumpToMarkedQuestion(0);
+          }
+        }
+      });
+      
+      console.log(`[ASSESS] 显示标记题目分析: ${markedCount}题`);
     },
     
     /**
@@ -652,9 +799,14 @@ export default {
       
       if (this.isLastQuestion) {
         console.log(`[ASSESS] submit`)
-        // 提交时清除保存的进度
-        this.clearProgress();
-        this.calculateResult()
+        // 提交前显示标记题目分析
+        if (this.markedQuestions.length > 0) {
+          this.showMarkedQuestionsAnalysis();
+        } else {
+          // 提交时清除保存的进度
+          this.clearProgress();
+          this.calculateResult();
+        }
       } else {
         this.currentIndex++
         this.questionStartTime = Date.now(); // 重置题目计时
@@ -1138,9 +1290,11 @@ export default {
 .option-item {
   background: #F9FAFB;
   border-radius: 16rpx;
-  padding: 24rpx;
+  padding: 32rpx 24rpx;
+  min-height: 96rpx;
   display: flex;
   align-items: center;
+  box-sizing: border-box;
   transition: all 0.2s ease;
   border: 2rpx solid transparent;
 }
@@ -1221,20 +1375,26 @@ export default {
 /* 输入区域 */
 .input-section {
   margin-top: 32rpx;
+  padding: 16rpx 0;
 }
 
 .time-input,
 .number-input {
   background: #F9FAFB;
   border-radius: 16rpx;
-  padding: 24rpx;
+  padding: 32rpx 24rpx;
+  min-height: 88rpx;
   font-size: 30rpx;
   border: 2rpx solid #E5E5EA;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
 }
 
 .time-input:focus,
 .number-input:focus {
   border-color: #007AFF;
+  box-shadow: 0 0 0 4rpx rgba(0, 122, 255, 0.1);
+  background: #FFFFFF;
 }
 
 /* 底部导航条 */
@@ -1348,6 +1508,14 @@ export default {
   color: #1D1D1F;
 }
 
+.action-group {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.font-size-btn,
+.theme-btn,
 .pause-btn {
   width: 64rpx;
   height: 64rpx;
@@ -1359,12 +1527,75 @@ export default {
   transition: all 0.2s ease;
 }
 
+.font-size-text {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #007AFF;
+}
+
+.font-size-btn:active,
+.theme-btn:active,
 .pause-btn:active {
   transform: scale(0.95);
   background: rgba(0, 122, 255, 0.2);
 }
 
-/* 响应式适配 */
+/* ==================== 字体大小调节 ==================== */
+/* 小字体 */
+.question-card.font-size-small .question-text {
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.question-card.font-size-small .option-text {
+  font-size: 26rpx;
+}
+
+.question-card.font-size-small .question-number {
+  font-size: 22rpx;
+}
+
+.question-card.font-size-small .scale-title {
+  font-size: 24rpx;
+}
+
+/* 中等字体（默认） */
+.question-card.font-size-medium .question-text {
+  font-size: 32rpx;
+  line-height: 1.7;
+}
+
+.question-card.font-size-medium .option-text {
+  font-size: 28rpx;
+}
+
+.question-card.font-size-medium .question-number {
+  font-size: 24rpx;
+}
+
+.question-card.font-size-medium .scale-title {
+  font-size: 26rpx;
+}
+
+/* 大字体 */
+.question-card.font-size-large .question-text {
+  font-size: 36rpx;
+  line-height: 1.8;
+}
+
+.question-card.font-size-large .option-text {
+  font-size: 32rpx;
+}
+
+.question-card.font-size-large .question-number {
+  font-size: 26rpx;
+}
+
+.question-card.font-size-large .scale-title {
+  font-size: 28rpx;
+}
+
+/* 响应式适配 - 小屏幕 */
 @media screen and (max-width: 320px) {
   .question-card {
     padding: 24rpx 16rpx;
@@ -1377,5 +1608,241 @@ export default {
   .option-text {
     font-size: 26rpx;
   }
+}
+
+/* 响应式适配 - 横屏模式 */
+@media screen and (orientation: landscape) {
+  .scale-runner {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  .question-card {
+    margin: 16rpx auto;
+    max-width: 1200rpx;
+    width: 90%;
+  }
+  
+  .question-content {
+    margin: 20rpx 0;
+  }
+  
+  .question-text {
+    font-size: 28rpx;
+    line-height: 1.5;
+  }
+  
+  .options-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16rpx;
+    margin-top: 20rpx;
+  }
+  
+  .option-item {
+    padding: 20rpx 24rpx;
+    margin-bottom: 0;
+  }
+  
+  .option-text {
+    font-size: 26rpx;
+  }
+  
+  .bottom-navigation {
+    padding: 16rpx 40rpx;
+    padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+  }
+  
+  .nav-button {
+    height: 72rpx;
+  }
+  
+  .nav-button-text {
+    font-size: 28rpx;
+  }
+  
+  .top-info-bar {
+    padding: 12rpx 32rpx;
+  }
+  
+  .info-label {
+    font-size: 20rpx;
+  }
+  
+  .info-value {
+    font-size: 24rpx;
+  }
+  
+  .font-size-btn,
+  .theme-btn,
+  .pause-btn {
+    width: 56rpx;
+    height: 56rpx;
+  }
+  
+  .action-group {
+    gap: 12rpx;
+  }
+}
+
+/* ==================== 夜间模式 ==================== */
+.scale-runner.dark-mode {
+  background: #1C1C1E;
+}
+
+.dark-mode .progress-bar {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .progress-fill {
+  background: linear-gradient(90deg, #0A84FF 0%, #5E5CE6 100%);
+}
+
+.dark-mode .top-info-bar {
+  background: #2C2C2E;
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .info-label {
+  color: #8E8E93;
+}
+
+.dark-mode .info-value {
+  color: #F5F5F7;
+}
+
+.dark-mode .font-size-btn {
+  background: rgba(10, 132, 255, 0.15);
+}
+
+.dark-mode .font-size-btn:active {
+  background: rgba(10, 132, 255, 0.25);
+}
+
+.dark-mode .font-size-text {
+  color: #0A84FF;
+}
+
+.dark-mode .theme-btn {
+  background: rgba(255, 214, 10, 0.15);
+}
+
+.dark-mode .theme-btn:active {
+  background: rgba(255, 214, 10, 0.25);
+}
+
+.dark-mode .pause-btn {
+  background: rgba(10, 132, 255, 0.15);
+}
+
+.dark-mode .pause-btn:active {
+  background: rgba(10, 132, 255, 0.25);
+}
+
+.dark-mode .question-card {
+  background: #2C2C2E;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.5);
+}
+
+.dark-mode .question-number {
+  background: rgba(10, 132, 255, 0.2);
+  color: #0A84FF;
+}
+
+.dark-mode .scale-title {
+  color: #8E8E93;
+}
+
+.dark-mode .question-text {
+  color: #F5F5F7;
+}
+
+.dark-mode .option-item {
+  background: #3A3A3C;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .option-item:hover {
+  background: #48484A;
+}
+
+.dark-mode .option-selected {
+  background: rgba(10, 132, 255, 0.2);
+  border-color: #0A84FF;
+}
+
+.dark-mode .option-radio {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.dark-mode .option-selected .option-radio {
+  border-color: #0A84FF;
+  background: #0A84FF;
+}
+
+.dark-mode .option-text {
+  color: #F5F5F7;
+}
+
+.dark-mode .option-selected .option-text {
+  color: #0A84FF;
+}
+
+.dark-mode .time-input,
+.dark-mode .number-input {
+  background: #3A3A3C;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #F5F5F7;
+}
+
+.dark-mode .time-input:focus,
+.dark-mode .number-input:focus {
+  border-color: #0A84FF;
+}
+
+.dark-mode .bottom-navigation {
+  background: rgba(44, 44, 46, 0.95);
+  border-top-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .nav-button-prev {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark-mode .nav-button-prev .nav-button-text {
+  color: #F5F5F7;
+}
+
+.dark-mode .nav-button-next {
+  background: linear-gradient(135deg, #0A84FF 0%, #5E5CE6 100%);
+  box-shadow: 0 8rpx 24rpx rgba(10, 132, 255, 0.4);
+}
+
+.dark-mode .nav-button-submit {
+  background: linear-gradient(135deg, #30D158 0%, #32D74B 100%);
+  box-shadow: 0 8rpx 24rpx rgba(48, 209, 88, 0.4);
+}
+
+.dark-mode .nav-hint-text {
+  color: #8E8E93;
+}
+
+.dark-mode .error-title {
+  color: #FF453A;
+}
+
+.dark-mode .error-message {
+  color: #8E8E93;
+}
+
+.dark-mode .mark-btn,
+.dark-mode .review-btn {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .mark-btn.marked {
+  background: rgba(255, 184, 0, 0.2);
 }
 </style>

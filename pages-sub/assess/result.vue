@@ -85,6 +85,33 @@
       </view>
     </view>
 
+    <!-- 结果解读视频 -->
+    <view class="video-card" v-if="interpretationVideo">
+      <view class="card-header">
+        <text class="card-title">🎥 专家解读</text>
+        <text class="card-subtitle">了解您的评估结果</text>
+      </view>
+      <view class="video-wrapper">
+        <video 
+          :src="interpretationVideo.url"
+          :poster="interpretationVideo.poster"
+          class="interpretation-video"
+          :controls="true"
+          :show-center-play-btn="true"
+          :enable-progress-gesture="true"
+          :object-fit="'contain'"
+          @play="handleVideoPlay"
+          @pause="handleVideoPause"
+          @ended="handleVideoEnded"
+          @error="handleVideoError"
+        ></video>
+        <view class="video-info">
+          <text class="video-title">{{ interpretationVideo.title }}</text>
+          <text class="video-duration">时长: {{ interpretationVideo.duration }}</text>
+        </view>
+      </view>
+    </view>
+
     <!-- 风险因素卡片 -->
     <view class="risk-card" v-if="riskFactors.length > 0">
       <view class="card-header">
@@ -181,6 +208,9 @@ export default {
       
       // 相关量表
       relatedScales: [],
+      
+      // 结果解读视频
+      interpretationVideo: null,
       
       // Canvas上下文
       radarCtx: null,
@@ -781,6 +811,84 @@ export default {
           route: '/pages-sub/assess/anxiety/index'
         }
       ].filter(s => s.id !== this.scaleId); // 排除当前量表
+      
+      // 加载对应的解读视频
+      this.loadInterpretationVideo();
+    },
+    
+    /**
+     * 加载结果解读视频
+     */
+    loadInterpretationVideo() {
+      // 根据量表ID和等级加载对应的解读视频
+      const videoMap = {
+        'phq9': {
+          url: 'https://example.com/videos/phq9_interpretation.mp4',
+          poster: 'https://example.com/videos/phq9_poster.jpg',
+          title: 'PHQ-9抑郁量表结果解读',
+          duration: '5:30'
+        },
+        'gad7': {
+          url: 'https://example.com/videos/gad7_interpretation.mp4',
+          poster: 'https://example.com/videos/gad7_poster.jpg',
+          title: 'GAD-7焦虑量表结果解读',
+          duration: '4:45'
+        },
+        'pss10': {
+          url: 'https://example.com/videos/pss10_interpretation.mp4',
+          poster: 'https://example.com/videos/pss10_poster.jpg',
+          title: 'PSS-10压力量表结果解读',
+          duration: '6:00'
+        }
+      };
+      
+      if (this.scaleId && videoMap[this.scaleId]) {
+        this.interpretationVideo = videoMap[this.scaleId];
+        console.log('[RESULT] 加载解读视频:', this.interpretationVideo.title);
+      }
+    },
+    
+    /**
+     * 视频播放事件
+     */
+    handleVideoPlay() {
+      console.log('[RESULT] 视频开始播放');
+      uni.showToast({
+        title: '开始播放',
+        icon: 'none',
+        duration: 1000
+      });
+    },
+    
+    /**
+     * 视频暂停事件
+     */
+    handleVideoPause() {
+      console.log('[RESULT] 视频已暂停');
+    },
+    
+    /**
+     * 视频播放结束事件
+     */
+    handleVideoEnded() {
+      console.log('[RESULT] 视频播放完成');
+      uni.showToast({
+        title: '已观看完成',
+        icon: 'success',
+        duration: 1500
+      });
+    },
+    
+    /**
+     * 视频播放错误事件
+     */
+    handleVideoError(e) {
+      console.error('[RESULT] 视频播放错误:', e);
+      uni.showToast({
+        title: '视频加载失败',
+        icon: 'none',
+        duration: 2000
+      });
     },
     
     /**
@@ -1183,6 +1291,10 @@ export default {
   animation-delay: 0.3s;
 }
 
+.video-card {
+  animation-delay: 0.35s;
+}
+
 .risk-card {
   animation-delay: 0.4s;
 }
@@ -1366,6 +1478,7 @@ export default {
 }
 
 /* 响应式适配 */
+/* 小屏设备 (iPhone SE, iPhone 6/7/8) */
 @media screen and (max-width: 375px) {
   .score-value {
     font-size: 100rpx;
@@ -1374,12 +1487,135 @@ export default {
   .score-max {
     font-size: 40rpx;
   }
+  
+  .chart-canvas {
+    height: 320rpx !important;
+  }
+  
+  .interpretation-video {
+    height: 320rpx;
+  }
+  
+  .card-title {
+    font-size: 28rpx;
+  }
+  
+  .suggestion-text,
+  .risk-text {
+    font-size: 26rpx;
+  }
 }
 
+/* 中等屏设备 (iPhone X/11/12/13) */
+@media screen and (min-width: 376px) and (max-width: 414px) {
+  .chart-canvas {
+    height: 380rpx !important;
+  }
+  
+  .interpretation-video {
+    height: 400rpx;
+  }
+}
+
+/* 大屏设备 (Plus, Pro Max) */
+@media screen and (min-width: 415px) and (max-width: 767px) {
+  .chart-canvas {
+    height: 420rpx !important;
+  }
+  
+  .interpretation-video {
+    height: 460rpx;
+  }
+  
+  .score-value {
+    font-size: 140rpx;
+  }
+  
+  .score-max {
+    font-size: 52rpx;
+  }
+}
+
+/* 平板设备 */
 @media screen and (min-width: 768px) {
   .result-page {
     max-width: 750rpx;
     margin: 0 auto;
   }
+  
+  .chart-canvas {
+    height: 500rpx !important;
+  }
+  
+  .interpretation-video {
+    height: 520rpx;
+  }
+  
+  .score-card {
+    padding: 64rpx 48rpx;
+  }
+  
+  .score-value {
+    font-size: 160rpx;
+  }
+  
+  .card-title {
+    font-size: 36rpx;
+  }
+}
+
+/* 横屏适配 */
+@media screen and (orientation: landscape) {
+  .interpretation-video {
+    height: 60vh;
+    max-height: 500rpx;
+  }
+  
+  .chart-canvas {
+    height: 50vh !important;
+    max-height: 400rpx !important;
+  }
+}
+
+/* 视频卡片 */
+.video-wrapper {
+  margin-top: 16rpx;
+}
+
+.interpretation-video {
+  width: 100%;
+  height: 420rpx;
+  border-radius: 12rpx;
+  background: #000;
+  overflow: hidden;
+}
+
+.video-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16rpx;
+  padding: 16rpx 20rpx;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 8rpx;
+}
+
+.video-title {
+  font-size: 28rpx;
+  color: #1D1D1F;
+  font-weight: 500;
+  flex: 1;
+}
+
+.video-duration {
+  font-size: 24rpx;
+  color: #8E8E93;
+  margin-left: 16rpx;
+}
+
+.card-subtitle {
+  font-size: 24rpx;
+  color: #8E8E93;
+  margin-left: 12rpx;
 }
 </style>
