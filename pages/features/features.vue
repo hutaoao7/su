@@ -1,347 +1,367 @@
 <template>
-  <view class="page">
-    <!-- 功能模块卡片清单 -->
-    <view class="module-list">
-      <!-- 压力检测模块 -->
-      <view class="card module-card" @tap="navigateToStressIndex">
-        <view class="module-header">
-          <view class="module-icon">🧠</view>
-          <view class="module-info">
-            <text class="module-title">压力检测</text>
-            <text class="module-desc">智能评估心理压力状态</text>
+  <view class="features-page">
+    <!-- 心理干预工具区域 -->
+    <view class="intervention-section">
+      <view class="section-title">心理干预工具</view>
+      <view class="intervention-cards">
+		<view 
+			v-for="(card, index) in interventionCards" 
+			:key="index"
+			class="intervention-card"
+			:class="{ 'card-pressed': pressedIntCard === index }"
+			:aria-label="card.title + '，' + card.subtitle"
+			role="button"
+			@touchstart="handleIntTouchStart(index)"
+			@touchend="handleTouchEnd"
+			@touchcancel="handleTouchEnd"
+			@tap="handleIntCardTap(index)"
+		>
+          <view class="card-content">
+            <view class="card-icon" :style="{ background: card.iconBg }">
+              <u-icon :name="card.icon" size="32" :color="card.iconColor"></u-icon>
+            </view>
+            <view class="card-text">
+              <text class="card-title">{{ card.title }}</text>
+              <text class="card-subtitle">{{ card.subtitle }}</text>
+            </view>
+            <view class="card-arrow">
+              <u-icon name="arrow-right" size="20" color="#C7C7CC"></u-icon>
+            </view>
           </view>
-        </view>
-        <view class="module-actions">
-          <button v-if="hasDetect" class="btn-action" @tap.stop="detect">快速检测</button>
-          <button class="btn-secondary" @tap.stop="navigateToStressHistory">查看历史</button>
-        </view>
-      </view>
-
-      <!-- 心理干预模块 -->
-      <view class="card module-card" @tap="navigateToIntervene">
-        <view class="module-header">
-          <view class="module-icon">💚</view>
-          <view class="module-info">
-            <text class="module-title">心理干预</text>
-            <text class="module-desc">专业心理疏导与建议</text>
-          </view>
-        </view>
-        <view class="module-actions">
-          <button v-if="hasStart" class="btn-action" @tap.stop="start">开始干预</button>
-          <button class="btn-secondary" @tap.stop="navigateToMeditation">正念冥想</button>
-        </view>
-      </view>
-
-      <!-- AI 倾诉模块 -->
-      <view class="card module-card" @tap="navigateToChat">
-        <view class="module-header">
-          <view class="module-icon">🤖</view>
-          <view class="module-info">
-            <text class="module-title">AI 倾诉</text>
-            <text class="module-desc">智能情感陪伴与对话</text>
-          </view>
-        </view>
-        <view class="module-actions">
-          <button v-if="hasChat" class="btn-action" @tap.stop="chat">开始对话</button>
-        </view>
-      </view>
-
-      <!-- 音乐疗愈模块 -->
-      <view class="card module-card" @tap="navigateToMusic">
-        <view class="module-header">
-          <view class="module-icon">🎵</view>
-          <view class="module-info">
-            <text class="module-title">音乐疗愈</text>
-            <text class="module-desc">舒缓心灵的治愈音乐</text>
-          </view>
-        </view>
-        <view class="module-actions">
-          <button v-if="hasPlay" class="btn-action" @tap.stop="play">播放音乐</button>
-          <button class="btn-secondary" @tap.stop="navigateToNature">自然音疗</button>
-        </view>
-      </view>
-
-      <!-- 社区交流模块 -->
-      <view class="card module-card" @tap="navigateToCommunity">
-        <view class="module-header">
-          <view class="module-icon">👥</view>
-          <view class="module-info">
-            <text class="module-title">社区交流</text>
-            <text class="module-desc">分享心得，互相支持</text>
-          </view>
-        </view>
-        <view class="module-actions">
-          <button v-if="hasFetch" class="btn-action" @tap.stop="fetch">刷新动态</button>
-        </view>
-      </view>
-
-      <!-- CDK 兑换模块 -->
-      <view class="card module-card" @tap="navigateToRedeem">
-        <view class="module-header">
-          <view class="module-icon">🎁</view>
-          <view class="module-info">
-            <text class="module-title">CDK 兑换</text>
-            <text class="module-desc">兑换会员权益</text>
-          </view>
-        </view>
-        <view class="module-actions">
-          <button v-if="hasRedeem" class="btn-action" @tap.stop="redeem">立即兑换</button>
-        </view>
-      </view>
-
-      <!-- 管理员模块 -->
-      <view v-if="canAdmin" class="card module-card" @tap="navigateToAdmin">
-        <view class="module-header">
-          <view class="module-icon">⚙️</view>
-          <view class="module-info">
-            <text class="module-title">数据管理</text>
-            <text class="module-desc">系统数据与指标</text>
-          </view>
-        </view>
-        <view class="module-actions">
-          <button class="btn-secondary" @tap.stop="navigateToAdminBatch">批量管理</button>
         </view>
       </view>
     </view>
 
-    <!-- 结果展示区域 -->
-    <view v-if="result" class="card result-card">
-      <text class="result-title">操作结果</text>
-      <text class="result-content" selectable>{{ resultText }}</text>
-    </view>
-
-    <view v-if="data" class="card result-card">
-      <text class="result-title">数据信息</text>
-      <text class="result-content" selectable>{{ dataText }}</text>
-    </view>
-
-    <view v-if="list && list.length" class="card result-card">
-      <text class="result-title">列表数据（{{ list.length }}）</text>
-      <view v-for="(txt, idx) in listText" :key="idx" class="list-item">
-        <text selectable>{{ txt }}</text>
+    <!-- 评估入口卡片区域 -->
+    <view class="assessment-section">
+      <view class="section-title">心理健康评估</view>
+      <view class="assessment-cards">
+		<view 
+			v-for="(card, index) in assessmentCards" 
+			:key="index"
+			class="assessment-card"
+			:class="{ 'card-pressed': pressedCard === index }"
+			:aria-label="card.title + '，' + card.subtitle"
+			role="button"
+			@touchstart="handleTouchStart(index)"
+			@touchend="handleTouchEnd"
+			@touchcancel="handleTouchEnd"
+			@tap="handleAssessCardTap(index)"
+		>
+          <view class="card-content">
+            <view class="card-icon">
+              <u-icon :name="card.icon" size="32" :color="card.iconColor"></u-icon>
+            </view>
+            <view class="card-text">
+              <text class="card-title">{{ card.title }}</text>
+              <text class="card-subtitle">{{ card.subtitle }}</text>
+            </view>
+            <view class="card-arrow">
+              <u-icon name="arrow-right" size="20" color="#C7C7CC"></u-icon>
+            </view>
+          </view>
+        </view>
       </view>
     </view>
+    
+    
   </view>
 </template>
 
 <script>
+import tabBarManager from '@/utils/tabbar-manager.js';
+
 export default {
 	data() {
 		return {
-			title: 'Hello',
-			result: null,
-			data: null,
-			list: []
-		}
-	},
-	computed: {
-		hasFetch() { return typeof this.fetch === 'function'; },
-		hasStart() { return typeof this.start === 'function'; },
-		hasPlay() { return typeof this.play === 'function'; },
-		hasDetect() { return typeof this.detect === 'function'; },
-		hasChat() { return typeof this.chat === 'function'; },
-		hasRedeem() { return typeof this.redeem === 'function'; },
-		canAdmin() {
-			// 基于现有数据判断管理员权限，不新增鉴权逻辑
-			return this.title === 'Admin' || this.data && this.data.role === 'admin';
-		},
-		resultText() {
-			if (!this.result) return '';
-			try {
-				return typeof this.result === 'string' ? this.result : JSON.stringify(this.result, null, 2);
-			} catch (e) {
-				return String(this.result);
-			}
-		},
-		dataText() {
-			if (!this.data) return '';
-			try {
-				return typeof this.data === 'string' ? this.data : JSON.stringify(this.data, null, 2);
-			} catch (e) {
-				return String(this.data);
-			}
-		},
-		listText() {
-			if (!this.list || !Array.isArray(this.list)) return [];
-			return this.list.map(item => {
-				try {
-					return typeof item === 'object' ? JSON.stringify(item) : String(item);
-				} catch (e) {
-					return String(item);
-				}
-			});
+			pressedCard: null,
+			pressedIntCard: null,
+				interventionCards: [
+					{
+						title: 'AI倾诉',
+						subtitle: '与AI进行心理倾诉对话',
+						icon: 'chat',
+						iconColor: '#34C759',
+						iconBg: 'rgba(52, 199, 89, 0.1)',
+						route: '/pages-sub/intervene/chat'
+					},
+					{
+						title: '正念冥想',
+						subtitle: '通过音乐和引导放松身心',
+						icon: 'play-circle',
+						iconColor: '#AF52DE',
+						iconBg: 'rgba(175, 82, 222, 0.1)',
+						route: '/pages-sub/intervene/meditation'
+					}
+				],
+				assessmentCards: [
+					{
+						title: '学业压力',
+						subtitle: '评估学习相关的压力水平',
+						icon: 'file-text',
+						iconColor: '#0A84FF',
+						route: '/pages-sub/assess/academic/index'
+					},
+					{
+						title: '社交焦虑',
+						subtitle: '评佰人际交往中的焦虑程度',
+						icon: 'account',
+						iconColor: '#0A84FF',
+						route: '/pages-sub/assess/social/index'
+					},
+					{
+						title: '睡眠质量',
+						subtitle: '评估睡眠状况与相关问题',
+						icon: 'moon',
+						iconColor: '#0A84FF',
+						route: '/pages-sub/assess/sleep/index'
+					},
+					{
+						title: '一般压力',
+						subtitle: '评估日常感知的总体压力',
+						icon: 'heart',
+						iconColor: '#0A84FF',
+						route: '/pages-sub/assess/stress/index'
+					}
+				]
 		}
 	},
 	onLoad() {
-
+		// 自检日志
+		console.log('[FEAT] features compact-mode applied; cards-only ready');
+	},
+	
+	onShow() {
+		// 通知导航栏更新状态
+		tabBarManager.setCurrentIndexByPath('/pages/features/features');
 	},
 	methods: {
-		// 既有方法占位符（如果存在会被调用）
-		fetch() { console.log('fetch method called'); },
-		start() { console.log('start method called'); },
-		play() { console.log('play method called'); },
-		detect() { console.log('detect method called'); },
-		chat() { console.log('chat method called'); },
-		redeem() { console.log('redeem method called'); },
+		// 处理卡片触摸开始
+		handleTouchStart(index) {
+			this.pressedCard = index;
+		},
+		
+		// 处理干预卡片触摸开始
+		handleIntTouchStart(index) {
+			this.pressedIntCard = index;
+		},
 
-		// 导航方法
-		navigateToStressIndex() {
-			uni.navigateTo({ url: '/pages/stress/index' });
+		// 处理卡片触摸结束
+		handleTouchEnd() {
+			this.pressedCard = null;
+			this.pressedIntCard = null;
 		},
-		navigateToStressHistory() {
-			uni.navigateTo({ url: '/pages/stress/history' });
+
+		// 处理干预卡片点击
+		handleIntCardTap(index) {
+			const card = this.interventionCards[index];
+			console.log(`[INTERVENE] nav ${card.title}`)
+			uni.navigateTo({
+				url: card.route
+			});
 		},
-		navigateToIntervene() {
-			uni.navigateTo({ url: '/pages/intervene/intervene' });
-		},
-		navigateToMeditation() {
-			uni.navigateTo({ url: '/pages/intervene/meditation' });
-		},
-		navigateToChat() {
-			uni.navigateTo({ url: '/pages/intervene/chat' });
-		},
-		navigateToMusic() {
-			uni.navigateTo({ url: '/pages/music/index' });
-		},
-		navigateToNature() {
-			uni.navigateTo({ url: '/pages/intervene/nature' });
-		},
-		navigateToCommunity() {
-			uni.navigateTo({ url: '/pages/community/index' });
-		},
-		navigateToRedeem() {
-			uni.navigateTo({ url: '/pages/cdk/redeem' });
-		},
-		navigateToAdmin() {
-			uni.navigateTo({ url: '/pages/admin/metrics' });
-		},
-		navigateToAdminBatch() {
-			uni.navigateTo({ url: '/pages/cdk/admin-batch' });
+		
+		// 处理评估卡片点击
+		handleAssessCardTap(index) {
+			const card = this.assessmentCards[index];
+			console.log(`[ASSESS] nav ${card.title}`)
+			uni.navigateTo({
+				url: card.route
+			});
 		}
 	}
 }
 </script>
 
 <style scoped>
-.page {
+.features-page {
 	min-height: 100vh;
 	background: #FFFFFF;
-	box-sizing: border-box;
-	padding: 24rpx;
+	/* 添加顶部安全区域 */
+	padding-top: constant(safe-area-inset-top);
+	padding-top: env(safe-area-inset-top);
+	/* TabBar底部安全区域 */
+	padding-bottom: calc(50px + constant(safe-area-inset-bottom));
+	padding-bottom: calc(50px + env(safe-area-inset-bottom));
 }
 
-.card {
+/* 心理干预工具区域 */
+.intervention-section {
 	background: #FFFFFF;
-	border-radius: 16rpx;
-	padding: 24rpx;
-	box-shadow: 0 8rpx 16rpx rgba(10, 132, 255, 0.12);
-	margin-bottom: 16rpx;
+	padding: 32rpx 24rpx 16rpx;
 }
 
-.module-list {
+.intervention-cards {
+	display: flex;
+	flex-direction: row;
+	gap: 16rpx;
+}
+
+.intervention-card {
+	flex: 1;
+	background: #F9FAFB;
+	border-radius: 24rpx;
+	padding: 24rpx;
+	box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.08);
+	transition: all 0.2s ease;
+	min-height: 160rpx;
+	position: relative;
+	overflow: hidden;
+}
+
+.intervention-card:active,
+.intervention-card.card-pressed {
+	transform: scale(0.98);
+	box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.06);
+}
+
+.intervention-card .card-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: 16rpx;
+}
+
+.intervention-card .card-icon {
+	width: 72rpx;
+	height: 72rpx;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 auto;
+}
+
+.intervention-card .card-text {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 8rpx;
+	align-items: center;
+}
+
+.intervention-card .card-title {
+	font-size: 32rpx;
+	font-weight: 600;
+	color: #1D1D1F;
+	line-height: 1.4;
+}
+
+.intervention-card .card-subtitle {
+	font-size: 24rpx;
+	color: #86868B;
+	line-height: 1.4;
+}
+
+.intervention-card .card-arrow {
+	display: none;
+}
+
+/* 评估卡片区域 */
+.assessment-section {
+	background: #FFFFFF;
+	padding: 16rpx 24rpx 32rpx;
+}
+
+.section-title {
+	font-size: 36rpx;
+	font-weight: 600;
+	color: #1D1D1F;
+	margin-bottom: 24rpx;
+	line-height: 1.4;
+}
+
+.assessment-cards {
 	display: flex;
 	flex-direction: column;
 	gap: 16rpx;
 }
 
-.module-card {
-	transition: all 0.3s ease;
+.assessment-card {
+	background: #F9FAFB;
+	border-radius: 24rpx;
+	padding: 32rpx;
+	box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.08);
+	transition: all 0.2s ease;
+	min-height: 88rpx;
+	position: relative;
+	overflow: hidden;
 }
 
-.module-card:active {
+.assessment-card:active,
+.card-pressed {
 	transform: scale(0.98);
-	box-shadow: 0 4rpx 8rpx rgba(10, 132, 255, 0.08);
+	box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.06);
 }
 
-.module-header {
+.card-content {
 	display: flex;
 	align-items: center;
-	margin-bottom: 16rpx;
+	width: 100%;
 }
 
-.module-icon {
-	font-size: 48rpx;
-	margin-right: 16rpx;
+.card-icon {
+	width: 64rpx;
+	height: 64rpx;
+	border-radius: 16rpx;
+	background: rgba(10, 132, 255, 0.1);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 24rpx;
+	flex-shrink: 0;
 }
 
-.module-info {
+.card-text {
 	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 8rpx;
 }
 
-.module-title {
-	display: block;
-	font-size: 28rpx;
+.card-title {
+	font-size: 36rpx;
 	font-weight: 600;
 	color: #1D1D1F;
-	margin-bottom: 4rpx;
+	line-height: 1.4;
 }
 
-.module-desc {
-	display: block;
-	font-size: 22rpx;
+.card-subtitle {
+	font-size: 26rpx;
 	color: #86868B;
 	line-height: 1.4;
 }
 
-.module-actions {
+.card-arrow {
+	width: 40rpx;
+	height: 40rpx;
 	display: flex;
-	gap: 12rpx;
-	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
 }
 
-.btn-action {
-	border-radius: 14rpx;
-	padding: 16rpx 24rpx;
-	color: #FFFFFF;
-	background: linear-gradient(135deg, #5AC8FA, #0A84FF);
-	box-shadow: 0 6rpx 12rpx rgba(10, 132, 255, 0.25);
-	font-size: 24rpx;
-	font-weight: 500;
-	border: none;
+/* 响应式适配 */
+@media screen and (max-width: 320px) {
+	.assessment-card {
+		padding: 24rpx;
+	}
+	
+	.card-title {
+		font-size: 32rpx;
+	}
+	
+	.card-subtitle {
+		font-size: 24rpx;
+	}
 }
 
-.btn-secondary {
-	border-radius: 14rpx;
-	padding: 16rpx 24rpx;
-	color: #0A84FF;
-	background: rgba(10, 132, 255, 0.1);
-	font-size: 24rpx;
-	font-weight: 500;
-	border: none;
-}
-
-.result-card {
-	margin-top: 24rpx;
-}
-
-.result-title {
-	display: block;
-	font-size: 26rpx;
-	font-weight: 600;
-	color: #1D1D1F;
-	margin-bottom: 12rpx;
-}
-
-.result-content {
-	display: block;
-	font-size: 24rpx;
-	color: #424245;
-	line-height: 1.5;
-	white-space: pre-wrap;
-}
-
-.list-item {
-	padding: 8rpx 0;
-	border-bottom: 1rpx solid #F2F2F7;
-}
-
-.list-item:last-child {
-	border-bottom: none;
-}
-
-.list-item text {
-	font-size: 24rpx;
-	color: #424245;
-	line-height: 1.5;
+@media screen and (min-width: 428px) {
+	.assessment-cards {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 16rpx;
+	}
 }
 </style>

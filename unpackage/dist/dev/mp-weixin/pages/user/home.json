@@ -1,5 +1,8 @@
 {
   "navigationStyle": "default",
   "navigationBarTitleText": "个人中心",
-  "usingComponents": {}
+  "usingComponents": {
+    "u-popup": "/uni_modules/uview-ui/components/u-popup/u-popup",
+    "u-switch": "/uni_modules/uview-ui/components/u-switch/u-switch"
+  }
 }

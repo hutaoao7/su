@@ -1,15 +1,21 @@
 /**
+ * @deprecated 本模块已不推荐使用
+ * 请使用 utils/unicloud-handler.js 调用云函数
+ */
+console.warn('[DEPRECATED] api/request.js已废弃，请使用utils/unicloud-handler.js');
+
+/**
  * 网络请求封装
  * 统一处理请求参数、响应结果、错误处理
  */
 
-// 开发环境API基础URL
-const DEV_BASE_URL = 'http://localhost:3000/api';
+// 开发环境API基础URL - 已注释，使用uniCloud
+// const DEV_BASE_URL = 'http://localhost:3000/api';
 // 生产环境API基础URL
 const PROD_BASE_URL = 'https://api.lingxin.example.com';
 
-// 配置当前环境
-const BASE_URL = process.env.NODE_ENV === 'development' ? DEV_BASE_URL : PROD_BASE_URL;
+// 配置当前环境 - 强制使用生产环境，避免本地直连
+const BASE_URL = PROD_BASE_URL;
 
 // 请求拦截器
 const requestInterceptor = (config) => {

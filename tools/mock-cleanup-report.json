@@ -1,0 +1,60 @@
+{
+  "scanTime": "2025-10-13T12:46:08.119Z",
+  "totalFiles": 53,
+  "filesWithMock": 3,
+  "totalMockUsages": 6,
+  "updatedFiles": 0,
+  "details": [
+    {
+      "file": "api\\community.js",
+      "usages": [
+        {
+          "pattern": "/import\\s+.*mock.*\\s+from\\s+['\"].*mock.*['\"]/gi",
+          "count": 1,
+          "examples": [
+            "import mockAdapter from './mock-adapter.js'"
+          ]
+        },
+        {
+          "pattern": "/mockAdapter\\./g",
+          "count": 2,
+          "examples": [
+            "mockAdapter.",
+            "mockAdapter."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "api\\mock-adapter.js",
+      "usages": [
+        {
+          "pattern": "/\\/\\/\\s*Mock[\\s\\S]*?(?=\\n(?!\\s*\\/\\/))/g",
+          "count": 1,
+          "examples": [
+            "// Mock数据存储\r"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "api\\user.js",
+      "usages": [
+        {
+          "pattern": "/import\\s+.*mock.*\\s+from\\s+['\"].*mock.*['\"]/gi",
+          "count": 1,
+          "examples": [
+            "import mockAdapter from './mock-adapter.js'"
+          ]
+        },
+        {
+          "pattern": "/mockAdapter\\./g",
+          "count": 1,
+          "examples": [
+            "mockAdapter."
+          ]
+        }
+      ]
+    }
+  ]
+}

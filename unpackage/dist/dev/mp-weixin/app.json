@@ -3,32 +3,81 @@
     "pages/home/home",
     "pages/user/home",
     "pages/index/index",
-    "pages/auth/login",
-    "pages/auth/wechat-login",
-    "pages/auth/register",
-    "pages/auth/role",
+    "pages/login/login",
     "pages/features/features",
-    "pages/settings/settings",
     "pages/community/index",
-    "pages/community/detail",
-    "pages/stress/index",
-    "pages/stress/detect",
-    "pages/stress/history",
-    "pages/stress/record",
-    "pages/stress/intervention",
-    "pages/intervene/intervene",
-    "pages/intervene/chat",
-    "pages/intervene/meditation",
-    "pages/intervene/nature",
-    "pages/music/index",
-    "pages/music/player",
-    "pages/user/profile",
-    "pages/user/login",
-    "pages/admin/metrics",
-    "pages/cdk/redeem",
-    "pages/test/index"
+    "pages/community/publish",
+    "pages/intervene/chat"
   ],
-  "subPackages": [],
+  "subPackages": [
+    {
+      "root": "pages-sub/consent",
+      "pages": [
+        "privacy-policy",
+        "user-agreement",
+        "disclaimer"
+      ],
+      "name": "consent"
+    },
+    {
+      "root": "pages-sub/stress",
+      "pages": [
+        "index",
+        "detect",
+        "history",
+        "record",
+        "intervention"
+      ],
+      "name": "stress"
+    },
+    {
+      "root": "pages-sub/assess",
+      "pages": [
+        "result",
+        "academic/index",
+        "sleep/index",
+        "social/index",
+        "stress/index"
+      ],
+      "name": "assess"
+    },
+    {
+      "root": "pages-sub/intervene",
+      "pages": [
+        "meditation",
+        "nature",
+        "intervene"
+      ],
+      "name": "intervene"
+    },
+    {
+      "root": "pages-sub/music",
+      "pages": [
+        "index",
+        "player"
+      ],
+      "name": "music"
+    },
+    {
+      "root": "pages-sub/community",
+      "pages": [
+        "detail"
+      ],
+      "name": "community"
+    },
+    {
+      "root": "pages-sub/other",
+      "pages": [
+        "redeem",
+        "feedback",
+        "metrics",
+        "profile",
+        "settings/settings",
+        "test/index"
+      ],
+      "name": "other"
+    }
+  ],
   "window": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "翎心",
@@ -36,10 +85,11 @@
     "backgroundColor": "#F0F0F5"
   },
   "tabBar": {
-    "color": "#8E8E93",
-    "selectedColor": "#007AFF",
+    "custom": false,
+    "color": "#666666",
+    "selectedColor": "#539df3",
+    "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
-    "backgroundColor": "rgba(255,255,255,0.8)",
     "list": [
       {
         "pagePath": "pages/home/home",
@@ -50,10 +100,63 @@
         "text": "探索"
       },
       {
+        "pagePath": "pages/intervene/chat",
+        "text": "AI倾诉"
+      },
+      {
+        "pagePath": "pages/community/index",
+        "text": "社区"
+      },
+      {
         "pagePath": "pages/user/home",
         "text": "我的"
       }
     ]
   },
+  "preloadRule": {
+    "pages/features/features": {
+      "network": "all",
+      "packages": [
+        "assess",
+        "intervene",
+        "music",
+        "stress"
+      ]
+    },
+    "pages/user/home": {
+      "network": "all",
+      "packages": [
+        "other",
+        "stress"
+      ]
+    },
+    "pages/home/home": {
+      "network": "all",
+      "packages": [
+        "intervene",
+        "assess",
+        "stress"
+      ]
+    },
+    "pages/community/index": {
+      "network": "all",
+      "packages": [
+        "community"
+      ]
+    },
+    "pages/login/login": {
+      "network": "all",
+      "packages": [
+        "consent"
+      ]
+    },
+    "pages/intervene/chat": {
+      "network": "all",
+      "packages": [
+        "intervene"
+      ]
+    }
+  },
+  "permission": {},
   "usingComponents": {}
 }

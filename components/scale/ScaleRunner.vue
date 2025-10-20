@@ -25,6 +25,9 @@
         <view class="pause-btn" @tap="handleTogglePause">
           <u-icon :name="isPaused ? 'play-circle' : 'pause-circle'" size="20" color="#007AFF"></u-icon>
         </view>
+        <view class="export-btn" @tap="showExportDialog">
+          <u-icon name="download" size="20" color="#007AFF"></u-icon>
+        </view>
       </view>
     </view>
     
@@ -132,12 +135,41 @@
       </view>
     </view>
     
+    <!-- 导出对话框 -->
+    <u-popup v-model="showExport" mode="center" border-radius="20">
+      <view class="export-dialog">
+        <view class="export-title">导出答题数据</view>
+        <view class="export-tips">
+          <text class="export-tips-text">可导出当前答题进度和已完成的答案</text>
+        </view>
+        <view class="export-options">
+          <view class="export-option" @tap="handleExport('json')">
+            <view class="export-option-icon">
+              <u-icon name="file-text" size="40" color="#007AFF"></u-icon>
+            </view>
+            <text class="export-option-title">JSON格式</text>
+            <text class="export-option-desc">适合数据分析和导入</text>
+          </view>
+          <view class="export-option" @tap="handleExport('csv')">
+            <view class="export-option-icon">
+              <u-icon name="list" size="40" color="#52C41A"></u-icon>
+            </view>
+            <text class="export-option-title">CSV格式</text>
+            <text class="export-option-desc">可用Excel打开查看</text>
+          </view>
+        </view>
+        <view class="export-actions">
+          <u-button type="default" @click="showExport = false">取消</u-button>
+        </view>
+      </view>
+    </u-popup>
 
   </view>
 </template>
 
 <script>
 import { scoreUnified } from '@/utils/scoring.js'
+import { exportAssessmentData } from '@/utils/assessment-export.js'
 
 export default {
   name: 'ScaleRunner',
@@ -186,7 +218,9 @@ export default {
       // 主题模式
       isDarkMode: false,
       // 字体大小
-      fontSize: 'medium'  // small, medium, large
+      fontSize: 'medium',  // small, medium, large
+      // 导出对话框
+      showExport: false
     }
   },
   computed: {
@@ -1161,6 +1195,70 @@ ${markedDetails}
       } catch (error) {
         console.error('Error saving assessment record:', error)
       }
+    },
+    
+    // 显示导出对话框
+    showExportDialog() {
+      if (Object.keys(this.answers).length === 0) {
+        uni.showToast({
+          title: '暂无答题数据可导出',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      this.showExport = true;
+    },
+    
+    // 处理导出
+    async handleExport(format) {
+      try {
+        uni.showLoading({
+          title: '正在导出...',
+          mask: true
+        });
+        
+        // 准备导出数据
+        const exportOptions = {
+          scaleId: this.scaleId,
+          title: this.title,
+          questions: this.questions,
+          answers: this.answers,
+          questionTimes: this.questionTimes,
+          totalTime: this.totalElapsedTime,
+          markedQuestions: this.markedQuestions,
+          scaleData: this.scaleData,
+          result: null  // 未完成时无结果
+        };
+        
+        // 调用导出工具
+        const result = await exportAssessmentData(exportOptions, format);
+        
+        uni.hideLoading();
+        
+        if (result.success) {
+          this.showExport = false;
+          
+          uni.showToast({
+            title: result.message,
+            icon: 'success',
+            duration: 2000
+          });
+          
+          console.log(`[ASSESS] 数据导出成功: ${format}`, result);
+        } else {
+          throw new Error(result.message);
+        }
+      } catch (error) {
+        uni.hideLoading();
+        console.error('[ASSESS] 导出失败:', error);
+        
+        uni.showToast({
+          title: error.message || '导出失败',
+          icon: 'none',
+          duration: 2000
+        });
+      }
     }
   }
 }
@@ -1844,5 +1942,121 @@ ${markedDetails}
 
 .dark-mode .mark-btn.marked {
   background: rgba(255, 184, 0, 0.2);
+}
+
+/* ==================== 导出对话框样式 ==================== */
+.export-btn {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 122, 255, 0.1);
+  border-radius: 16rpx;
+  transition: all 0.3s ease;
+}
+
+.export-btn:active {
+  opacity: 0.6;
+  transform: scale(0.95);
+}
+
+.export-dialog {
+  width: 560rpx;
+  padding: 48rpx 32rpx 32rpx;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+}
+
+.export-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #000000;
+  text-align: center;
+  margin-bottom: 16rpx;
+}
+
+.export-tips {
+  margin-bottom: 32rpx;
+}
+
+.export-tips-text {
+  font-size: 24rpx;
+  color: #8E8E93;
+  text-align: center;
+  display: block;
+}
+
+.export-options {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin-bottom: 32rpx;
+}
+
+.export-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32rpx;
+  background: #F7F7F7;
+  border-radius: 16rpx;
+  transition: all 0.3s ease;
+}
+
+.export-option:active {
+  background: #ECECEC;
+  transform: scale(0.98);
+}
+
+.export-option-icon {
+  margin-bottom: 16rpx;
+}
+
+.export-option-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #000000;
+  margin-bottom: 8rpx;
+}
+
+.export-option-desc {
+  font-size: 24rpx;
+  color: #8E8E93;
+  text-align: center;
+}
+
+.export-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.export-actions button {
+  width: 200rpx;
+}
+
+/* 夜间模式下的导出对话框 */
+.dark-mode .export-dialog {
+  background: #2C2C2E;
+}
+
+.dark-mode .export-title {
+  color: #FFFFFF;
+}
+
+.dark-mode .export-option {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .export-option:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .export-option-title {
+  color: #FFFFFF;
+}
+
+.dark-mode .export-btn {
+  background: rgba(10, 132, 255, 0.2);
 }
 </style>

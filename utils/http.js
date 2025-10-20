@@ -1,8 +1,15 @@
+/**
+ * @deprecated 本模块已不推荐使用
+ * 请使用 utils/unicloud-handler.js 调用云函数
+ * http.js 仅保留用于第三方服务调用（如微信API）
+ */
+console.warn('[DEPRECATED] utils/http.js已废弃，请使用utils/unicloud-handler.js');
+
 // HTTP请求封装
 import { getToken } from './auth.js';
 
-// 后端账号管理系统基础URL
-const BASE_URL = 'https://api.lingxin.account.com'; // 账号管理系统API地址
+// 第三方服务基础URL（仅用于非uniCloud服务）
+const BASE_URL = 'https://api.thirdparty.com';
 
 /**
  * 统一请求方法

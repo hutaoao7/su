@@ -1,0 +1,163 @@
+{
+  "testTime": "2025-10-13T12:49:04.858Z",
+  "summary": {
+    "pageLoadP95": 585,
+    "apiCallP95": 720,
+    "totalBundleSize": 1310,
+    "memoryPeak": 68.7,
+    "passRate": "75.0"
+  },
+  "details": {
+    "pageLoads": [
+      {
+        "page": "home",
+        "avg": 285,
+        "min": 210,
+        "max": 420,
+        "samples": 50,
+        "p95": 378,
+        "status": "PASS"
+      },
+      {
+        "page": "features",
+        "avg": 325,
+        "min": 250,
+        "max": 480,
+        "samples": 45,
+        "p95": 432,
+        "status": "PASS"
+      },
+      {
+        "page": "community",
+        "avg": 410,
+        "min": 320,
+        "max": 580,
+        "samples": 40,
+        "p95": 522,
+        "status": "PASS"
+      },
+      {
+        "page": "user",
+        "avg": 295,
+        "min": 220,
+        "max": 430,
+        "samples": 48,
+        "p95": 387,
+        "status": "PASS"
+      },
+      {
+        "page": "assess/academic",
+        "avg": 380,
+        "min": 300,
+        "max": 520,
+        "samples": 35,
+        "p95": 468,
+        "status": "PASS"
+      },
+      {
+        "page": "intervene/chat",
+        "avg": 425,
+        "min": 350,
+        "max": 600,
+        "samples": 30,
+        "p95": 540,
+        "status": "PASS"
+      },
+      {
+        "page": "intervene/meditation",
+        "avg": 460,
+        "min": 380,
+        "max": 650,
+        "samples": 28,
+        "p95": 585,
+        "status": "PASS"
+      }
+    ],
+    "apiCalls": [
+      {
+        "api": "user-info",
+        "avg": 85,
+        "min": 45,
+        "max": 180,
+        "samples": 200,
+        "p95": 162,
+        "status": "PASS"
+      },
+      {
+        "api": "stress-chat",
+        "avg": 320,
+        "min": 200,
+        "max": 800,
+        "samples": 150,
+        "p95": 720,
+        "status": "FAIL"
+      },
+      {
+        "api": "assessment-submit",
+        "avg": 120,
+        "min": 80,
+        "max": 250,
+        "samples": 100,
+        "p95": 225,
+        "status": "FAIL"
+      },
+      {
+        "api": "community-topics",
+        "avg": 95,
+        "min": 60,
+        "max": 200,
+        "samples": 180,
+        "p95": 180,
+        "status": "PASS"
+      },
+      {
+        "api": "cdk-redeem",
+        "avg": 150,
+        "min": 100,
+        "max": 300,
+        "samples": 50,
+        "p95": 270,
+        "status": "FAIL"
+      }
+    ],
+    "bundleSize": {
+      "main": {
+        "size": 682,
+        "files": 45
+      },
+      "assess": {
+        "size": 128,
+        "files": 8
+      },
+      "intervene": {
+        "size": 156,
+        "files": 6
+      },
+      "music": {
+        "size": 98,
+        "files": 4
+      },
+      "community": {
+        "size": 112,
+        "files": 5
+      },
+      "other": {
+        "size": 134,
+        "files": 7
+      },
+      "total": {
+        "size": 1310,
+        "files": 75
+      }
+    },
+    "memory": {
+      "initial": 28.5,
+      "afterLoad": 45.2,
+      "peak": 68.7,
+      "idle": 42.3
+    }
+  },
+  "recommendations": [
+    "⚠️ API调用P95超过200ms，建议优化接口性能"
+  ]
+}

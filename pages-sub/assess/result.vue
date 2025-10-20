@@ -68,21 +68,40 @@
       </view>
     </view>
 
-    <!-- 建议卡片 -->
+    <!-- 建议卡片 - 优化滚动性能 -->
     <view class="suggestions-card" v-if="suggestions.length > 0">
       <view class="card-header">
         <text class="card-title">💡 专业建议</text>
+        <text class="card-subtitle">{{ suggestions.length }}条建议</text>
       </view>
-      <view class="card-content">
-        <view 
-          v-for="(suggestion, index) in suggestions" 
-          :key="index"
-          class="suggestion-item"
-        >
-          <view class="suggestion-bullet">{{ index + 1 }}</view>
-          <text class="suggestion-text">{{ suggestion }}</text>
+      <!-- 使用scroll-view提升长列表性能，最大高度800rpx -->
+      <scroll-view 
+        scroll-y 
+        class="suggestions-scroll"
+        :show-scrollbar="suggestions.length > 5"
+        :enable-flex="true"
+        :scroll-with-animation="true"
+      >
+        <view class="card-content">
+          <view 
+            v-for="(suggestion, index) in visibleSuggestions" 
+            :key="index"
+            class="suggestion-item"
+          >
+            <view class="suggestion-bullet">{{ index + 1 }}</view>
+            <text class="suggestion-text">{{ suggestion }}</text>
+          </view>
+          <!-- 加载更多提示 -->
+          <view 
+            v-if="suggestions.length > visibleSuggestionsCount && !showAllSuggestions"
+            class="load-more-hint"
+            @tap="loadMoreSuggestions"
+          >
+            <text class="hint-text">展开查看更多建议（{{ suggestions.length - visibleSuggestionsCount }}条）</text>
+            <text class="hint-icon">▼</text>
+          </view>
         </view>
-      </view>
+      </scroll-view>
     </view>
 
     <!-- 结果解读视频 -->
@@ -142,9 +161,9 @@
       </button>
       <!-- #endif -->
       
-      <button class="btn btn-secondary" @tap="viewHistory">
-        <u-icon name="clock" size="18" color="#0A84FF"></u-icon>
-        <text class="btn-text">查看历史</text>
+      <button class="btn btn-secondary" @tap="toggleCompareMode">
+        <u-icon name="swap" size="18" color="#0A84FF"></u-icon>
+        <text class="btn-text">{{ compareMode ? '退出对比' : '对比历史' }}</text>
       </button>
       
       <button class="btn btn-secondary" @tap="retakeAssessment">
@@ -153,8 +172,95 @@
       </button>
     </view>
 
+    <!-- 历史对比视图 -->
+    <view class="compare-card" v-if="compareMode && historyData.length > 0">
+      <view class="card-header">
+        <text class="card-title">📊 历史对比分析</text>
+        <text class="card-subtitle">选择记录进行对比</text>
+      </view>
+      <view class="card-content">
+        <!-- 历史记录选择器 -->
+        <scroll-view scroll-y class="compare-list">
+          <view 
+            v-for="(item, index) in historyData" 
+            :key="index"
+            class="compare-item"
+            :class="{ 'compare-item-selected': selectedCompareIndex === index }"
+            @tap="selectCompareItem(index)"
+          >
+            <view class="compare-item-header">
+              <text class="compare-item-date">{{ formatDate(item.timestamp) }}</text>
+              <view class="compare-item-level" :class="getLevelClass(item.level)">
+                {{ item.level }}
+              </view>
+            </view>
+            <view class="compare-item-score">
+              <text class="score-label">得分：</text>
+              <text class="score-value">{{ item.score }}</text>
+              <text class="score-change" v-if="index > 0" :class="getScoreChangeClass(item, historyData[index-1])">
+                {{ getScoreChange(item, historyData[index-1]) }}
+              </text>
+            </view>
+          </view>
+        </scroll-view>
+        
+        <!-- 对比结果展示 -->
+        <view class="compare-result" v-if="selectedCompareIndex !== null">
+          <view class="compare-section">
+            <text class="section-title">分数对比</text>
+            <view class="compare-scores">
+              <view class="compare-score-item">
+                <text class="label">当前</text>
+                <text class="value current">{{ score }}</text>
+              </view>
+              <view class="compare-arrow">→</view>
+              <view class="compare-score-item">
+                <text class="label">历史</text>
+                <text class="value history">{{ historyData[selectedCompareIndex].score }}</text>
+              </view>
+              <view class="compare-diff" :class="getCompareClass(score, historyData[selectedCompareIndex].score)">
+                {{ getCompareDiff(score, historyData[selectedCompareIndex].score) }}
+              </view>
+            </view>
+          </view>
+          
+          <view class="compare-section">
+            <text class="section-title">等级对比</text>
+            <view class="compare-levels">
+              <view class="level-item">
+                <text class="label">当前</text>
+                <view class="level-badge" :class="levelClass">{{ displayLevel }}</view>
+              </view>
+              <view class="level-item">
+                <text class="label">历史</text>
+                <view class="level-badge" :class="getLevelClass(historyData[selectedCompareIndex].level)">
+                  {{ historyData[selectedCompareIndex].level }}
+                </view>
+              </view>
+            </view>
+          </view>
+          
+          <view class="compare-analysis">
+            <text class="analysis-title">📈 变化分析</text>
+            <text class="analysis-text">{{ getCompareAnalysis() }}</text>
+          </view>
+          
+          <!-- 趋势折线图 -->
+          <view class="trend-section" v-if="historyData.length >= 2">
+            <text class="section-title">📉 趋势变化</text>
+            <canvas 
+              id="trendChart"
+              type="2d"
+              class="trend-canvas"
+              @touchstart="handleTrendTouch"
+            ></canvas>
+          </view>
+        </view>
+      </view>
+    </view>
+    
     <!-- 相关推荐 -->
-    <view class="related-card">
+    <view class="related-card" v-if="!compareMode">
       <view class="card-header">
         <text class="card-title">📋 相关评估</text>
       </view>
@@ -180,11 +286,19 @@
         ⚠️ 本评估结果仅供参考，不能替代专业医疗诊断。如有心理健康问题，请及时寻求专业帮助。
       </text>
     </view>
+    
+    <!-- 隐藏Canvas用于生成分享图片 -->
+    <canvas 
+      id="shareCanvas"
+      type="2d"
+      class="share-canvas-hidden"
+    ></canvas>
   </view>
 </template>
 
 <script>
 import { trackEvent } from '@/utils/analytics.js';
+import resultCache from '@/utils/result-cache.js';
 
 export default {
   data() {
@@ -205,6 +319,10 @@ export default {
       // 建议和风险
       suggestions: [],
       riskFactors: [],
+      
+      // 建议展示优化
+      visibleSuggestionsCount: 5, // 初始显示5条
+      showAllSuggestions: false,   // 是否展开全部
       
       // 相关量表
       relatedScales: [],
@@ -228,6 +346,10 @@ export default {
       // Canvas尺寸缓存
       radarCanvasSize: null,
       barCanvasSize: null,
+      
+      // 对比模式
+      compareMode: false,
+      selectedCompareIndex: null,
     };
   },
   
@@ -263,6 +385,16 @@ export default {
     
     levelDescription() {
       return this.generateLevelDescription();
+    },
+    
+    /**
+     * 可见的建议列表（懒加载优化）
+     */
+    visibleSuggestions() {
+      if (this.showAllSuggestions || this.suggestions.length <= this.visibleSuggestionsCount) {
+        return this.suggestions;
+      }
+      return this.suggestions.slice(0, this.visibleSuggestionsCount);
     }
   },
   
@@ -696,41 +828,57 @@ export default {
     /**
      * 加载历史数据
      */
-    loadHistoryData() {
+    async loadHistoryData() {
       try {
-        const history = uni.getStorageSync('assessment_history') || [];
-        // 过滤当前量表的历史
-        this.historyData = history
-          .filter(h => h.scaleId === this.scaleId)
-          .slice(-5); // 最近5次
+        // 使用新的缓存管理器读取历史
+        const history = resultCache.getHistory(this.scaleId, 5);
+        this.historyData = history;
         
-        console.log('[RESULT] 加载历史数据:', this.historyData.length);
+        console.log('[RESULT] 加载历史数据（增强版）:', this.historyData.length);
+        
+        // 定期清理过期缓存
+        if (Math.random() < 0.1) { // 10%概率触发清理
+          const cleaned = await resultCache.cleanExpired();
+          if (cleaned.success && cleaned.cleanedCount > 0) {
+            console.log('[RESULT] 已清理过期缓存:', cleaned.cleanedCount);
+          }
+        }
       } catch (error) {
         console.error('[RESULT] 加载历史失败:', error);
       }
     },
     
     /**
-     * 保存到历史
+     * 保存到历史（使用增强的缓存管理器）
      */
-    saveToHistory() {
+    async saveToHistory() {
       try {
-        const history = uni.getStorageSync('assessment_history') || [];
-        
-        history.push({
+        // 使用新的缓存管理器保存完整结果
+        const resultData = {
           scaleId: this.scaleId,
           score: this.score,
+          maxScore: this.maxScore,
           level: this.level,
-          timestamp: Date.now()
-        });
+          levelDescription: this.levelDescription,
+          dimensions: this.dimensions,
+          suggestions: this.suggestions,
+          riskFactors: this.riskFactors,
+          timestamp: Date.now(),
+          // 用户信息（如果有）
+          userId: uni.getStorageSync('userId') || null
+        };
         
-        // 只保留最近50条
-        if (history.length > 50) {
-          history.splice(0, history.length - 50);
+        const saved = await resultCache.saveResult(resultData);
+        
+        if (saved) {
+          console.log('[RESULT] 结果已缓存（增强版）');
+          
+          // 显示缓存统计
+          const stats = resultCache.getCacheStats();
+          console.log('[RESULT] 缓存统计:', stats);
+        } else {
+          console.error('[RESULT] 缓存保存失败');
         }
-        
-        uni.setStorageSync('assessment_history', history);
-        console.log('[RESULT] 已保存到历史');
       } catch (error) {
         console.error('[RESULT] 保存历史失败:', error);
       }
@@ -892,6 +1040,26 @@ export default {
     },
     
     /**
+     * 加载更多建议
+     */
+    loadMoreSuggestions() {
+      console.log('[RESULT] 展开更多建议');
+      this.showAllSuggestions = true;
+      
+      // 震动反馈
+      uni.vibrateShort({
+        type: 'light'
+      });
+      
+      // 提示
+      uni.showToast({
+        title: '已展开全部建议',
+        icon: 'success',
+        duration: 1500
+      });
+    },
+    
+    /**
      * 格式化日期
      */
     formatDate(timestamp) {
@@ -960,10 +1128,305 @@ export default {
     /**
      * 生成分享图片
      */
+    /**
+     * 生成高质量分享图片
+     * 优化策略：
+     * 1. 使用2倍像素密度提升清晰度
+     * 2. 优化Canvas绘制顺序减少重绘
+     * 3. 压缩图片降低文件大小
+     */
     async generateShareImage() {
-      // TODO: 使用Canvas生成包含图表的分享图片
-      console.log('[RESULT] 生成分享图片');
+      console.log('[RESULT] 生成高质量分享图片');
+      
+      try {
+        // 创建离屏Canvas用于合成
+        const query = uni.createSelectorQuery().in(this);
+        
+        // 获取设备像素比，提升清晰度
+        const dpr = uni.getSystemInfoSync().pixelRatio || 2;
+        
+        // 画布尺寸（物理像素）
+        const canvasWidth = 750;  // rpx转px后的宽度
+        const canvasHeight = 1334; // 标准分享图高度
+        
+        // 实际渲染尺寸（考虑dpr）
+        const renderWidth = canvasWidth * dpr;
+        const renderHeight = canvasHeight * dpr;
+        
+        return new Promise((resolve, reject) => {
+          query.select('#shareCanvas')
+            .fields({ node: true, size: true })
+            .exec(async (res) => {
+              if (!res || !res[0]) {
+                // 降级方案：使用旧版Canvas API
+                const shareCanvas = await this.generateShareImageLegacy();
+                resolve(shareCanvas);
+                return;
+              }
+              
+              const canvas = res[0].node;
+              const ctx = canvas.getContext('2d');
+              
+              // 设置Canvas尺寸
+              canvas.width = renderWidth;
+              canvas.height = renderHeight;
+              
+              // 缩放上下文以支持高DPI
+              ctx.scale(dpr, dpr);
+              
+              // 填充背景
+              ctx.fillStyle = '#F5F5F7';
+              ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+              
+              // 绘制白色卡片背景
+              ctx.fillStyle = '#FFFFFF';
+              ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+              ctx.shadowBlur = 20;
+              ctx.shadowOffsetY = 5;
+              this.roundRect(ctx, 30, 30, canvasWidth - 60, canvasHeight - 60, 20);
+              ctx.fill();
+              ctx.shadowColor = 'transparent';
+              
+              // 绘制标题
+              ctx.fillStyle = '#1D1D1F';
+              ctx.font = 'bold 36px -apple-system, sans-serif';
+              ctx.textAlign = 'center';
+              ctx.fillText('评估结果分享', canvasWidth / 2, 100);
+              
+              // 绘制分数
+              ctx.font = 'bold 72px -apple-system, sans-serif';
+              ctx.fillStyle = this.getScoreColor();
+              ctx.fillText(this.displayScore.toString(), canvasWidth / 2, 200);
+              
+              ctx.font = '28px -apple-system, sans-serif';
+              ctx.fillStyle = '#86868B';
+              ctx.fillText(`/ ${this.displayMaxScore}`, canvasWidth / 2, 240);
+              
+              // 绘制等级
+              ctx.font = 'bold 32px -apple-system, sans-serif';
+              ctx.fillStyle = this.getScoreColor();
+              ctx.fillText(this.displayLevel, canvasWidth / 2, 290);
+              
+              // 如果有雷达图数据，绘制简化版
+              if (this.dimensions.length > 0) {
+                await this.drawMiniRadarChart(ctx, canvasWidth / 2, 400, 150, dpr);
+              }
+              
+              // 绘制建议（前3条）
+              const topSuggestions = this.suggestions.slice(0, 3);
+              let yOffset = 620;
+              
+              ctx.textAlign = 'left';
+              ctx.font = 'bold 28px -apple-system, sans-serif';
+              ctx.fillStyle = '#1D1D1F';
+              ctx.fillText('💡 专业建议', 60, yOffset);
+              
+              yOffset += 50;
+              ctx.font = '24px -apple-system, sans-serif';
+              topSuggestions.forEach((suggestion, index) => {
+                const text = `${index + 1}. ${suggestion}`;
+                const lines = this.wrapText(ctx, text, canvasWidth - 120);
+                
+                lines.forEach(line => {
+                  ctx.fillStyle = '#515154';
+                  ctx.fillText(line, 60, yOffset);
+                  yOffset += 36;
+                });
+                
+                yOffset += 10;
+              });
+              
+              // 绘制二维码（如果需要）
+              // TODO: 集成小程序码生成
+              
+              // 绘制底部信息
+              ctx.textAlign = 'center';
+              ctx.font = '20px -apple-system, sans-serif';
+              ctx.fillStyle = '#86868B';
+              ctx.fillText('翎心 CraneHeart - 心理健康评估', canvasWidth / 2, canvasHeight - 80);
+              ctx.fillText(this.formatDate(Date.now()), canvasWidth / 2, canvasHeight - 50);
+              
+              // 导出图片（质量0.9，平衡清晰度和文件大小）
+              uni.canvasToTempFilePath({
+                canvas: canvas,
+                quality: 0.9,
+                fileType: 'jpg',
+                destWidth: renderWidth,
+                destHeight: renderHeight,
+                success: (res) => {
+                  console.log('[RESULT] 分享图片生成成功:', res.tempFilePath);
+                  
+                  // 保存到相册（可选）
+                  uni.showModal({
+                    title: '保存图片',
+                    content: '是否保存到相册？',
+                    success: (modalRes) => {
+                      if (modalRes.confirm) {
+                        uni.saveImageToPhotosAlbum({
+                          filePath: res.tempFilePath,
+                          success: () => {
+                            uni.showToast({
+                              title: '已保存到相册',
+                              icon: 'success'
+                            });
+                          }
+                        });
+                      }
+                    }
+                  });
+                  
+                  resolve(res.tempFilePath);
+                },
+                fail: (err) => {
+                  console.error('[RESULT] 导出图片失败:', err);
+                  reject(err);
+                }
+              }, this);
+            });
+        });
+      } catch (error) {
+        console.error('[RESULT] 生成分享图片失败:', error);
+        uni.showToast({
+          title: '生成图片失败',
+          icon: 'none'
+        });
+        return null;
+      }
+    },
+    
+    /**
+     * 降级方案：使用旧版Canvas API
+     */
+    async generateShareImageLegacy() {
+      console.log('[RESULT] 使用降级方案生成图片');
+      // 简化版实现...
       return null;
+    },
+    
+    /**
+     * 绘制迷你雷达图
+     */
+    async drawMiniRadarChart(ctx, centerX, centerY, radius, dpr) {
+      const angleStep = (Math.PI * 2) / this.dimensions.length;
+      
+      // 绘制背景多边形
+      ctx.strokeStyle = '#E5E5EA';
+      ctx.lineWidth = 1;
+      
+      for (let level = 1; level <= 5; level++) {
+        ctx.beginPath();
+        const r = (radius / 5) * level;
+        
+        for (let i = 0; i <= this.dimensions.length; i++) {
+          const angle = angleStep * i - Math.PI / 2;
+          const x = centerX + r * Math.cos(angle);
+          const y = centerY + r * Math.sin(angle);
+          
+          if (i === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+        
+        ctx.closePath();
+        ctx.stroke();
+      }
+      
+      // 绘制数据多边形
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(102, 126, 234, 0.3)';
+      ctx.strokeStyle = '#667eea';
+      ctx.lineWidth = 2;
+      
+      for (let i = 0; i <= this.dimensions.length; i++) {
+        const dim = this.dimensions[i % this.dimensions.length];
+        const ratio = dim.value / dim.max;
+        const r = radius * ratio;
+        const angle = angleStep * i - Math.PI / 2;
+        const x = centerX + r * Math.cos(angle);
+        const y = centerY + r * Math.sin(angle);
+        
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+      
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      
+      // 绘制维度标签（简化）
+      ctx.font = '18px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#515154';
+      
+      this.dimensions.forEach((dim, index) => {
+        const angle = angleStep * index - Math.PI / 2;
+        const labelRadius = radius + 30;
+        const x = centerX + labelRadius * Math.cos(angle);
+        const y = centerY + labelRadius * Math.sin(angle);
+        
+        ctx.fillText(dim.label.substring(0, 4), x, y);
+      });
+    },
+    
+    /**
+     * 文本换行处理
+     */
+    wrapText(ctx, text, maxWidth) {
+      const words = text.split('');
+      const lines = [];
+      let currentLine = '';
+      
+      words.forEach(word => {
+        const testLine = currentLine + word;
+        const metrics = ctx.measureText(testLine);
+        
+        if (metrics.width > maxWidth && currentLine) {
+          lines.push(currentLine);
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+      });
+      
+      if (currentLine) {
+        lines.push(currentLine);
+      }
+      
+      return lines;
+    },
+    
+    /**
+     * 获取分数颜色
+     */
+    getScoreColor() {
+      const level = this.level || '';
+      if (level.includes('severe')) return '#FF3B30';
+      if (level.includes('moderate')) return '#FF9500';
+      if (level.includes('mild')) return '#FFCC00';
+      return '#34C759';
+    },
+    
+    /**
+     * 绘制圆角矩形
+     */
+    roundRect(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.arcTo(x + width, y, x + width, y + radius, radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+      ctx.lineTo(x + radius, y + height);
+      ctx.arcTo(x, y + height, x, y + height - radius, radius);
+      ctx.lineTo(x, y + radius);
+      ctx.arcTo(x, y, x + radius, y, radius);
+      ctx.closePath();
     },
     
     /**
@@ -993,6 +1456,333 @@ export default {
     /**
      * 重新测评
      */
+    /**
+     * 切换对比模式
+     */
+    toggleCompareMode() {
+      this.compareMode = !this.compareMode;
+      this.selectedCompareIndex = null;
+      
+      console.log('[RESULT] 对比模式:', this.compareMode);
+      
+      if (this.compareMode && this.historyData.length === 0) {
+        uni.showToast({
+          title: '暂无历史记录',
+          icon: 'none'
+        });
+        this.compareMode = false;
+        return;
+      }
+      
+      // 如果进入对比模式且有数据，绘制趋势图
+      if (this.compareMode && this.historyData.length >= 2) {
+        this.$nextTick(() => {
+          this.initTrendChart();
+        });
+      }
+    },
+    
+    /**
+     * 选择对比项
+     */
+    selectCompareItem(index) {
+      this.selectedCompareIndex = index;
+      
+      uni.vibrateShort({
+        type: 'light'
+      });
+      
+      console.log('[RESULT] 选择对比项:', index);
+      
+      // 更新趋势图高亮选中点
+      if (this.historyData.length >= 2) {
+        this.initTrendChart();
+      }
+    },
+    
+    /**
+     * 初始化趋势折线图
+     */
+    async initTrendChart() {
+      console.log('[RESULT] 初始化趋势折线图');
+      
+      try {
+        const query = uni.createSelectorQuery().in(this);
+        query.select('#trendChart')
+          .fields({ node: true, size: true })
+          .exec((res) => {
+            if (!res || !res[0]) {
+              console.error('[RESULT] 趋势图Canvas未找到');
+              return;
+            }
+            
+            const canvas = res[0].node;
+            const ctx = canvas.getContext('2d');
+            
+            // 获取设备像素比
+            const dpr = uni.getSystemInfoSync().pixelRatio || 2;
+            
+            // 设置Canvas尺寸
+            const width = res[0].width;
+            const height = 200; // 固定高度
+            
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            ctx.scale(dpr, dpr);
+            
+            // 绘制折线图
+            this.drawTrendChart(ctx, width, height);
+          });
+      } catch (error) {
+        console.error('[RESULT] 初始化趋势图失败:', error);
+      }
+    },
+    
+    /**
+     * 绘制趋势折线图
+     */
+    drawTrendChart(ctx, width, height) {
+      const padding = 40;
+      const chartWidth = width - padding * 2;
+      const chartHeight = height - padding * 2;
+      
+      // 清空画布
+      ctx.clearRect(0, 0, width, height);
+      
+      // 准备数据（包括当前结果）
+      const allData = [...this.historyData, {
+        score: this.score,
+        timestamp: Date.now()
+      }];
+      
+      // 计算最大最小值
+      const scores = allData.map(d => d.score);
+      const maxScore = Math.max(...scores);
+      const minScore = Math.min(...scores);
+      const scoreRange = maxScore - minScore || 10; // 避免除0
+      
+      // 计算点的位置
+      const points = allData.map((item, index) => {
+        const x = padding + (chartWidth / (allData.length - 1)) * index;
+        const y = padding + chartHeight - ((item.score - minScore) / scoreRange) * chartHeight;
+        return { x, y, score: item.score, timestamp: item.timestamp };
+      });
+      
+      // 绘制背景网格
+      ctx.strokeStyle = '#E5E5EA';
+      ctx.lineWidth = 1;
+      
+      for (let i = 0; i <= 4; i++) {
+        const y = padding + (chartHeight / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(width - padding, y);
+        ctx.stroke();
+      }
+      
+      // 绘制折线
+      ctx.beginPath();
+      ctx.strokeStyle = '#667eea';
+      ctx.lineWidth = 3;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      
+      points.forEach((point, index) => {
+        if (index === 0) {
+          ctx.moveTo(point.x, point.y);
+        } else {
+          ctx.lineTo(point.x, point.y);
+        }
+      });
+      
+      ctx.stroke();
+      
+      // 绘制渐变填充
+      const gradient = ctx.createLinearGradient(0, padding, 0, height - padding);
+      gradient.addColorStop(0, 'rgba(102, 126, 234, 0.3)');
+      gradient.addColorStop(1, 'rgba(102, 126, 234, 0)');
+      
+      ctx.beginPath();
+      ctx.fillStyle = gradient;
+      points.forEach((point, index) => {
+        if (index === 0) {
+          ctx.moveTo(point.x, point.y);
+        } else {
+          ctx.lineTo(point.x, point.y);
+        }
+      });
+      ctx.lineTo(points[points.length - 1].x, height - padding);
+      ctx.lineTo(points[0].x, height - padding);
+      ctx.closePath();
+      ctx.fill();
+      
+      // 绘制数据点
+      points.forEach((point, index) => {
+        const isSelected = index === this.selectedCompareIndex;
+        const isCurrent = index === points.length - 1;
+        
+        // 外圈
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, isCurrent ? 8 : 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
+        
+        // 内圈
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, isCurrent ? 6 : 4, 0, Math.PI * 2);
+        ctx.fillStyle = isSelected ? '#FF9500' : (isCurrent ? '#667eea' : '#667eea');
+        ctx.fill();
+        
+        // 如果是选中或当前点，显示标签
+        if (isSelected || isCurrent) {
+          ctx.fillStyle = '#1D1D1F';
+          ctx.font = 'bold 12px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(point.score.toString(), point.x, point.y - 12);
+        }
+      });
+      
+      // 绘制Y轴标签
+      ctx.fillStyle = '#86868B';
+      ctx.font = '11px -apple-system, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      
+      ctx.fillText(maxScore.toString(), padding - 10, padding);
+      ctx.fillText(minScore.toString(), padding - 10, height - padding);
+      
+      // 绘制X轴标签（简化显示）
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      
+      if (points.length > 0) {
+        ctx.fillText('首次', points[0].x, height - padding + 10);
+      }
+      if (points.length > 1) {
+        ctx.fillText('最近', points[points.length - 1].x, height - padding + 10);
+      }
+      
+      console.log('[RESULT] 趋势图绘制完成');
+    },
+    
+    /**
+     * 处理趋势图触摸
+     */
+    handleTrendTouch(e) {
+      console.log('[RESULT] 趋势图触摸');
+      // TODO: 实现点击查看详细数据
+    },
+    
+    /**
+     * 获取等级样式类
+     */
+    getLevelClass(level) {
+      if (!level) return 'level-normal';
+      
+      const levelStr = level.toLowerCase();
+      if (levelStr.includes('severe') || levelStr.includes('重度')) {
+        return 'level-severe';
+      } else if (levelStr.includes('moderate') || levelStr.includes('中度')) {
+        return 'level-moderate';
+      } else if (levelStr.includes('mild') || levelStr.includes('轻度')) {
+        return 'level-mild';
+      }
+      return 'level-normal';
+    },
+    
+    /**
+     * 获取分数变化
+     */
+    getScoreChange(current, previous) {
+      if (!previous) return '';
+      
+      const diff = current.score - previous.score;
+      if (diff > 0) {
+        return `+${diff}`;
+      } else if (diff < 0) {
+        return `${diff}`;
+      }
+      return '持平';
+    },
+    
+    /**
+     * 获取分数变化样式类
+     */
+    getScoreChangeClass(current, previous) {
+      if (!previous) return '';
+      
+      const diff = current.score - previous.score;
+      if (diff > 0) {
+        return 'score-increase';
+      } else if (diff < 0) {
+        return 'score-decrease';
+      }
+      return 'score-same';
+    },
+    
+    /**
+     * 获取对比差值
+     */
+    getCompareDiff(current, history) {
+      const diff = current - history;
+      if (diff > 0) {
+        return `+${diff}分`;
+      } else if (diff < 0) {
+        return `${diff}分`;
+      }
+      return '持平';
+    },
+    
+    /**
+     * 获取对比样式类
+     */
+    getCompareClass(current, history) {
+      const diff = current - history;
+      if (diff > 0) {
+        return 'diff-increase';
+      } else if (diff < 0) {
+        return 'diff-decrease';
+      }
+      return 'diff-same';
+    },
+    
+    /**
+     * 生成对比分析文字
+     */
+    getCompareAnalysis() {
+      if (this.selectedCompareIndex === null) {
+        return '';
+      }
+      
+      const historyItem = this.historyData[this.selectedCompareIndex];
+      const scoreDiff = this.score - historyItem.score;
+      const daysDiff = Math.floor((Date.now() - historyItem.timestamp) / (24 * 60 * 60 * 1000));
+      
+      let analysis = '';
+      
+      if (scoreDiff > 0) {
+        analysis = `与${daysDiff}天前相比，您的得分上升了${scoreDiff}分，`;
+        if (scoreDiff > 10) {
+          analysis += '变化较大，建议关注近期生活状态的变化。';
+        } else {
+          analysis += '略有波动，属于正常范围。';
+        }
+      } else if (scoreDiff < 0) {
+        analysis = `与${daysDiff}天前相比，您的得分下降了${Math.abs(scoreDiff)}分，`;
+        if (Math.abs(scoreDiff) > 10) {
+          analysis += '说明您的状态有明显改善，请继续保持！';
+        } else {
+          analysis += '略有改善，请继续坚持良好的生活习惯。';
+        }
+      } else {
+        analysis = `与${daysDiff}天前相比，您的得分保持稳定，`;
+        analysis += '请继续关注自己的心理健康状态。';
+      }
+      
+      return analysis;
+    },
+    
     retakeAssessment() {
       console.log('[RESULT] 重新测评');
       
@@ -1363,6 +2153,52 @@ export default {
   line-height: 1.6;
 }
 
+/* 建议滚动容器 */
+.suggestions-scroll {
+  max-height: 800rpx;
+  width: 100%;
+}
+
+/* 加载更多提示 */
+.load-more-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  padding: 30rpx;
+  margin-top: 20rpx;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border-radius: 12rpx;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.load-more-hint:active {
+  transform: scale(0.98);
+  opacity: 0.8;
+}
+
+.hint-text {
+  font-size: 26rpx;
+  color: #667eea;
+  font-weight: 500;
+}
+
+.hint-icon {
+  font-size: 20rpx;
+  color: #667eea;
+  animation: bounce 1.5s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4rpx);
+  }
+}
+
 /* 风险列表 */
 .risk-item {
   padding: 20rpx 24rpx;
@@ -1617,5 +2453,251 @@ export default {
   font-size: 24rpx;
   color: #8E8E93;
   margin-left: 12rpx;
+}
+
+/* 对比卡片 */
+.compare-card {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin: 24rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+  animation: fadeInUp 0.5s ease-out;
+}
+
+/* 对比列表 */
+.compare-list {
+  max-height: 400rpx;
+  margin-bottom: 32rpx;
+}
+
+.compare-item {
+  padding: 24rpx;
+  background: #F5F5F7;
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+  transition: all 0.3s ease;
+}
+
+.compare-item:active {
+  transform: scale(0.98);
+}
+
+.compare-item-selected {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border: 2rpx solid #667eea;
+}
+
+.compare-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.compare-item-date {
+  font-size: 26rpx;
+  color: #515154;
+  font-weight: 500;
+}
+
+.compare-item-level {
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.compare-item-score {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.score-label {
+  font-size: 24rpx;
+  color: #86868B;
+}
+
+.score-value {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1D1D1F;
+}
+
+.score-change {
+  font-size: 22rpx;
+  font-weight: 500;
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+}
+
+.score-increase {
+  background: #FFEBEE;
+  color: #FF3B30;
+}
+
+.score-decrease {
+  background: #E8F5E9;
+  color: #34C759;
+}
+
+.score-same {
+  background: #F5F5F7;
+  color: #86868B;
+}
+
+/* 对比结果 */
+.compare-result {
+  padding: 24rpx;
+  background: linear-gradient(135deg, #F5F7FA 0%, #F9F9FB 100%);
+  border-radius: 16rpx;
+}
+
+.compare-section {
+  margin-bottom: 32rpx;
+}
+
+.section-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1D1D1F;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+/* 分数对比 */
+.compare-scores {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 24rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+}
+
+.compare-score-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.compare-score-item .label {
+  font-size: 24rpx;
+  color: #86868B;
+}
+
+.compare-score-item .value {
+  font-size: 48rpx;
+  font-weight: 700;
+}
+
+.compare-score-item .value.current {
+  color: #667eea;
+}
+
+.compare-score-item .value.history {
+  color: #86868B;
+}
+
+.compare-arrow {
+  font-size: 36rpx;
+  color: #86868B;
+}
+
+.compare-diff {
+  padding: 8rpx 20rpx;
+  border-radius: 24rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.diff-increase {
+  background: #FFEBEE;
+  color: #FF3B30;
+}
+
+.diff-decrease {
+  background: #E8F5E9;
+  color: #34C759;
+}
+
+.diff-same {
+  background: #F5F5F7;
+  color: #86868B;
+}
+
+/* 等级对比 */
+.compare-levels {
+  display: flex;
+  gap: 24rpx;
+  padding: 24rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+}
+
+.level-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.level-item .label {
+  font-size: 24rpx;
+  color: #86868B;
+}
+
+.level-badge {
+  padding: 12rpx 24rpx;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+/* 对比分析 */
+.compare-analysis {
+  padding: 24rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+}
+
+.analysis-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1D1D1F;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.analysis-text {
+  font-size: 26rpx;
+  color: #515154;
+  line-height: 1.8;
+}
+
+/* 趋势图 */
+.trend-section {
+  margin-top: 24rpx;
+}
+
+.trend-canvas {
+  width: 100%;
+  height: 400rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+}
+
+/* 隐藏Canvas（用于生成分享图片） */
+.share-canvas-hidden {
+  position: fixed;
+  top: -9999px;
+  left: -9999px;
+  width: 750rpx;
+  height: 1334rpx;
+  opacity: 0;
+  pointer-events: none;
 }
 </style>

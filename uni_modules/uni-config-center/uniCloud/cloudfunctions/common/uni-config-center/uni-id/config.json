@@ -1,0 +1,13 @@
+{
+  "tokenSecret": "7AqR9mK3xG2pL6vB1tY5cW8dF4zN0jUe",
+  "passwordSecret": "X1hT8nM5bV9yQ2kJ6pC0dZ7rE4fL3wGs",
+  "tokenExpiresIn": 2592000,
+  "passwordErrorLimit": 6,
+  "passwordErrorRetryTime": 3600,
+  "mp-weixin": {
+    "weixin": {
+      "appid": "wx5a3c2fd2f74332b9",
+      "appsecret": "33ab41087a867e6686c1b39af3af3854"
+    }
+  }
+}

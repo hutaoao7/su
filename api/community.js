@@ -1,71 +1,104 @@
 /**
  * 社区相关API
  */
-import request from './request.js';
+import { callFunction } from '@/utils/unicloud-handler.js';
+import mockAdapter from './mock-adapter.js';
 
-// 获取社区帖子列表
-export const getPosts = (params) => {
-  return request.get('/community/posts', params);
-};
+// 是否使用Mock数据（开发阶段）
+const USE_MOCK = false; // 设置为false使用真实接口
 
-// 获取帖子详情
-export const getPostDetail = (id) => {
-  return request.get(`/community/post/${id}`);
-};
-
-// 创建新帖子
-export const createPost = (data) => {
-  return request.post('/community/post', data);
-};
-
-// 上传帖子图片
-export const uploadPostImage = (filePath) => {
-  return new Promise((resolve, reject) => {
-    uni.uploadFile({
-      url: request.defaults.baseURL + '/community/upload/image',
-      filePath,
-      name: 'image',
-      header: {
-        'Authorization': `Bearer ${uni.getStorageSync('token') || ''}`,
-      },
-      success: (res) => {
-        if (res.statusCode === 200) {
-          try {
-            const data = JSON.parse(res.data);
-            resolve(data);
-          } catch (e) {
-            reject(e);
-          }
-        } else {
-          reject(res);
-        }
-      },
-      fail: reject
+/**
+ * 获取话题列表
+ */
+export const getTopicList = async (params = {}) => {
+  if (USE_MOCK) {
+    return mockAdapter.getMockCommunityTopics(params.page, params.pageSize);
+  }
+  
+  try {
+    const res = await callFunction('community-topics', {
+      page: params.page || 1,
+      pageSize: params.pageSize || 10,
+      category: params.category || 'all',
+      sortBy: params.sortBy || 'latest'
     });
-  });
+    
+    return res;
+  } catch (error) {
+    console.error('[API] 获取话题列表失败:', error);
+    throw error;
+  }
 };
 
-// 点赞帖子
-export const likePost = (postId) => {
-  return request.post(`/community/post/${postId}/like`);
+/**
+ * 获取话题详情
+ */
+export const getTopicDetail = async (topicId) => {
+  if (USE_MOCK) {
+    return mockAdapter.getMockTopicDetail(topicId);
+  }
+  
+  try {
+    const res = await callFunction('community-detail', {
+      topicId
+    });
+    
+    return res;
+  } catch (error) {
+    console.error('[API] 获取话题详情失败:', error);
+    throw error;
+  }
 };
 
-// 取消点赞
-export const unlikePost = (postId) => {
-  return request.delete(`/community/post/${postId}/like`);
+/**
+ * 点赞话题
+ */
+export const likeTopic = async (topicId) => {
+  try {
+    const res = await callFunction('community-like', {
+      topicId,
+      action: 'like'
+    });
+    
+    return res;
+  } catch (error) {
+    console.error('[API] 点赞失败:', error);
+    throw error;
+  }
 };
 
-// 评论帖子
-export const commentPost = (postId, content) => {
-  return request.post(`/community/post/${postId}/comment`, { content });
+/**
+ * 发布话题
+ */
+export const publishTopic = async (data) => {
+  try {
+    const res = await callFunction('community-publish', {
+      title: data.title,
+      content: data.content,
+      category: data.category,
+      tags: data.tags
+    });
+    
+    return res;
+  } catch (error) {
+    console.error('[API] 发布话题失败:', error);
+    throw error;
+  }
 };
 
-// 获取帖子评论列表
-export const getComments = (postId, params) => {
-  return request.get(`/community/post/${postId}/comments`, params);
+/**
+ * 发表评论
+ */
+export const addComment = async (topicId, content) => {
+  try {
+    const res = await callFunction('community-comment', {
+      topicId,
+      content
+    });
+    
+    return res;
+  } catch (error) {
+    console.error('[API] 发表评论失败:', error);
+    throw error;
+  }
 };
-
-// 获取话题标签列表
-export const getTopics = () => {
-  return request.get('/community/topics');
-}; 

@@ -2,33 +2,33 @@
 export const FEATURES = [
   // 核心功能 - 已完成
   { key: 'home', name: '首页', route: '/pages/home/home', enabled: true },
-  { key: 'stress-detect', name: '压力检测', route: '/pages/stress/index', enabled: true },
-  { key: 'stress-history', name: '检测历史', route: '/pages/stress/history', enabled: true },
-  { key: 'intervene', name: '心理干预', route: '/pages/intervene/intervene', enabled: true },
+  { key: 'stress-detect', name: '压力检测', route: '/pages-sub/stress/index', enabled: true },
+  { key: 'stress-history', name: '检测历史', route: '/pages-sub/stress/history', enabled: true },
+  { key: 'intervene', name: '心理干预', route: '/pages-sub/intervene/intervene', enabled: true },
   { key: 'intervene-chat', name: 'AI倾诉', route: '/pages/intervene/chat', enabled: true },
-  { key: 'intervene-meditation', name: '正念冥想', route: '/pages/intervene/meditation', enabled: true },
-  { key: 'intervene-nature', name: '自然音疗', route: '/pages/intervene/nature', enabled: true },
-  { key: 'music', name: '音乐播放', route: '/pages/music/index', enabled: true },
-  { key: 'music-player', name: '音乐播放器', route: '/pages/music/player', enabled: true },
+  { key: 'intervene-meditation', name: '正念冥想', route: '/pages-sub/intervene/meditation', enabled: true },
+  { key: 'intervene-nature', name: '自然音疗', route: '/pages-sub/intervene/nature', enabled: true },
+  { key: 'music', name: '音乐播放', route: '/pages-sub/music/index', enabled: true },
+  { key: 'music-player', name: '音乐播放器', route: '/pages-sub/music/player', enabled: true },
   { key: 'user-center', name: '个人中心', route: '/pages/user/home', enabled: true },
-  { key: 'user-profile', name: '个人资料', route: '/pages/user/profile', enabled: true },
+  { key: 'user-profile', name: '个人资料', route: '/pages-sub/other/profile', enabled: true },
   { key: 'community', name: '社区交流', route: '/pages/community/index', enabled: true },
-  { key: 'settings', name: '设置', route: '/pages/settings/settings', enabled: true },
-  { key: 'auth-login', name: '登录', route: '/pages/auth/login', enabled: true },
-  { key: 'cdk-redeem', name: 'CDK兑换', route: '/pages/cdk/redeem', enabled: true },
+  { key: 'settings', name: '设置', route: '/pages-sub/other/settings/settings', enabled: true },
+  { key: 'auth-login', name: '登录', route: '/pages/login/login', enabled: true },
+  { key: 'cdk-redeem', name: 'CDK兑换', route: '/pages-sub/other/redeem', enabled: true },
   
   // 管理功能 - 已完成
-  { key: 'admin-metrics', name: '数据指标', route: '/pages/admin/metrics', enabled: true },
-  { key: 'cdk-admin', name: 'CDK管理', route: '/pages/cdk/admin-batch', enabled: true },
+  { key: 'admin-metrics', name: '数据指标', route: '/pages-sub/other/metrics', enabled: true },
+  { key: 'cdk-admin', name: 'CDK管理', route: '/pages/cdk/admin-batch', enabled: false },
   
   // 未完成功能 - 禁用
   { key: 'features', name: '功能中心', route: '/pages/features/features', enabled: true },
   { key: 'user-notifications', name: '通知设置', route: '/pages/user/notifications', enabled: false },
   { key: 'user-privacy', name: '隐私设置', route: '/pages/user/privacy', enabled: false },
   { key: 'user-about', name: '关于应用', route: '/pages/user/about', enabled: false },
-  { key: 'user-feedback', name: '意见反馈', route: '/pages/user/feedback', enabled: false },
-  { key: 'stress-intervention', name: '压力干预', route: '/pages/stress/intervention', enabled: false },
-  { key: 'community-detail', name: '社区详情', route: '/pages/community/detail', enabled: false }
+  { key: 'user-feedback', name: '意见反馈', route: '/pages-sub/other/feedback', enabled: true },
+  { key: 'stress-intervention', name: '压力干预', route: '/pages-sub/stress/intervention', enabled: true },
+  { key: 'community-detail', name: '社区详情', route: '/pages-sub/community/detail', enabled: true }
 ]
 
 /**

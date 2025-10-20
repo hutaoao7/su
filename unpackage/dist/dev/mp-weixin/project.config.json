@@ -4,12 +4,13 @@
     "ignore": []
   },
   "setting": {
-    "urlCheck": false,
-    "es6": false,
-    "postcss": false,
-    "minified": false,
+    "urlCheck": true,
+    "es6": true,
+    "postcss": true,
+    "minified": true,
     "newFeature": true,
-    "bigPackageSizeSupport": true
+    "bigPackageSizeSupport": true,
+    "uglifyFileName": true
   },
   "compileType": "miniprogram",
   "libVersion": "",

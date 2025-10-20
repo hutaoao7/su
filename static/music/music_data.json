@@ -1,0 +1,180 @@
+{
+  "categories": [
+    {
+      "id": "relax",
+      "name": "放松冥想",
+      "description": "帮助您放松身心，缓解压力",
+      "icon": "🧘"
+    },
+    {
+      "id": "sleep",
+      "name": "助眠音乐",
+      "description": "改善睡眠质量，促进深度睡眠",
+      "icon": "🌙"
+    },
+    {
+      "id": "focus",
+      "name": "专注工作",
+      "description": "提高专注力，增强工作效率",
+      "icon": "🎯"
+    },
+    {
+      "id": "nature",
+      "name": "自然之声",
+      "description": "大自然的声音，带来内心平静",
+      "icon": "🌿"
+    }
+  ],
+  "playlists": [
+    {
+      "id": 1,
+      "categoryId": "relax",
+      "title": "深度放松冥想",
+      "cover": "/static/images/meditation-1.jpg",
+      "duration": "15分钟",
+      "plays": 12580,
+      "songs": [
+        {
+          "id": 101,
+          "title": "呼吸放松",
+          "artist": "冥想大师",
+          "duration": 180,
+          "url": "/static/audio/relax/breathing.mp3",
+          "cover": "/static/images/meditation-1.jpg"
+        },
+        {
+          "id": 102,
+          "title": "身体扫描",
+          "artist": "冥想大师",
+          "duration": 300,
+          "url": "/static/audio/relax/body-scan.mp3",
+          "cover": "/static/images/meditation-1.jpg"
+        },
+        {
+          "id": 103,
+          "title": "正念冥想",
+          "artist": "冥想大师",
+          "duration": 420,
+          "url": "/static/audio/relax/mindfulness.mp3",
+          "cover": "/static/images/meditation-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "categoryId": "sleep",
+      "title": "深度睡眠音乐",
+      "cover": "/static/images/sleep-1.jpg",
+      "duration": "30分钟",
+      "plays": 8960,
+      "songs": [
+        {
+          "id": 201,
+          "title": "雨声助眠",
+          "artist": "自然音乐",
+          "duration": 600,
+          "url": "/static/audio/sleep/rain.mp3",
+          "cover": "/static/images/sleep-1.jpg"
+        },
+        {
+          "id": 202,
+          "title": "海浪声",
+          "artist": "自然音乐",
+          "duration": 900,
+          "url": "/static/audio/sleep/ocean.mp3",
+          "cover": "/static/images/sleep-1.jpg"
+        },
+        {
+          "id": 203,
+          "title": "白噪音",
+          "artist": "睡眠专家",
+          "duration": 1200,
+          "url": "/static/audio/sleep/white-noise.mp3",
+          "cover": "/static/images/sleep-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "categoryId": "focus",
+      "title": "专注力音乐",
+      "cover": "/static/images/focus-1.jpg",
+      "duration": "25分钟",
+      "plays": 6540,
+      "songs": [
+        {
+          "id": 301,
+          "title": "阿尔法脑波",
+          "artist": "专注音乐",
+          "duration": 500,
+          "url": "/static/audio/focus/alpha-waves.mp3",
+          "cover": "/static/images/focus-1.jpg"
+        },
+        {
+          "id": 302,
+          "title": "深度专注",
+          "artist": "专注音乐",
+          "duration": 600,
+          "url": "/static/audio/focus/deep-focus.mp3",
+          "cover": "/static/images/focus-1.jpg"
+        },
+        {
+          "id": 303,
+          "title": "学习音乐",
+          "artist": "专注音乐",
+          "duration": 400,
+          "url": "/static/audio/focus/study.mp3",
+          "cover": "/static/images/focus-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "categoryId": "nature",
+      "title": "大自然声音",
+      "cover": "/static/images/nature-1.jpg",
+      "duration": "20分钟",
+      "plays": 9850,
+      "songs": [
+        {
+          "id": 401,
+          "title": "森林鸟鸣",
+          "artist": "自然之声",
+          "duration": 480,
+          "url": "/static/audio/nature/forest.mp3",
+          "cover": "/static/images/nature-1.jpg"
+        },
+        {
+          "id": 402,
+          "title": "溪流声",
+          "artist": "自然之声",
+          "duration": 420,
+          "url": "/static/audio/nature/stream.mp3",
+          "cover": "/static/images/nature-1.jpg"
+        },
+        {
+          "id": 403,
+          "title": "风声",
+          "artist": "自然之声",
+          "duration": 300,
+          "url": "/static/audio/nature/wind.mp3",
+          "cover": "/static/images/nature-1.jpg"
+        }
+      ]
+    }
+  ],
+  "recommendations": [
+    {
+      "id": 1,
+      "title": "每日推荐",
+      "subtitle": "为您精选的放松音乐",
+      "songs": [101, 201, 301, 401]
+    },
+    {
+      "id": 2,
+      "title": "热门播放",
+      "subtitle": "大家都在听",
+      "songs": [102, 202, 302, 402]
+    }
+  ]
+}

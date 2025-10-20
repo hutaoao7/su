@@ -1,15 +1,14 @@
 'use strict';
 
 // 导入所需模块
-const axios = require('axios');
-const { Configuration, OpenAIApi } = require('openai');
+const aiGateway = require('../common/ai-gateway');
+const { 
+  checkSensitiveWords, 
+  getCrisisInterventionResponse, 
+  getSensitiveResponse 
+} = require('../common/sensitive-filter');
 
-// OpenAI配置
-const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY'; // 实际项目中应使用环境变量或配置中心
-const configuration = new Configuration({
-  apiKey: OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
+// 现在通过AI网关调用，无需直接配置OpenAI
 
 // CBT认知行为疗法的系统提示词
 const SYSTEM_PROMPT = `
@@ -34,11 +33,12 @@ const SYSTEM_PROMPT = `
 `;
 
 /**
- * 生成聊天回复
+ * 生成聊天回复（重构为使用AI网关）
+ * @param {string} userId - 用户ID
  * @param {string} userMessage - 用户消息
  * @param {Array} chatHistory - 聊天历史
  */
-async function generateChatResponse(userMessage, chatHistory = []) {
+async function generateChatResponse(userId, userMessage, chatHistory = []) {
   try {
     // 构建消息历史
     const messages = [
@@ -57,19 +57,12 @@ async function generateChatResponse(userMessage, chatHistory = []) {
     // 添加当前用户消息
     messages.push({ role: 'user', content: userMessage });
     
-    // 调用OpenAI API
-    const response = await openai.createChatCompletion({
+    // 通过AI网关调用（支持限流、降级、内容安全）
+    const reply = await aiGateway.chat(userId, messages, {
       model: 'gpt-3.5-turbo',
-      messages,
       temperature: 0.7,
-      max_tokens: 400,
-      top_p: 0.95,
-      frequency_penalty: 0.5,
-      presence_penalty: 0.5,
+      maxTokens: 400
     });
-    
-    // 提取回复
-    const reply = response.data.choices[0].message.content.trim();
     
     return {
       code: 0,
@@ -82,31 +75,18 @@ async function generateChatResponse(userMessage, chatHistory = []) {
   } catch (error) {
     console.error('生成聊天回复错误:', error);
     
-    // 使用备用回复
+    // 错误已在网关层处理，这里仅记录
     return {
       code: -1,
-      msg: '生成回复失败',
+      msg: error.message || '生成回复失败',
       data: {
-        content: getFallbackResponse()
+        content: error.message || '服务暂时不可用，请稍后再试'
       }
     };
   }
 }
 
-/**
- * 当API调用失败时的备用回复
- */
-function getFallbackResponse() {
-  const fallbackResponses = [
-    '我理解你现在的感受。尝试深呼吸几次，感受当下，然后我们可以一起探讨这个问题。',
-    '听起来你正在经历一些压力。从CBT的角度，我们可以尝试识别导致这种感受的具体想法，然后质疑它们的合理性。',
-    '你描述的感受很常见。让我们尝试一种CBT技术：想象一下，如果你的好朋友遇到同样的情况，你会给他们什么建议？',
-    '我理解这种情况会让人感到压力。CBT建议我们关注可控因素，制定具体的小步骤来改善情况。',
-    '从你的描述中，我注意到一些"非黑即白"的思维模式。生活中的许多情况其实存在灰色地带。你能尝试找出一个介于最好和最坏情况之间的中间可能性吗？'
-  ];
-  
-  return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
-}
+// getFallbackResponse已移至ai-gateway/fallback-templates.js
 
 /**
  * 记录聊天内容到数据库（如需要）
@@ -117,7 +97,21 @@ async function logChatToDatabase(userId, userMessage, aiResponse) {
 }
 
 exports.main = async (event, context) => {
-  const { message, history = [], userId = '' } = event;
+  const { message, history = [], userId } = event;
+  
+  // 从Token提取userId（如果未提供）
+  let uid = userId;
+  if (!uid && context.UNI_ID_TOKEN) {
+    try {
+      const token = context.UNI_ID_TOKEN;
+      const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString());
+      uid = payload.sub || payload.uid || 'anonymous';
+    } catch (error) {
+      uid = 'anonymous';
+    }
+  } else if (!uid) {
+    uid = 'anonymous';
+  }
   
   if (!message || message.trim() === '') {
     return {
@@ -128,8 +122,44 @@ exports.main = async (event, context) => {
   }
   
   try {
-    // 生成聊天回复
-    const response = await generateChatResponse(message, history);
+    // 检查敏感词
+    const sensitiveCheck = checkSensitiveWords(message);
+    
+    if (sensitiveCheck.hasSensitive) {
+      console.log('检测到敏感词:', sensitiveCheck.matchedWords);
+      
+      // 如果是危机情况，返回危机干预回复
+      if (sensitiveCheck.isCrisis) {
+        const crisisResponse = getCrisisInterventionResponse();
+        
+        // 记录危机干预日志
+        console.warn('触发危机干预，用户ID:', uid);
+        
+        return {
+          code: 0,
+          msg: '危机干预',
+          data: {
+            content: crisisResponse,
+            isCrisis: true
+          }
+        };
+      } else {
+        // 一般敏感词，返回引导性回复
+        const sensitiveResponse = getSensitiveResponse(sensitiveCheck.matchedWords);
+        
+        return {
+          code: 0,
+          msg: '敏感内容',
+          data: {
+            content: sensitiveResponse,
+            hasSensitive: true
+          }
+        };
+      }
+    }
+    
+    // 正常流程：生成聊天回复（传入userId用于限流）
+    const response = await generateChatResponse(uid, message, history);
     
     // 记录聊天内容（可选）
     if (userId) {

@@ -1,0 +1,17 @@
+{
+  "name": "user-update-profile",
+  "version": "1.0.0",
+  "description": "更新用户资料云函数",
+  "main": "index.js",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "cloudfunction-config": {
+    "timeout": 10,
+    "memorySize": 256
+  },
+  "engines": {
+    "node": ">=16.0.0 <17.0.0"
+  }
+}
+

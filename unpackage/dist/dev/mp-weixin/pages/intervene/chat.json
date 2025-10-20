@@ -1,5 +1,7 @@
 {
   "navigationStyle": "default",
-  "navigationBarTitleText": "AI 倾诉",
-  "usingComponents": {}
+  "navigationBarTitleText": "AI倾诉",
+  "usingComponents": {
+    "u-icon": "/uni_modules/uview-ui/components/u-icon/u-icon"
+  }
 }

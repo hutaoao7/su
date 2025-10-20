@@ -1,5 +1,8 @@
 {
   "navigationStyle": "default",
-  "navigationBarTitleText": "社区交流",
-  "usingComponents": {}
+  "navigationBarTitleText": "社区",
+  "usingComponents": {
+    "u-icon": "/uni_modules/uview-ui/components/u-icon/u-icon",
+    "u-loadmore": "/uni_modules/uview-ui/components/u-loadmore/u-loadmore"
+  }
 }

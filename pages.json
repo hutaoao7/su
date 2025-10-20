@@ -1,43 +1,70 @@
 {
   "pages": [
-    { "path": "pages/home/home",           "style": { "navigationStyle": "default", "navigationBarTitleText": "首页" } },
-    { "path": "pages/user/home",           "style": { "navigationStyle": "default", "navigationBarTitleText": "个人中心" } },
-    { "path": "pages/index/index",         "style": { "navigationStyle": "default", "navigationBarTitleText": "翎心" } },
-
-    { "path": "pages/auth/login",          "style": { "navigationStyle": "default", "navigationBarTitleText": "登录/注册" } },
-    { "path": "pages/auth/wechat-login",   "style": { "navigationStyle": "default", "navigationBarTitleText": "登录" } },
-    { "path": "pages/auth/register",       "style": { "navigationStyle": "default", "navigationBarTitleText": "注册" } },
-    { "path": "pages/auth/role",           "style": { "navigationStyle": "default", "navigationBarTitleText": "角色选择" } },
-
-    { "path": "pages/features/features",   "style": { "navigationStyle": "default", "navigationBarTitleText": "探索" } },
-    { "path": "pages/settings/settings",   "style": { "navigationStyle": "default", "navigationBarTitleText": "我的" } },
-
-    { "path": "pages/community/index",     "style": { "navigationStyle": "default", "navigationBarTitleText": "社区交流" } },
-    { "path": "pages/community/detail",    "style": { "navigationStyle": "default", "navigationBarTitleText": "社区详情" } },
-    
-    { "path": "pages/stress/index",        "style": { "navigationStyle": "default", "navigationBarTitleText": "压力检测" } },
-    { "path": "pages/stress/detect",       "style": { "navigationStyle": "default", "navigationBarTitleText": "压力检测" } },
-    { "path": "pages/stress/history",      "style": { "navigationStyle": "default", "navigationBarTitleText": "检测历史" } },
-    { "path": "pages/stress/record",       "style": { "navigationStyle": "default", "navigationBarTitleText": "记录详情" } },
-    { "path": "pages/stress/intervention", "style": { "navigationStyle": "default", "navigationBarTitleText": "干预建议" } },
-    
-    { "path": "pages/intervene/intervene", "style": { "navigationStyle": "default", "navigationBarTitleText": "心理干预" } },
-    { "path": "pages/intervene/chat",      "style": { "navigationStyle": "default", "navigationBarTitleText": "AI 倾诉" } },
-    { "path": "pages/intervene/meditation","style": { "navigationStyle": "default", "navigationBarTitleText": "正念冥想" } },
-    { "path": "pages/intervene/nature",    "style": { "navigationStyle": "default", "navigationBarTitleText": "自然音疗" } },
-
-    { "path": "pages/music/index",         "style": { "navigationStyle": "default", "navigationBarTitleText": "音乐播放" } },
-    { "path": "pages/music/player",        "style": { "navigationStyle": "default", "navigationBarTitleText": "音乐播放器" } },
-
-    { "path": "pages/user/profile",        "style": { "navigationStyle": "default", "navigationBarTitleText": "个人资料" } },
-    { "path": "pages/user/login",          "style": { "navigationStyle": "default", "navigationBarTitleText": "用户登录" } },
-    
-    { "path": "pages/admin/metrics",       "style": { "navigationStyle": "default", "navigationBarTitleText": "数据指标" } },
-
-    { "path": "pages/cdk/redeem",          "style": { "navigationStyle": "default", "navigationBarTitleText": "CDK 兑换" } },
-  
-    { "path": "pages/test/index",          "style": { "navigationStyle": "default", "navigationBarTitleText": "测试页面" } }
+    {
+      "path": "pages/home/home",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "首页"
+      }
+    },
+    {
+      "path": "pages/user/home",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "个人中心"
+      }
+    },
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "翎心"
+      }
+    },
+    {
+      "path": "pages/login/login",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "登录",
+        "navigationBarBackgroundColor": "#667eea",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/features/features",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "探索"
+      }
+    },
+    {
+      "path": "pages/community/index",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "社区"
+      }
+    },
+    {
+      "path": "pages/community/publish",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "发布动态"
+      }
+    },
+    {
+      "path": "pages/intervene/chat",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "AI倾诉"
+      }
+    }
   ],
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^u-(.*)": "@/uni_modules/uview-ui/components/u-$1/u-$1.vue"
+    }
+  },
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "翎心",
@@ -45,14 +72,270 @@
     "backgroundColor": "#F0F0F5"
   },
   "tabBar": {
-    "color": "#8E8E93",
-    "selectedColor": "#007AFF",
+    "custom": false,
+    "color": "#666666",
+    "selectedColor": "#539df3",
+    "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
-    "backgroundColor": "rgba(255,255,255,0.8)",
     "list": [
-      { "pagePath": "pages/home/home", "text": "首页" },
-      { "pagePath": "pages/features/features", "text": "探索" },
-      { "pagePath": "pages/user/home", "text": "我的" }
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/features/features",
+        "text": "探索"
+      },
+      {
+        "pagePath": "pages/intervene/chat",
+        "text": "AI倾诉"
+      },
+      {
+        "pagePath": "pages/community/index",
+        "text": "社区"
+      },
+      {
+        "pagePath": "pages/user/home",
+        "text": "我的"
+      }
     ]
+  },
+  "subPackages": [
+    {
+      "root": "pages-sub/consent",
+      "name": "consent",
+      "pages": [
+        {
+          "path": "privacy-policy",
+          "style": {
+            "navigationBarTitleText": "隐私政策"
+          }
+        },
+        {
+          "path": "user-agreement",
+          "style": {
+            "navigationBarTitleText": "用户协议"
+          }
+        },
+        {
+          "path": "disclaimer",
+          "style": {
+            "navigationBarTitleText": "免责声明"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages-sub/stress",
+      "name": "stress",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationBarTitleText": "压力检测"
+          }
+        },
+        {
+          "path": "detect",
+          "style": {
+            "navigationBarTitleText": "压力检测"
+          }
+        },
+        {
+          "path": "history",
+          "style": {
+            "navigationBarTitleText": "检测历史"
+          }
+        },
+        {
+          "path": "record",
+          "style": {
+            "navigationBarTitleText": "记录详情"
+          }
+        },
+        {
+          "path": "intervention",
+          "style": {
+            "navigationBarTitleText": "干预建议"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages-sub/assess",
+      "name": "assess",
+      "pages": [
+        {
+          "path": "result",
+          "style": {
+            "navigationBarTitleText": "评估结果"
+          }
+        },
+        {
+          "path": "academic/index",
+          "style": {
+            "navigationBarTitleText": "学业压力评估"
+          }
+        },
+        {
+          "path": "sleep/index",
+          "style": {
+            "navigationBarTitleText": "睡眠质量评估"
+          }
+        },
+        {
+          "path": "social/index",
+          "style": {
+            "navigationBarTitleText": "社交焦虑评估"
+          }
+        },
+        {
+          "path": "stress/index",
+          "style": {
+            "navigationBarTitleText": "压力评估"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages-sub/intervene",
+      "name": "intervene",
+      "pages": [
+        {
+          "path": "meditation",
+          "style": {
+            "navigationBarTitleText": "冥想音疗"
+          }
+        },
+        {
+          "path": "nature",
+          "style": {
+            "navigationBarTitleText": "自然音"
+          }
+        },
+        {
+          "path": "intervene",
+          "style": {
+            "navigationBarTitleText": "干预方案"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages-sub/music",
+      "name": "music",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationBarTitleText": "音乐疗愈"
+          }
+        },
+        {
+          "path": "player",
+          "style": {
+            "navigationBarTitleText": "播放器"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages-sub/community",
+      "name": "community",
+      "pages": [
+        {
+          "path": "detail",
+          "style": {
+            "navigationBarTitleText": "话题详情"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages-sub/other",
+      "name": "other",
+      "pages": [
+        {
+          "path": "redeem",
+          "style": {
+            "navigationBarTitleText": "CDK兑换"
+          }
+        },
+        {
+          "path": "feedback",
+          "style": {
+            "navigationBarTitleText": "意见反馈"
+          }
+        },
+        {
+          "path": "metrics",
+          "style": {
+            "navigationBarTitleText": "数据统计"
+          }
+        },
+        {
+          "path": "profile",
+          "style": {
+            "navigationBarTitleText": "个人资料"
+          }
+        },
+        {
+          "path": "settings/settings",
+          "style": {
+            "navigationBarTitleText": "设置"
+          }
+        },
+        {
+          "path": "test/index",
+          "style": {
+            "navigationBarTitleText": "测试页面"
+          }
+        }
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/features/features": {
+      "network": "all",
+      "packages": [
+        "assess",
+        "intervene",
+        "music",
+        "stress"
+      ]
+    },
+    "pages/user/home": {
+      "network": "all",
+      "packages": [
+        "other",
+        "stress"
+      ]
+    },
+    "pages/home/home": {
+      "network": "all",
+      "packages": [
+        "intervene",
+        "assess",
+        "stress"
+      ]
+    },
+    "pages/community/index": {
+      "network": "all",
+      "packages": [
+        "community"
+      ]
+    },
+    "pages/login/login": {
+      "network": "all",
+      "packages": [
+        "consent"
+      ]
+    },
+    "pages/intervene/chat": {
+      "network": "all",
+      "packages": [
+        "intervene"
+      ]
+    }
   }
 }

@@ -1,0 +1,11 @@
+{
+  "name": "auth-login",
+  "version": "1.0.0",
+  "description": "统一登录入口云函数（支持微信登录）",
+  "main": "index.js",
+  "dependencies": {
+    "uni-config-center": "file:../../../uni_modules/uni-config-center/uniCloud/cloudfunctions/common/uni-config-center",
+    "uni-id": "file:../../../uni_modules/uni-id/uniCloud/cloudfunctions/common/uni-id"
+  },
+  "extensions": {}
+}

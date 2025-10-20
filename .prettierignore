@@ -1,0 +1,16 @@
+# 依赖
+node_modules/
+uni_modules/
+
+# 构建产物
+unpackage/
+dist/
+
+# 测试
+coverage/
+
+# 其他
+*.min.js
+*.min.css
+package-lock.json
+

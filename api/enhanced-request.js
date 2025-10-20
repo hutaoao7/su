@@ -6,13 +6,13 @@
 
 import { enhancedApiCall, initNetworkMonitor, defaultApiOptions } from '@/utils/api-handler.js';
 
-// 开发环境API基础URL
-const DEV_BASE_URL = 'http://localhost:3000/api';
+// 开发环境API基础URL - 已注释，使用uniCloud
+// const DEV_BASE_URL = 'http://localhost:3000/api';
 // 生产环境API基础URL
 const PROD_BASE_URL = 'https://api.lingxin.example.com';
 
-// 配置当前环境
-const BASE_URL = process.env.NODE_ENV === 'development' ? DEV_BASE_URL : PROD_BASE_URL;
+// 配置当前环境 - 强制使用生产环境，避免本地直连
+const BASE_URL = PROD_BASE_URL;
 
 // 初始化网络监控
 initNetworkMonitor();

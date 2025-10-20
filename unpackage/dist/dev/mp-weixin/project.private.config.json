@@ -1,5 +1,7 @@
 {
+  "libVersion": "3.5.8",
   "setting": {
-    "compileHotReLoad": false
+    "lazyloadPlaceholderEnable": false,
+    "preloadBackgroundData": true
   }
 }

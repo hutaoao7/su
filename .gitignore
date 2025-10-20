@@ -2,3 +2,7 @@ node_modules/、unpackage/、dist/、.hbuilderx/node_modules/
 unpackage/
 dist/
 .hbuilderx/
+
+# 忽略私密配置文件
+/uniCloud-aliyun/cloudfunctions/common/_secrets/
+/uniCloud-aliyun/cloudfunctions/common/_secrets/supabase.js

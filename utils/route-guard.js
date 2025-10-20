@@ -1,5 +1,34 @@
-// 简化的路由守卫实现
-import { checkRouteAccess } from '@/utils/auth.js';
+// 增强的路由守卫实现 - 同意检查 + 登录检查
+import { checkRouteAccess, hasConsent, isAuthed } from '@/utils/auth.js';
+
+// 白名单（无需检查）
+const CONSENT_WHITELIST = [
+  '/pages/home/home',
+  '/pages/index/index',
+  '/pages/consent/privacy-policy',
+  '/pages/consent/user-agreement',
+  '/pages/consent/disclaimer',
+  '/pages/login/login'
+];
+
+function guardCheck(path) {
+  // 1. 白名单
+  if (CONSENT_WHITELIST.includes(path)) {
+    return { allow: true };
+  }
+  
+  // 2. 同意检查
+  if (!hasConsent()) {
+    console.log('[ROUTE_GUARD] 未同意协议，重定向到登录页');
+    setTimeout(() => {
+      uni.reLaunch({ url: '/pages/login/login' });
+    }, 100);
+    return { allow: false, reason: 'consent' };
+  }
+  
+  // 3. 登录检查（原有逻辑）
+  return checkRouteAccess(path) ? { allow: true } : { allow: false, reason: 'auth' };
+}
 
 // 保存原始的导航方法
 const originalNavigateTo = uni.navigateTo;
@@ -12,11 +41,11 @@ uni.navigateTo = function(options) {
   const url = options.url;
   const path = url.split('?')[0];
   
-  if (checkRouteAccess(path)) {
+  const checkResult = guardCheck(path);
+  if (checkResult.allow) {
     return originalNavigateTo.call(this, options);
   } else {
-    // 已在checkRouteAccess中处理Toast和跳转
-    return Promise.reject(new Error('路由访问被拒绝'));
+    return Promise.reject(new Error(`Route guarded: ${checkResult.reason}`));
   }
 };
 
@@ -25,10 +54,11 @@ uni.switchTab = function(options) {
   const url = options.url;
   const path = url.split('?')[0];
   
-  if (checkRouteAccess(path)) {
+  const checkResult = guardCheck(path);
+  if (checkResult.allow) {
     return originalSwitchTab.call(this, options);
   } else {
-    return Promise.reject(new Error('路由访问被拒绝'));
+    return Promise.reject(new Error(`Route guarded: ${checkResult.reason}`));
   }
 };
 

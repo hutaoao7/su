@@ -1,10 +1,10 @@
 'use strict';
 
 // 与 common 模块的“默认导出”对齐
-const v = require('../../common/validator')
-const jwtUtil = require('../../common/jwt')
-const resp = require('../../common/response')
-const rate = require('../../common/rateLimit')
+const v = require('validator')
+const jwtUtil = require('jwt')
+const resp = require('response')
+const rate = require('ratelimit')
 const bcrypt = require('bcryptjs')
 
 function parseBody(e){

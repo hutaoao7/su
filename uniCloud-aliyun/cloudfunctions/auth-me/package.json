@@ -1,0 +1,10 @@
+{
+  "name": "auth-me",
+  "version": "1.0.0",
+  "description": "token自检云函数",
+  "main": "index.js",
+  "dependencies": {
+    "uni-id": "file:../../../uni_modules/uni-id/uniCloud/cloudfunctions/common/uni-id"
+  },
+  "extensions": {}
+}

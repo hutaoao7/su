@@ -1,14 +1,49 @@
 <template>
+  <!-- #ifdef H5 -->
   <view id="app">
     <router-view />
   </view>
+  <!-- #endif -->
+  
+  <!-- #ifndef H5 -->
+  <view id="app"></view>
+  <!-- #endif -->
 </template>
 
 <script>
+import { hasConsent } from '@/utils/auth.js';
+import { initRouteGuard } from '@/utils/route-guard.js';
+
 export default {
   onLaunch() {
-    console.log('App Launch')
+    console.log('App Launch');
+    
+    // 初始化路由守卫
+    initRouteGuard();
+    
+    // 检查同意状态
+    this.checkConsentStatus();
   },
+  
+  methods: {
+    checkConsentStatus() {
+      const hasAgreed = hasConsent();
+      console.log('[APP] 同意状态:', hasAgreed);
+      
+      if (!hasAgreed) {
+        console.log('[APP] 首次使用，跳转同意页');
+        setTimeout(() => {
+          uni.reLaunch({
+            url: '/pages/consent/consent',
+            fail: () => {
+              uni.reLaunch({ url: '/pages/home/home' });
+            }
+          });
+        }, 500);
+      }
+    }
+  },
+  
   onShow() {
     console.log('App Show')
   },
@@ -18,7 +53,9 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+@import '@/uni_modules/uview-ui/index.scss';
+
 html, body, #app, page { 
   background: #fff !important; 
   height: 100%;

@@ -1,108 +1,59 @@
 'use strict';
+const crypto = require('crypto');
+const qs = require('querystring');
+const uniCloudHttp = uniCloud.httpclient;
 
-const v = require('../common/validator');
-const jwtUtil = require('../common/jwt');
-const resp = require('../common/response');
-const rate = require('../common/rateLimit');
+// 自签 token（最小实现）
+function signToken(payload, secret, expSeconds = 7 * 24 * 3600) {
+  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const now = Math.floor(Date.now() / 1000);
+  const body = Buffer.from(JSON.stringify({ ...payload, iat: now, exp: now + expSeconds })).toString('base64url');
+  const sig = crypto.createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  return `${header}.${body}.${sig}`;
+}
 
 exports.main = async (event, context) => {
-  const startTime = Date.now();
-  
   try {
-    const timeoutCheck = () => {
-      if (Date.now() - startTime > 2000) {
-        throw new Error('TIMEOUT');
+    const code = event && event.code;
+    if (!code) return { errCode: 400, errMsg: '缺少 code' };
+
+    // 用环境变量优先，其次用内联常量（把下面改成你的）
+    const appid = process.env.WX_APPID || 'wx5a3c2fd2f74332b9';
+    const secret = process.env.WX_APPSECRET || '306bf5a31398b0af35bd72e3fa072131';
+    const tokenSecret = process.env.TOKEN_SECRET || '7AqR9mK3xG2pL6vB1tY5cW8dF4zN0jUe';
+
+    // 1) 调微信 jscode2session
+    const url = `https://api.weixin.qq.com/sns/jscode2session?${qs.stringify({
+      appid,
+      secret,
+      js_code: code,
+      grant_type: 'authorization_code'
+    })}`;
+
+    const { status, data } = await uniCloudHttp.request(url, { method: 'GET', dataType: 'json', timeout: 6000 });
+    if (status !== 200) return { errCode: 502, errMsg: '微信登录服务不可用' };
+    if (!data || data.errcode) return { errCode: 401, errMsg: data.errmsg || 'code 无效' };
+
+    const { openid, session_key, unionid } = data;
+
+    // 2) 这里你可以落库用户（示例省略：users 表 upsert）
+    // const db = uniCloud.database(); await db.collection('users').doc(openid).set({...})
+
+    // 3) 签发自定义 token（前端后续携带）
+    const token = signToken({ sub: openid, sk: session_key ? session_key.slice(0, 6) : '' }, tokenSecret);
+
+    return {
+      errCode: 0,
+      errMsg: 'ok',
+      data: {
+        uid: openid,
+        token,
+        tokenInfo: { token, tokenExpired: Math.floor(Date.now() / 1000) + 7 * 24 * 3600 },
+        userInfo: { uid: openid, unionid: unionid || '' }
       }
     };
-
-    const { account, password } = event;
-    
-    timeoutCheck();
-
-    if (!v.isAccount(account)) {
-      return resp.err(400, '账号格式不正确');
-    }
-    if (!password) {
-      return resp.err(400, '密码不能为空');
-    }
-
-    timeoutCheck();
-
-    const clientIP = context.CLIENTIP || 'unknown';
-    const rateLimitKey = `login:${clientIP}:${account}`;
-    const rateLimitResult = await rate.check(rateLimitKey, 10, 60);
-    
-    if (!rateLimitResult.allowed) {
-      return resp.err(429, '请求过于频繁，请稍后再试');
-    }
-
-    timeoutCheck();
-
-    const db = uniCloud.database();
-    const usersCollection = db.collection('users');
-
-    const userResult = await usersCollection.where({
-      account: account
-    }).get();
-
-    if (userResult.data.length === 0) {
-      console.log(`登录失败 - 用户不存在: ${account}, IP: ${clientIP}, 时间: ${new Date().toISOString()}`);
-      return resp.err(404, '用户不存在');
-    }
-
-    const user = userResult.data[0];
-    
-    timeoutCheck();
-
-    if (user.loginFailCount >= 5) {
-      console.log(`登录失败 - 账号被锁定: ${account}, IP: ${clientIP}, 时间: ${new Date().toISOString()}`);
-      return resp.err(403, '账号已被锁定，请联系管理员');
-    }
-
-    const bcrypt = require('bcryptjs');
-    const passwordValid = await bcrypt.compare(password, user.password_hash);
-    
-    timeoutCheck();
-
-    if (!passwordValid) {
-      await usersCollection.doc(user._id).update({
-        loginFailCount: user.loginFailCount + 1,
-        updatedAt: new Date()
-      });
-      
-      console.log(`登录失败 - 密码错误: ${account}, IP: ${clientIP}, 时间: ${new Date().toISOString()}, 失败次数: ${user.loginFailCount + 1}`);
-      return resp.err(401, '密码错误');
-    }
-
-    timeoutCheck();
-
-    await usersCollection.doc(user._id).update({
-      loginFailCount: 0,
-      lastLoginAt: new Date(),
-      updatedAt: new Date()
-    });
-
-    const token = jwtUtil.sign({
-      uid: user._id,
-      role: user.role
-    });
-
-    return resp.ok({
-      token: token,
-      user: {
-        id: user._id,
-        nickname: user.nickname,
-        role: user.role
-      }
-    });
-
-  } catch (error) {
-    console.error('登录失败:', error);
-    
-    if (error.message === 'TIMEOUT') {
-      return resp.err(504, '服务器繁忙');
-    }
-    
-    return resp.err(500, '服务器繁忙');
+  } catch (e) {
+    console.log('[AUTH-LOGIN/J2S] error =', e && e.message);
+    return { errCode: 500, errMsg: '登录服务异常' };
   }
 };

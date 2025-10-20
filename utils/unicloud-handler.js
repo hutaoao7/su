@@ -22,12 +22,15 @@ export function initUniCloud() {
       return false;
     }
     
-    // 获取uniCloud实例
-    uniCloudInstance = uniCloud.init({
-      provider: 'aliyun',
-      spaceId: 'your-space-id', // 替换为实际的spaceId
-      clientSecret: 'your-client-secret' // 替换为实际的clientSecret
-    });
+    // 获取uniCloud实例 - 注释手动初始化，使用默认配置
+    // uniCloudInstance = uniCloud.init({
+    //   provider: 'aliyun',
+    //   spaceId: 'your-space-id', // 替换为实际的spaceId
+    //   clientSecret: 'your-client-secret' // 替换为实际的clientSecret
+    // });
+    
+    // 使用默认uniCloud实例
+    uniCloudInstance = uniCloud;
     
     console.log('[uniCloud处理器] 初始化完成');
     return true;

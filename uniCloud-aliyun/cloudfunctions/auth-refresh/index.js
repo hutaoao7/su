@@ -1,8 +1,8 @@
 'use strict';
 
 const v = require('../common/validator');
-const jwtUtil = require('../common/jwt');
-const resp = require('../common/response');
+const jwtUtil = require('jwt');
+const resp = require('response');
 const rate = require('../common/rateLimit');
 
 exports.main = async (event, context) => {

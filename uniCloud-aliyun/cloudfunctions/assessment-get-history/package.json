@@ -1,0 +1,13 @@
+{
+  "name": "assessment-get-history",
+  "version": "1.0.0",
+  "description": "获取评估历史记录",
+  "main": "index.js",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "engines": {
+    "node": ">=16.0.0 <17.0.0"
+  }
+}
+

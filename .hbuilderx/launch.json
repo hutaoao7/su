@@ -5,9 +5,6 @@
             "default" : {
                 "launchtype" : "local"
             },
-            "h5" : {
-                "launchtype" : "local"
-            },
             "mp-weixin" : {
                 "launchtype" : "remote"
             },

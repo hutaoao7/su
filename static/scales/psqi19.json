@@ -1,0 +1,40 @@
+{
+  "id": "psqi19",
+  "title": "匹兹堡睡眠质量指数（PSQI-19）",
+  "intro": "请基于最近一个月的睡眠状况作答。",
+  "schema": {
+    "bedtime": {"type": "time", "label": "通常几点上床(HH:MM)"},
+    "sleep_latency_min": {"type": "number", "label": "通常需要多少分钟入睡"},
+    "waketime": {"type": "time", "label": "通常几点起床(HH:MM)"},
+    "sleep_duration_h": {"type": "number", "label": "通常每晚实际睡眠时长(小时)"},
+    "subjective_quality": {"type": "select", "options": [0, 1, 2, 3], "labels": ["很好(0)", "较好(1)", "较差(2)", "很差(3)"]},
+    "latency_freq": {"type": "select", "options": [0, 1, 2, 3], "labels": ["无(0)", "<每周1次(1)", "每周1-2次(2)", "≥每周3次(3)"]},
+    "disturbances_sum": {"type": "sum9x", "label": "夜间干扰(9 小项频次求和 0–27)"},
+    "medication_use": {"type": "select", "options": [0, 1, 2, 3], "labels": ["无(0)", "偶尔(1)", "每周(2)", "几乎每天(3)"]},
+    "daytime_dysfunction": {"type": "sum2x", "label": "白天困倦/精力不济(2 小项 0–6)"}
+  },
+  "mapping": {
+    "c1_subjective_quality": "subjective_quality",
+    "c2_latency": ["sleep_latency_min", "latency_freq"],
+    "c3_duration": "sleep_duration_h",
+    "c4_efficiency": ["bedtime", "waketime", "sleep_duration_h"],
+    "c5_disturbance": "disturbances_sum",
+    "c6_med": "medication_use",
+    "c7_dayfunc": "daytime_dysfunction"
+  },
+  "bands": [
+    {"label": "良好", "range": [0, 5]},
+    {"label": "可疑/需关注", "range": [6, 21]}
+  ],
+  "items": [
+    {"id": 1, "type": "time", "text": "（占位）最近一个月，您通常几点上床？", "field": "bedtime"},
+    {"id": 2, "type": "number", "text": "（占位）最近一个月，您通常需要多长时间才能入睡？（分钟）", "field": "sleep_latency_min"},
+    {"id": 3, "type": "time", "text": "（占位）最近一个月，您通常几点起床？", "field": "waketime"},
+    {"id": 4, "type": "number", "text": "（占位）最近一个月，您每晚实际睡眠时间是多少？（小时）", "field": "sleep_duration_h"},
+    {"id": 5, "type": "select", "text": "（占位）最近一个月，您如何评价自己的睡眠质量？", "field": "subjective_quality", "options": [0, 1, 2, 3], "labels": ["很好", "较好", "较差", "很差"]},
+    {"id": 6, "type": "select", "text": "（占位）最近一个月，您因为入睡困难而睡眠不好的频率？", "field": "latency_freq", "options": [0, 1, 2, 3], "labels": ["无", "少于每周1次", "每周1-2次", "每周3次或以上"]},
+    {"id": 7, "type": "number", "text": "（占位）最近一个月，夜间睡眠干扰总分（简化为数值输入）", "field": "disturbances_sum"},
+    {"id": 8, "type": "select", "text": "（占位）最近一个月，您使用助眠药物的频率？", "field": "medication_use", "options": [0, 1, 2, 3], "labels": ["无", "少于每周1次", "每周1-2次", "每周3次或以上"]},
+    {"id": 9, "type": "number", "text": "（占位）最近一个月，白天功能障碍总分（简化为数值输入）", "field": "daytime_dysfunction"}
+  ]
+}

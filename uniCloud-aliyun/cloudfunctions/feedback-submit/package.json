@@ -1,0 +1,15 @@
+{
+  "name": "feedback-submit",
+  "version": "1.0.0",
+  "description": "提交反馈",
+  "main": "index.js",
+  "dependencies": {},
+  "cloudfunction-config": {
+    "concurrency": 10,
+    "memorySize": 256,
+    "timeout": 10,
+    "triggers": [],
+    "path": "",
+    "runtime": "Nodejs16"
+  }
+}
