@@ -76,7 +76,7 @@
         :loading="publishing"
         @tap="handlePublish"
       >
-        {{ publishing ? '发布中...' : '发布' }}
+        {{ publishing ? (mode === 'edit' ? '更新中...' : '发布中...') : (mode === 'edit' ? '更新' : '发布') }}
       </button>
     </view>
   </view>
@@ -86,9 +86,13 @@
 import { callCloudFunction } from '@/utils/unicloud-handler.js';
 import { trackEvent } from '@/utils/analytics.js';
 
+import { getTopicDetail, updateTopic } from '@/api/community.js';
+
 export default {
   data() {
     return {
+      mode: 'create', // create 或 edit
+      topicId: '',
       formData: {
         title: '',
         content: '',
@@ -113,9 +117,22 @@ export default {
     }
   },
   
-  onLoad() {
-    // 恢复草稿
-    this.restoreDraft();
+  onLoad(options) {
+    this.mode = options.mode || 'create';
+    this.topicId = options.id || '';
+    
+    if (this.mode === 'edit' && this.topicId) {
+      // 编辑模式：加载话题数据
+      this.loadTopicData();
+    } else {
+      // 创建模式：恢复草稿
+      this.restoreDraft();
+    }
+    
+    // 设置导航栏标题
+    uni.setNavigationBarTitle({
+      title: this.mode === 'edit' ? '编辑话题' : '发布话题'
+    });
   },
   
   onUnload() {
@@ -126,9 +143,49 @@ export default {
   },
   
   methods: {
+    // 加载话题数据（编辑模式）
+    async loadTopicData() {
+      try {
+        uni.showLoading({ title: '加载中...' });
+        
+        const res = await getTopicDetail(this.topicId);
+        
+        if (res.errCode === 0 && res.data) {
+          const topic = res.data;
+          this.formData = {
+            title: topic.title,
+            content: topic.content,
+            category: topic.category,
+            images: topic.images || []
+          };
+        } else {
+          uni.showToast({
+            title: '加载失败',
+            icon: 'none'
+          });
+          setTimeout(() => {
+            uni.navigateBack();
+          }, 1500);
+        }
+      } catch (error) {
+        console.error('[PUBLISH] 加载话题数据失败:', error);
+        uni.showToast({
+          title: '加载失败',
+          icon: 'none'
+        });
+        setTimeout(() => {
+          uni.navigateBack();
+        }, 1500);
+      } finally {
+        uni.hideLoading();
+      }
+    },
+    
     selectCategory(value) {
       this.formData.category = value;
-      this.saveDraft();
+      if (this.mode === 'create') {
+        this.saveDraft();
+      }
     },
     
     async chooseImage() {
@@ -174,18 +231,35 @@ export default {
       this.publishing = true;
       
       try {
-        const result = await callCloudFunction('community-topics', {
-          action: 'create',
-          title: this.formData.title.trim(),
-          content: this.formData.content.trim(),
-          category: this.formData.category,
-          images: this.formData.images
-        }, {
-          showLoading: true,
-          loadingText: '发布中...'
-        });
+        let result;
         
-        if (result && result.topic_id) {
+        if (this.mode === 'edit') {
+          // 编辑模式：调用更新接口
+          result = await updateTopic(this.topicId, {
+            title: this.formData.title.trim(),
+            content: this.formData.content.trim(),
+            category: this.formData.category,
+            images: this.formData.images
+          });
+          
+          // 埋点
+          trackEvent('topic_update_success', {
+            topic_id: this.topicId,
+            category: this.formData.category
+          });
+        } else {
+          // 创建模式：调用发布接口
+          result = await callCloudFunction('community-topics', {
+            action: 'create',
+            title: this.formData.title.trim(),
+            content: this.formData.content.trim(),
+            category: this.formData.category,
+            images: this.formData.images
+          }, {
+            showLoading: true,
+            loadingText: '发布中...'
+          });
+          
           // 埋点
           trackEvent('topic_publish_success', {
             category: this.formData.category,
@@ -194,9 +268,11 @@ export default {
           
           // 清除草稿
           this.clearDraft();
-          
+        }
+        
+        if (result && (result.topic_id || result.errCode === 0)) {
           uni.showToast({
-            title: '发布成功',
+            title: this.mode === 'edit' ? '更新成功' : '发布成功',
             icon: 'success'
           });
           
@@ -205,10 +281,10 @@ export default {
           }, 1500);
         }
       } catch (error) {
-        console.error('[PUBLISH] 发布失败:', error);
+        console.error('[PUBLISH] 操作失败:', error);
         
         uni.showToast({
-          title: '发布失败',
+          title: this.mode === 'edit' ? '更新失败' : '发布失败',
           icon: 'none'
         });
       } finally {
@@ -233,11 +309,14 @@ export default {
     },
     
     saveDraft() {
-      try {
-        uni.setStorageSync('topic_draft', JSON.stringify(this.formData));
-        console.log('[PUBLISH] 草稿已保存');
-      } catch (error) {
-        console.error('[PUBLISH] 保存草稿失败:', error);
+      // 仅在创建模式下保存草稿
+      if (this.mode === 'create') {
+        try {
+          uni.setStorageSync('topic_draft', JSON.stringify(this.formData));
+          console.log('[PUBLISH] 草稿已保存');
+        } catch (error) {
+          console.error('[PUBLISH] 保存草稿失败:', error);
+        }
       }
     },
     

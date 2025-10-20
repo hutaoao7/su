@@ -19,6 +19,11 @@
           <text class="author-name">{{ topic.author_name }}</text>
           <text class="publish-time">{{ formatTime(topic.created_at) }}</text>
         </view>
+        
+        <!-- 更多操作按钮 -->
+        <view class="more-btn" @tap="showActionMenu">
+          <u-icon name="more-dot-fill" size="20" color="#86868B"></u-icon>
+        </view>
       </view>
 
       <!-- 话题内容 -->
@@ -76,6 +81,7 @@
         :key="index"
         class="comment-item"
       >
+        <view class="comment-floor">{{ index + 1 }}楼</view>
         <image 
           class="comment-avatar"
           :src="comment.user_avatar || '/static/images/default-avatar.png'"
@@ -116,11 +122,58 @@
         发送
       </button>
     </view>
+    
+    <!-- 操作菜单 -->
+    <u-action-sheet 
+      :show="showMenu" 
+      :actions="menuActions"
+      @close="showMenu = false"
+      @select="handleMenuSelect"
+    ></u-action-sheet>
+    
+    <!-- 举报对话框 -->
+    <u-popup 
+      :show="showReportDialog" 
+      mode="center" 
+      :round="20"
+      @close="showReportDialog = false"
+    >
+      <view class="report-dialog">
+        <view class="report-title">举报话题</view>
+        <view class="report-reasons">
+          <view 
+            v-for="(item, index) in reportReasons" 
+            :key="index"
+            class="reason-item"
+            :class="{ active: reportReason === item.value }"
+            @tap="reportReason = item.value"
+          >
+            {{ item.label }}
+          </view>
+        </view>
+        <textarea 
+          class="report-desc"
+          v-model="reportDescription"
+          placeholder="请详细描述举报原因（选填）"
+          maxlength="200"
+        />
+        <view class="report-actions">
+          <button class="cancel-btn" @tap="showReportDialog = false">取消</button>
+          <button 
+            class="confirm-btn" 
+            :disabled="!reportReason"
+            @tap="submitReport"
+          >
+            提交
+          </button>
+        </view>
+      </view>
+    </u-popup>
   </view>
 </template>
 
 <script>
-import { getTopicDetail } from '@/api/community.js';
+import { getTopicDetail, updateTopic, deleteTopic, reportTopic } from '@/api/community.js';
 import { callCloudFunction } from '@/utils/unicloud-handler.js';
 import { trackEvent } from '@/utils/analytics.js';
 
@@ -132,12 +185,34 @@ export default {
       comments: [],
       commentText: '',
       loading: true,
-      commenting: false
+      commenting: false,
+      showMenu: false,
+      menuActions: [],
+      currentUserId: '',
+      showReportDialog: false,
+      reportReason: '',
+      reportDescription: '',
+      reportReasons: [
+        { label: '垃圾广告', value: 'spam' },
+        { label: '色情低俗', value: 'vulgar' },
+        { label: '政治敏感', value: 'political' },
+        { label: '人身攻击', value: 'attack' },
+        { label: '虚假信息', value: 'fake' },
+        { label: '侵权内容', value: 'copyright' },
+        { label: '其他', value: 'other' }
+      ]
     };
+  },
+  
+  computed: {
+    isAuthor() {
+      return this.topic && this.currentUserId && this.topic.user_id === this.currentUserId;
+    }
   },
   
   onLoad(options) {
     this.topicId = options.id;
+    this.currentUserId = uni.getStorageSync('userId') || '';
     this.loadTopic();
     this.loadComments();
   },
@@ -268,6 +343,150 @@ export default {
       if (diff < 604800000) return Math.floor(diff / 86400000) + '天前';
       
       return date.toLocaleDateString();
+    },
+    
+    // 显示操作菜单
+    showActionMenu() {
+      const actions = [];
+      
+      if (this.isAuthor) {
+        actions.push(
+          { name: '编辑', color: '#0A84FF' },
+          { name: '删除', color: '#FF3B30' }
+        );
+      } else {
+        actions.push(
+          { name: '举报', color: '#FF9500' }
+        );
+      }
+      
+      this.menuActions = actions;
+      this.showMenu = true;
+    },
+    
+    // 处理菜单选择
+    handleMenuSelect(e) {
+      const action = e.name;
+      
+      if (action === '编辑') {
+        this.editTopic();
+      } else if (action === '删除') {
+        this.confirmDelete();
+      } else if (action === '举报') {
+        this.openReportDialog();
+      }
+    },
+    
+    // 编辑话题
+    editTopic() {
+      uni.navigateTo({
+        url: `/pages/community/publish?mode=edit&id=${this.topicId}`
+      });
+    },
+    
+    // 确认删除
+    confirmDelete() {
+      uni.showModal({
+        title: '确认删除',
+        content: '删除后无法恢复，确定要删除这个话题吗？',
+        confirmColor: '#FF3B30',
+        success: async (res) => {
+          if (res.confirm) {
+            await this.handleDelete();
+          }
+        }
+      });
+    },
+    
+    // 执行删除
+    async handleDelete() {
+      try {
+        uni.showLoading({ title: '删除中...' });
+        
+        const res = await deleteTopic(this.topicId);
+        
+        if (res.errCode === 0) {
+          uni.showToast({
+            title: '删除成功',
+            icon: 'success'
+          });
+          
+          // 埋点
+          trackEvent('topic_delete', {
+            topic_id: this.topicId
+          });
+          
+          setTimeout(() => {
+            uni.navigateBack();
+          }, 1500);
+        } else {
+          throw new Error(res.errMsg || '删除失败');
+        }
+      } catch (error) {
+        console.error('[DETAIL] 删除失败:', error);
+        
+        uni.showToast({
+          title: error.message || '删除失败',
+          icon: 'none'
+        });
+      } finally {
+        uni.hideLoading();
+      }
+    },
+    
+    // 打开举报对话框
+    openReportDialog() {
+      this.reportReason = '';
+      this.reportDescription = '';
+      this.showReportDialog = true;
+    },
+    
+    // 提交举报
+    async submitReport() {
+      if (!this.reportReason) {
+        uni.showToast({
+          title: '请选择举报原因',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      try {
+        uni.showLoading({ title: '提交中...' });
+        
+        const res = await reportTopic(
+          this.topicId,
+          this.reportReason,
+          this.reportDescription
+        );
+        
+        if (res.errCode === 0) {
+          this.showReportDialog = false;
+          
+          uni.showToast({
+            title: '举报成功，我们会尽快处理',
+            icon: 'success',
+            duration: 2000
+          });
+          
+          // 埋点
+          trackEvent('topic_report', {
+            topic_id: this.topicId,
+            reason: this.reportReason
+          });
+        } else {
+          throw new Error(res.errMsg || '举报失败');
+        }
+      } catch (error) {
+        console.error('[DETAIL] 举报失败:', error);
+        
+        uni.showToast({
+          title: error.message || '举报失败',
+          icon: 'none'
+        });
+      } finally {
+        uni.hideLoading();
+      }
     }
   }
 };
@@ -309,6 +528,7 @@ export default {
   align-items: center;
   gap: 20rpx;
   margin-bottom: 32rpx;
+  position: relative;
 }
 
 .author-avatar {
@@ -322,6 +542,16 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 8rpx;
+}
+
+.more-btn {
+  width: 72rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #F9FAFB;
 }
 
 .author-name {
@@ -423,6 +653,17 @@ export default {
   display: flex;
   gap: 20rpx;
   margin-bottom: 32rpx;
+  position: relative;
+}
+
+.comment-floor {
+  position: absolute;
+  left: -80rpx;
+  top: 0;
+  font-size: 24rpx;
+  color: #C7C7CC;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
 }
 
 .comment-avatar {
@@ -508,6 +749,87 @@ export default {
 }
 
 .comment-btn[disabled] {
+  opacity: 0.5;
+}
+
+/* 举报对话框 */
+.report-dialog {
+  width: 600rpx;
+  padding: 48rpx 32rpx;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+}
+
+.report-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #1D1D1F;
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+
+.report-reasons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.reason-item {
+  padding: 20rpx;
+  background: #F9FAFB;
+  border: 2rpx solid transparent;
+  border-radius: 16rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #1D1D1F;
+  transition: all 0.3s;
+}
+
+.reason-item.active {
+  background: #E8F4FF;
+  border-color: #0A84FF;
+  color: #0A84FF;
+}
+
+.report-desc {
+  width: 100%;
+  min-height: 180rpx;
+  padding: 20rpx;
+  background: #F9FAFB;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  color: #1D1D1F;
+  margin-bottom: 32rpx;
+}
+
+.report-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.cancel-btn,
+.confirm-btn {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  border: none;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  padding: 0;
+}
+
+.cancel-btn {
+  background: #F9FAFB;
+  color: #1D1D1F;
+}
+
+.confirm-btn {
+  background: #0A84FF;
+  color: #FFFFFF;
+}
+
+.confirm-btn[disabled] {
   opacity: 0.5;
 }
 </style>

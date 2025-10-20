@@ -203,11 +203,26 @@ export default {
     },
     
     // 下拉刷新
-    onRefresh() {
+    async onRefresh() {
       this.isRefreshing = true;
       this.page = 1;
       this.hasMore = true;
-      this.loadTopics();
+      
+      // 添加触感反馈
+      uni.vibrateShort({
+        type: 'light'
+      });
+      
+      await this.loadTopics();
+      
+      // 刷新完成提示
+      if (!this.loading) {
+        uni.showToast({
+          title: '刷新成功',
+          icon: 'success',
+          duration: 1500
+        });
+      }
     },
     
     // 加载更多

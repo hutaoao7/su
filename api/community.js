@@ -102,3 +102,60 @@ export const addComment = async (topicId, content) => {
     throw error;
   }
 };
+
+/**
+ * 编辑话题
+ */
+export const updateTopic = async (topicId, data) => {
+  try {
+    const res = await callFunction('community-topics', {
+      action: 'update',
+      topic_id: topicId,
+      title: data.title,
+      content: data.content,
+      category: data.category,
+      images: data.images
+    });
+    
+    return res;
+  } catch (error) {
+    console.error('[API] 编辑话题失败:', error);
+    throw error;
+  }
+};
+
+/**
+ * 删除话题
+ */
+export const deleteTopic = async (topicId) => {
+  try {
+    const res = await callFunction('community-topics', {
+      action: 'delete',
+      topic_id: topicId
+    });
+    
+    return res;
+  } catch (error) {
+    console.error('[API] 删除话题失败:', error);
+    throw error;
+  }
+};
+
+/**
+ * 举报话题
+ */
+export const reportTopic = async (topicId, reason, description) => {
+  try {
+    const res = await callFunction('community-topics', {
+      action: 'report',
+      topic_id: topicId,
+      reason,
+      description
+    });
+    
+    return res;
+  } catch (error) {
+    console.error('[API] 举报话题失败:', error);
+    throw error;
+  }
+};
