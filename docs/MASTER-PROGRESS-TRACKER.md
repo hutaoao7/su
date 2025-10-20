@@ -1,9 +1,9 @@
 # 翎心CraneHeart 主进度追踪器
 
-**更新时间**: 2025-10-20 19:00  
+**更新时间**: 2025-10-20 11:30  
 **总任务数**: 570+  
-**已完成**: 113  
-**完成率**: 19.8%  
+**已完成**: 119  
+**完成率**: 20.9%  
 
 ---
 
@@ -48,7 +48,62 @@
 
 ---
 
-## 🔥 最新成果（2025-10-20 19:00）
+## 🔥 最新成果（2025-10-20 11:30）
+
+### 新增/更新文件: 3个
+- **scale-consistency-checker.js**（量表一致性检查工具 - 新建，800+行）
+- **scale-version-manager.js**（量表版本管理工具 - 新建，900+行）
+- **SCALE-CONSISTENCY-REPORT.md**（一致性检查报告 - 自动生成）
+
+### 代码行数: 1700+行（新增）
+- **scale-consistency-checker.js**：约800行
+  - 跨量表数据一致性检查
+  - 题目数量验证
+  - 元数据一致性验证
+  - 命名规范检查
+  - 评分规则合理性检查
+  - 格式统一性检查
+  - 自动生成Markdown报告
+- **scale-version-manager.js**：约900行
+  - 语义化版本号管理（major.minor.patch）
+  - 版本初始化和升级
+  - 版本历史记录
+  - 版本对比（深度diff）
+  - 版本回退功能
+  - 完整的CLI命令行接口
+- **package.json更新**：新增8个npm脚本
+  - check:scale-consistency
+  - scale:list/init/info/bump/compare/history/rollback
+
+### 本次完成的任务（6个）
+
+**评估模块完善（4个）**
+1. ✅ 创建量表数据一致性检查脚本（scale-consistency-checker.js）
+   - 检查14个量表的数据一致性
+   - 发现1个错误（psqi19题目数量不匹配）
+   - 发现19个警告（命名不一致等）
+   - 生成详细的一致性报告
+2. ✅ 实现量表版本管理机制（scale-version-manager.js）
+   - 支持语义化版本号
+   - 版本初始化、升级、回退
+   - 版本历史记录和追踪
+   - 深度对比两个版本的差异
+3. ✅ 完成assessments表迁移SQL（已在002_create_assessments_tables.sql中）
+4. ✅ 完成assessment-get-history API文档（已存在）
+
+**工具开发（2个）**
+5. ✅ scale-consistency-checker.js（一致性检查工具）
+6. ✅ scale-version-manager.js（版本管理工具）
+
+### 技术亮点
+- **一致性检查**：8个维度的全面检查，自动生成报告
+- **版本管理**：完整的版本控制系统，支持diff和rollback
+- **CLI接口**：友好的命令行接口，易于集成到CI/CD
+- **npm脚本**：添加快捷命令，提升开发效率
+
+---
+
+## 🔥 之前成果（2025-10-20 19:00）
 
 ### 新增/更新文件: 3个
 - **assessment-export.js**（答题数据导出工具 - 新建，400+行）
