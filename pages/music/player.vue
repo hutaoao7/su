@@ -3,11 +3,28 @@
     <!-- 封面区域 -->
     <view class="cover-section">
       <view class="cover-container" :class="{ rotating: isPlaying }">
+        <!-- 加载占位符 -->
+        <view v-if="coverLoading" class="cover-placeholder">
+          <u-loading mode="circle" color="#0A84FF" size="40"></u-loading>
+        </view>
+        
+        <!-- 封面图片 -->
         <image 
+          v-show="!coverLoading && !coverError"
           class="cover-image"
+          :class="{ 'cover-fade-in': !coverLoading }"
           :src="currentTrack.cover || '/static/images/music-cover.png'"
           mode="aspectFill"
+          :lazy-load="true"
+          @load="onCoverLoad"
+          @error="onCoverError"
         />
+        
+        <!-- 加载失败占位符 -->
+        <view v-if="coverError" class="cover-error">
+          <u-icon name="image" size="60" color="#C7C7CC"></u-icon>
+          <text class="error-text">封面加载失败</text>
+        </view>
       </view>
     </view>
 
@@ -130,7 +147,11 @@ export default {
       isFavorite: false,
       
       // 播放开始时间（用于统计）
-      playStartTime: 0
+      playStartTime: 0,
+      
+      // 封面加载状态
+      coverLoading: true,
+      coverError: false
     };
   },
   
@@ -162,6 +183,9 @@ export default {
     // 创建音频上下文
     this.audioContext = uni.createInnerAudioContext();
     this.setupAudioListeners();
+    
+    // 监听耳机拔出事件
+    this.setupHeadphoneListener();
   },
   
   onUnload() {
@@ -210,8 +234,57 @@ export default {
       });
     },
     
+    /**
+     * 设置耳机拔出监听
+     */
+    setupHeadphoneListener() {
+      // #ifdef MP-WEIXIN
+      // 小程序端：监听音频中断事件
+      uni.onAudioInterruptionBegin(() => {
+        console.log('[PLAYER] 音频中断（耳机拔出）');
+        if (this.isPlaying) {
+          this.pause();
+          uni.showToast({
+            title: '耳机已断开',
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      });
+      
+      uni.onAudioInterruptionEnd(() => {
+        console.log('[PLAYER] 音频中断结束');
+      });
+      // #endif
+      
+      // #ifdef H5
+      // H5端：使用Web Audio API检测音频设备变化
+      if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) {
+        navigator.mediaDevices.addEventListener('devicechange', () => {
+          console.log('[PLAYER] 音频设备变化');
+          // H5端耳机拔出检测（需要浏览器支持）
+          navigator.mediaDevices.enumerateDevices().then(devices => {
+            const audioOutputs = devices.filter(d => d.kind === 'audiooutput');
+            if (audioOutputs.length === 0 && this.isPlaying) {
+              this.pause();
+              uni.showToast({
+                title: '音频设备已断开',
+                icon: 'none',
+                duration: 2000
+              });
+            }
+          });
+        });
+      }
+      // #endif
+    },
+    
     async loadTrack(trackId) {
       try {
+        // 重置封面加载状态
+        this.coverLoading = true;
+        this.coverError = false;
+        
         const res = await callCloudFunction('fn-music', {
           action: 'detail',
           track_id: trackId
@@ -236,7 +309,27 @@ export default {
         }
       } catch (error) {
         console.error('[PLAYER] 加载曲目失败:', error);
+        this.coverLoading = false;
+        this.coverError = true;
       }
+    },
+    
+    /**
+     * 封面加载成功
+     */
+    onCoverLoad() {
+      console.log('[PLAYER] 封面加载成功');
+      this.coverLoading = false;
+      this.coverError = false;
+    },
+    
+    /**
+     * 封面加载失败
+     */
+    onCoverError(e) {
+      console.error('[PLAYER] 封面加载失败:', e);
+      this.coverLoading = false;
+      this.coverError = true;
     },
     
     play() {
@@ -504,6 +597,50 @@ export default {
 .cover-image {
   width: 100%;
   height: 100%;
+}
+
+.cover-fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.cover-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.cover-error {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #F2F2F7;
+  gap: 20rpx;
+}
+
+.error-text {
+  font-size: 24rpx;
+  color: #86868B;
 }
 
 /* 歌曲信息 */
