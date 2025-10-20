@@ -114,6 +114,7 @@
 <script>
 import { getTopicList, likeTopic as likeTopicApi } from '@/api/community.js';
 import tabBarManager from '@/utils/tabbar-manager.js';
+import { trackPageView, trackClick, trackEvent } from '@/utils/analytics.js';
 
 export default {
   data() {
@@ -142,6 +143,16 @@ export default {
   },
   
   onShow() {
+    // 页面浏览埋点
+    trackPageView(
+      '/pages/community/index',
+      '社区广场',
+      {
+        current_category: this.currentCategory,
+        topic_count: this.topics.length
+      }
+    );
+    
     // 通知导航栏更新状态
     tabBarManager.setCurrentIndexByPath('/pages/community/index');
   },
@@ -150,6 +161,12 @@ export default {
     // 切换分类
     switchCategory(category) {
       if (this.currentCategory === category) return;
+      
+      // 埋点：切换分类
+      trackClick('community_switch_category', {
+        from_category: this.currentCategory,
+        to_category: category
+      });
       
       this.currentCategory = category;
       this.page = 1;
@@ -236,6 +253,13 @@ export default {
     // 点赞话题
     async likeTopic(topic) {
       try {
+        // 埋点：点赞话题
+        trackClick('topic_like', {
+          topic_id: topic.id,
+          action: topic.isLiked ? 'unlike' : 'like',
+          category: this.currentCategory
+        });
+        
         // 乐观更新
         topic.isLiked = !topic.isLiked;
         topic.likes_count += topic.isLiked ? 1 : -1;
@@ -263,6 +287,12 @@ export default {
     
     // 跳转到详情
     goToDetail(topicId) {
+      // 埋点：点击话题查看详情
+      trackClick('topic_view_detail', {
+        topic_id: topicId,
+        category: this.currentCategory
+      });
+      
       uni.navigateTo({
         url: `/pages/community/detail?id=${topicId}`
       });
@@ -273,6 +303,11 @@ export default {
       // 检查登录状态
       const token = uni.getStorageSync('token');
       if (!token) {
+        // 埋点：未登录点击发布
+        trackEvent('publish_click_not_logged', {
+          from_page: '/pages/community/index'
+        });
+        
         uni.showToast({
           title: '请先登录',
           icon: 'none'
@@ -284,6 +319,11 @@ export default {
         }, 1500);
         return;
       }
+      
+      // 埋点：点击发布按钮
+      trackClick('community_publish_button', {
+        category: this.currentCategory
+      });
       
       uni.navigateTo({
         url: '/pages/community/publish'

@@ -885,6 +885,22 @@ export default {
         isCrisis: sensitiveCheck?.isCrisis || false
       };
       
+      // 【埋点】记录用户发送消息事件
+      try {
+        const { track } = require('@/utils/analytics.js');
+        track('chat_send_message', {
+          event_type: 'custom',
+          message_length: text.length,
+          session_id: this.currentSessionId || 'unknown',
+          personality: this.currentPersonality || 'gentle',
+          has_sensitive: sensitiveCheck?.hasSensitive || false,
+          is_crisis: sensitiveCheck?.isCrisis || false,
+          message_count: this.messages.length + 1
+        });
+      } catch (err) {
+        console.warn('[CHAT] 发送消息埋点失败:', err);
+      }
+      
       // 添加到消息列表
       this.messages.push(userMessage);
       const messageIndex = this.messages.length - 1;
@@ -983,11 +999,40 @@ export default {
           
           // 添加AI回复
           this.addAIMessage(aiContent);
+          
+          // 【埋点】记录AI回复成功事件
+          try {
+            const { track } = require('@/utils/analytics.js');
+            track('chat_ai_response', {
+              event_type: 'custom',
+              response_length: aiContent.length,
+              session_id: this.currentSessionId || 'unknown',
+              personality: this.currentPersonality || 'gentle',
+              is_success: true,
+              response_time: Date.now() - this.messages[messageIndex].timestamp // 响应时长
+            });
+          } catch (err) {
+            console.warn('[CHAT] AI回复埋点失败:', err);
+          }
         } else {
           console.error('[CHAT] AI回复异常:', res);
           // 标记消息发送失败
           this.$set(this.messages[messageIndex], 'sendStatus', 'failed');
           await this.saveMessage(this.messages[messageIndex]);
+          
+          // 【埋点】记录AI回复失败事件
+          try {
+            const { track } = require('@/utils/analytics.js');
+            track('chat_ai_response', {
+              event_type: 'custom',
+              session_id: this.currentSessionId || 'unknown',
+              personality: this.currentPersonality || 'gentle',
+              is_success: false,
+              error_message: res.result?.msg || 'AI回复异常'
+            });
+          } catch (err) {
+            console.warn('[CHAT] AI回复失败埋点失败:', err);
+          }
           
           uni.showToast({
             title: 'AI回复异常，点击重发',
@@ -1002,6 +1047,21 @@ export default {
         // 标记消息发送失败
         this.$set(this.messages[messageIndex], 'sendStatus', 'failed');
         await this.saveMessage(this.messages[messageIndex]);
+        
+        // 【埋点】记录网络错误事件
+        try {
+          const { track } = require('@/utils/analytics.js');
+          track('chat_ai_response', {
+            event_type: 'custom',
+            session_id: this.currentSessionId || 'unknown',
+            personality: this.currentPersonality || 'gentle',
+            is_success: false,
+            error_type: 'network_error',
+            error_message: error.message || '网络请求失败'
+          });
+        } catch (err) {
+          console.warn('[CHAT] 网络错误埋点失败:', err);
+        }
         
         uni.showToast({
           title: '发送失败，点击重发',

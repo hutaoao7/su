@@ -64,6 +64,7 @@
 import { musicAPI } from '@/utils/request.js';
 import { isAuthed, getUid, getUserInfo } from '@/utils/auth.js';
 import tabBarManager from '@/utils/tabbar-manager.js';
+import { trackPageView, trackClick } from '@/utils/analytics.js';
 
 export default {
 	data() {
@@ -93,6 +94,16 @@ export default {
 		this.loadRecommendMusic();
 	},
 	onShow() {
+		// 页面浏览埋点
+		trackPageView(
+			'/pages/home/home',
+			'首页',
+			{
+				is_logged_in: this.isLoggedIn,
+				recommend_count: this.recommendList.length
+			}
+		);
+		
 		// 刷新用户状态
 		this.$forceUpdate();
 		// 通知导航栏更新状态
@@ -161,18 +172,33 @@ export default {
 
 		// 导航方法 - 跳转到features页面的对应模块
 		navigateToMusic() {
+			// 埋点：点击音乐入口
+			trackClick('home_music_entry', {
+				module: 'music'
+			});
+			
 			uni.switchTab({ 
 				url: '/pages/features/features?tab=music' 
 			});
 		},
 		
 		navigateToScreening() {
+			// 埋点：点击筛查入口
+			trackClick('home_screening_entry', {
+				module: 'screening'
+			});
+			
 			uni.switchTab({ 
 				url: '/pages/features/features?tab=screening' 
 			});
 		},
 		
 		navigateToAI() {
+			// 埋点：点击AI入口
+			trackClick('home_ai_entry', {
+				module: 'ai'
+			});
+			
 			uni.switchTab({ 
 				url: '/pages/features/features?tab=ai' 
 			});

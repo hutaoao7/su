@@ -1078,6 +1078,27 @@ ${markedDetails}
         console.log(`[ASSESS] navigating to unified result page: ${resultPath}`)
         this.$emit('complete', payload)
 
+        // 【埋点】记录评估完成事件
+        try {
+          const { track } = require('@/utils/analytics.js');
+          const completionTime = this.elapsedTime || 0; // 使用已有的计时器数据
+          track('assessment_complete', {
+            event_type: 'custom',
+            scale_id: this.scaleId || 'unknown',
+            scale_name: this.scale?.name || 'unknown',
+            total_score: payload.score || payload.total_score || 0,
+            level: payload.level || 'unknown',
+            duration: completionTime, // 答题时长（秒）
+            question_count: this.questions?.length || 0,
+            marked_count: this.markedQuestions?.size || 0, // 标记的题目数量
+            is_completed: true,
+            completion_rate: 100
+          }, true); // 立即上报
+          console.log('[ASSESS] 评估完成埋点已记录');
+        } catch (err) {
+          console.warn('[ASSESS] 埋点记录失败:', err);
+        }
+
         // 保存到历史记录
         try {
           const history = uni.getStorageSync('assessment_history') || []

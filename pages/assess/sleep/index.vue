@@ -47,6 +47,7 @@
 
 <script>
 import ScaleRunner from '@/components/scale/ScaleRunner.vue'
+import { trackPageView } from '@/utils/analytics.js';
 
 const PAGE_PATH = '/pages/assess/sleep/index'
 
@@ -81,6 +82,16 @@ export default {
   },
   onShow() {
     console.log(`[ASSESS] onShow view=${this.view}`)
+    
+    // 页面浏览埋点
+    trackPageView(
+      '/pages/assess/sleep/index',
+      '睡眠质量评估',
+      {
+        scale_id: 'sleep_health_6',
+        view: this.view
+      }
+    );
   },
   methods: {
     handleBack() {

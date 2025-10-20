@@ -65,6 +65,7 @@
 
 <script>
 import { getLoginData } from '@/utils/auth.js';
+import { trackPageView, trackClick, trackEvent } from '@/utils/analytics.js';
 
 export default {
   data() {
@@ -88,6 +89,15 @@ export default {
   
   onShow() {
     console.log('[FEEDBACK] ready');
+    
+    // 页面浏览埋点
+    trackPageView(
+      '/pages/feedback/feedback',
+      '问题反馈',
+      {
+        from_page: this.$mp.page?.route || ''
+      }
+    );
   },
   
   methods: {
@@ -135,10 +145,23 @@ export default {
     
     // 提交反馈
     async handleSubmit() {
+      // 埋点：点击提交按钮
+      trackClick('feedback_submit_button', {
+        title_length: this.title.trim().length,
+        content_length: this.content.trim().length,
+        has_contact: this.contact.trim().length > 0
+      });
+      
       // 校验
       const validation = this.validate();
       if (!validation.ok) {
         console.log(`[FEEDBACK] validate fail reason=${validation.reason}`);
+        
+        // 埋点：提交失败（校验未通过）
+        trackEvent('feedback_submit_validate_fail', {
+          reason: validation.reason
+        });
+        
         uni.showToast({
           title: validation.reason,
           icon: 'none'
@@ -193,6 +216,15 @@ export default {
           const rid = result.data?.rid || 'unknown';
           console.log(`[FEEDBACK] submit ok rid=${rid}`);
           
+          // 埋点：反馈提交成功
+          trackEvent('feedback_submit_success', {
+            rid: rid,
+            title_length: this.title.trim().length,
+            content_length: this.content.trim().length,
+            has_contact: this.contact.trim().length > 0,
+            uid: uid
+          });
+          
           uni.showToast({
             title: '反馈已提交',
             icon: 'none'
@@ -209,6 +241,13 @@ export default {
         
       } catch (error) {
         console.log(`[FEEDBACK] submit fail msg=${error.message}`);
+        
+        // 埋点：反馈提交失败
+        trackEvent('feedback_submit_fail', {
+          error_message: error.message,
+          uid: uid
+        });
+        
         uni.showToast({
           title: error.message || '提交失败，请稍后重试',
           icon: 'none'
