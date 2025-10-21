@@ -1,8 +1,8 @@
 'use strict';
 
 const db = uniCloud.database();
-const resp = require('response');
-const auth = require('auth');
+const resp = require('common/response');
+const auth = require('common/auth');
 
 exports.main = async (event, context) => {
   try {

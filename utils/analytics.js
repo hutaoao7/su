@@ -571,6 +571,13 @@ export function track(eventName, properties, immediate) {
 }
 
 /**
+ * 追踪事件（与现有调用保持一致的别名）
+ */
+export function trackEvent(eventName, properties, immediate) {
+  return getAnalytics().track(eventName, properties, immediate);
+}
+
+/**
  * 追踪页面浏览
  */
 export function trackPageView(pageUrl, pageTitle, extraProps) {
@@ -589,6 +596,21 @@ export function trackClick(elementId, extraProps) {
  */
 export function trackError(error, context) {
   return getAnalytics().trackError(error, context);
+}
+
+/**
+ * 追踪登录事件
+ * @param {String} provider - 登录方式，如 'wechat'
+ * @param {Boolean} success - 是否成功
+ * @param {Object} extraProps - 额外属性
+ */
+export function trackLogin(provider, success, extraProps = {}) {
+  return getAnalytics().track('user_login', {
+    event_type: 'auth',
+    provider,
+    success,
+    ...extraProps
+  }, true);
 }
 
 /**
@@ -612,9 +634,11 @@ export default {
   getAnalytics,
   destroyAnalytics,
   track,
+  trackEvent,
   trackPageView,
   trackClick,
   trackError,
+  trackLogin,
   setUser,
   clearUser
 };
