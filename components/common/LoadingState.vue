@@ -124,10 +124,10 @@ export default {
 <style scoped>
 .loading-state {
   position: fixed;
-  top: 0;
+  top: calc(0px + env(safe-area-inset-top));
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: calc(0px + env(safe-area-inset-bottom));
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -171,7 +171,7 @@ export default {
 }
 
 .skeleton-line {
-  height: 24rpx;
+  height: 44px;
   border-radius: 12rpx;
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
@@ -262,7 +262,7 @@ export default {
 
 .progress-bar {
   width: 100%;
-  height: 12rpx;
+  height: 44px;
   background: rgba(0, 122, 255, 0.2);
   border-radius: 6rpx;
   overflow: hidden;
@@ -294,8 +294,8 @@ export default {
 }
 
 .dot {
-  width: 20rpx;
-  height: 20rpx;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: #007AFF;
   animation: dotPulse 1.4s infinite ease-in-out;

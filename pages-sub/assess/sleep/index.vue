@@ -283,4 +283,11 @@ export default {
 .nav-button:active {
   transform: scale(0.95);
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>

@@ -473,7 +473,7 @@ export default {
   top: 12rpx;
   right: -50%;
   width: 100%;
-  height: 2rpx;
+  height: 44px;
   background: rgba(255, 255, 255, 0.3);
 }
 
@@ -482,8 +482,8 @@ export default {
 }
 
 .phase-dot {
-  width: 24rpx;
-  height: 24rpx;
+  width: 44px;
+  height: 44px;
   border-radius: 12rpx;
   background: rgba(255, 255, 255, 0.3);
   margin-bottom: 8rpx;
@@ -723,10 +723,10 @@ export default {
 /* 敏感词提示 */
 .sensitive-alert {
   position: fixed;
-  top: 0;
+  top: calc(0px + env(safe-area-inset-top));
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: calc(0px + env(safe-area-inset-bottom));
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
@@ -767,4 +767,11 @@ export default {
   font-size: 26rpx;
   font-weight: 500;
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>

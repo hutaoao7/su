@@ -289,7 +289,7 @@ export default {
   font-size: 30rpx;
   color: #333;
   box-sizing: border-box;
-}
+; max-width: 750rpx; overflow: hidden}
 
 .form-input:focus {
   border-color: #007AFF;
@@ -307,7 +307,7 @@ export default {
   color: #333;
   box-sizing: border-box;
   line-height: 1.6;
-}
+; max-width: 750rpx; overflow: hidden}
 
 .form-textarea:focus {
   border-color: #007AFF;
@@ -340,7 +340,7 @@ export default {
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-}
+; max-width: 750rpx; overflow: hidden}
 
 .submit-btn:active {
   transform: scale(0.98);
@@ -355,4 +355,30 @@ export default {
 .submit-btn.disabled:active {
   transform: none;
 }
+
+
+/* 响应式布局 - 平板设备 */
+@media (min-width: 768px) {
+  /* 平板设备样式 */
+}
+
+/* 响应式布局 - 大屏设备 */
+@media (min-width: 1024px) {
+  /* 大屏设备样式 */
+}
+
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
+
+
+/* 横屏适配 */
+@media (orientation: landscape) {
+  /* 横屏样式 */
+}
+
 </style>

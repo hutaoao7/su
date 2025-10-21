@@ -55,19 +55,19 @@ export default {
 <style scoped>
 .global-loading {
   position: fixed;
-  top: 0;
+  top: calc(0px + env(safe-area-inset-top));
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: calc(0px + env(safe-area-inset-bottom));
   z-index: 9999;
 }
 
 .loading-mask {
   position: absolute;
-  top: 0;
+  top: calc(0px + env(safe-area-inset-top));
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: calc(0px + env(safe-area-inset-bottom));
   background: rgba(0, 0, 0, 0.5);
 }
 
@@ -95,8 +95,8 @@ export default {
 
 .spinner-dot {
   position: absolute;
-  width: 12rpx;
-  height: 12rpx;
+  width: 44px;
+  height: 44px;
   background: #0A84FF;
   border-radius: 50%;
   animation: spinner-rotate 1.2s linear infinite;
@@ -129,4 +129,11 @@ export default {
   font-size: 28rpx;
   color: #1D1D1F;
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>

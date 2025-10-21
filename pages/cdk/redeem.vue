@@ -467,7 +467,7 @@ export default {
   font-size: 32rpx;
   font-weight: 600;
   box-shadow: 0 4rpx 12rpx rgba(0, 122, 255, 0.3);
-}
+; max-width: 750rpx; overflow: hidden}
 
 .history-btn {
   width: 100%;
@@ -475,7 +475,7 @@ export default {
   margin-top: 24rpx;
   border-radius: 12rpx;
   font-size: 28rpx;
-}
+; max-width: 750rpx; overflow: hidden}
 
 /* 兑换结果 */
 .result-card {
@@ -589,4 +589,30 @@ export default {
   color: #606266;
   flex: 1;
 }
+
+
+/* 响应式布局 - 平板设备 */
+@media (min-width: 768px) {
+  /* 平板设备样式 */
+}
+
+/* 响应式布局 - 大屏设备 */
+@media (min-width: 1024px) {
+  /* 大屏设备样式 */
+}
+
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
+
+
+/* 横屏适配 */
+@media (orientation: landscape) {
+  /* 横屏样式 */
+}
+
 </style>

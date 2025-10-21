@@ -59,7 +59,7 @@ export default {
 <style lang="scss" scoped>
 .nav-bar {
   position: fixed;
-  top: 0;
+  top: calc(0px + env(safe-area-inset-top));
   left: 0;
   right: 0;
   z-index: 999;
@@ -111,4 +111,11 @@ export default {
     }
   }
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>

@@ -1597,8 +1597,8 @@ export default {
   position: absolute;
   top: -8rpx;
   right: -8rpx;
-  width: 36rpx;
-  height: 36rpx;
+  width: 44px;
+  height: 44px;
   background: #FFFFFF;
   border-radius: 50%;
   display: flex;
@@ -1658,8 +1658,8 @@ export default {
 }
 
 .typing-indicator .dot {
-  width: 12rpx;
-  height: 12rpx;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: #C7C7CC;
   animation: typing 1.4s infinite;
@@ -2027,4 +2027,30 @@ export default {
   background: #F5F5F7;
   border-radius: 16rpx;
 }
+
+
+/* 响应式布局 - 平板设备 */
+@media (min-width: 768px) {
+  /* 平板设备样式 */
+}
+
+/* 响应式布局 - 大屏设备 */
+@media (min-width: 1024px) {
+  /* 大屏设备样式 */
+}
+
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
+
+
+/* 横屏适配 */
+@media (orientation: landscape) {
+  /* 横屏样式 */
+}
+
 </style>

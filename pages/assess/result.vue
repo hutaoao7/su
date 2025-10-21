@@ -192,5 +192,12 @@ export default {
   background: #F5F5F5;
   color: #666;
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>
 

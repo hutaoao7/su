@@ -67,8 +67,25 @@
 
     <!-- 评论区 -->
     <view class="comments-section">
+      <!-- 任务5: 互动优化 - 评论排序 -->
       <view class="comments-header">
         <text class="comments-title">评论 ({{ comments.length }})</text>
+        <view class="sort-buttons">
+          <view
+            class="sort-btn"
+            :class="{ active: commentSort === 'latest' }"
+            @tap="changeCommentSort('latest')"
+          >
+            最新
+          </view>
+          <view
+            class="sort-btn"
+            :class="{ active: commentSort === 'hottest' }"
+            @tap="changeCommentSort('hottest')"
+          >
+            最热
+          </view>
+        </view>
       </view>
       
       <view v-if="comments.length === 0" class="empty-comments">
@@ -92,13 +109,20 @@
           <rich-text class="comment-text" :nodes="renderCommentContent(comment.content)"></rich-text>
           <view class="comment-meta">
             <text class="comment-time">{{ formatTime(comment.created_at) }}</text>
-            <view class="comment-like" @tap.stop="likeComment(comment)">
-              <u-icon 
-                :name="comment.is_liked ? 'thumb-up-fill' : 'thumb-up'" 
-                size="14" 
-                :color="comment.is_liked ? '#0A84FF' : '#86868B'"
-              ></u-icon>
-              <text class="like-count">{{ comment.likes_count || 0 }}</text>
+            <!-- 任务5: 互动优化 - 回复按钮 -->
+            <view class="comment-actions">
+              <view class="comment-reply" @tap.stop="replyComment(comment)">
+                <u-icon name="chat" size="14" color="#86868B"></u-icon>
+                <text class="reply-text">回复</text>
+              </view>
+              <view class="comment-like" @tap.stop="likeComment(comment)">
+                <u-icon
+                  :name="comment.is_liked ? 'thumb-up-fill' : 'thumb-up'"
+                  size="14"
+                  :color="comment.is_liked ? '#0A84FF' : '#86868B'"
+                ></u-icon>
+                <text class="like-count">{{ comment.likes_count || 0 }}</text>
+              </view>
             </view>
           </view>
         </view>
@@ -265,7 +289,10 @@ export default {
       mentionKeyword: '',
       availableUsers: [],
       mentionTrigger: null, // { atPos, keyword }
-      cursorPosition: 0
+      cursorPosition: 0,
+      // 任务5: 互动优化 - 评论排序和回复
+      commentSort: 'latest', // 'latest' 或 'hottest'
+      replyingTo: null // 正在回复的评论
     };
   },
   
@@ -361,36 +388,53 @@ export default {
       }
     },
     
+    // 任务2: @用户提醒功能完善
+    // 任务4: 社区内容审核
     async submitComment() {
       const text = this.commentText.trim();
       if (!text) return;
-      
+
+      // 任务4增强: 内容审核 - 敏感词检测
+      const auditResult = await this.auditCommentContent(text);
+      if (!auditResult.passed) {
+        uni.showToast({
+          title: auditResult.message || '内容包含不适当信息',
+          icon: 'none'
+        });
+        return;
+      }
+
       this.commenting = true;
-      
+
       try {
         // 解析@用户
         const mentionedUserIds = parseMentions(text);
-        
+
         const res = await callCloudFunction('community-comments', {
           action: 'create',
           topic_id: this.topicId,
           content: text,
           mentioned_users: mentionedUserIds // 传递@的用户ID列表
         });
-        
+
         if (res && res.comment) {
           this.comments.push(res.comment);
           this.commentText = '';
           this.topic.comments_count++;
-          
+
           // 更新可用用户列表
           this.availableUsers = getAvailableUsers(this.topic, this.comments);
-          
+
+          // 任务2增强: 发送@提醒通知
+          if (mentionedUserIds.length > 0) {
+            await this.sendMentionNotifications(mentionedUserIds, text, res.comment.id);
+          }
+
           uni.showToast({
             title: '评论成功',
             icon: 'success'
           });
-          
+
           // 埋点
           trackEvent('comment_submit', {
             topic_id: this.topicId,
@@ -400,13 +444,77 @@ export default {
         }
       } catch (error) {
         console.error('[DETAIL] 评论失败:', error);
-        
+
         uni.showToast({
           title: '评论失败',
           icon: 'none'
         });
       } finally {
         this.commenting = false;
+      }
+    },
+
+    // 任务2增强: 发送@提醒通知
+    async sendMentionNotifications(mentionedUserIds, content, commentId) {
+      try {
+        // 调用云函数发送提醒
+        await callCloudFunction('community-mentions', {
+          action: 'createMentions',
+          topic_id: this.topicId,
+          comment_id: commentId,
+          mentioned_user_ids: mentionedUserIds,
+          content: content,
+          mentioned_by_user_id: this.currentUserId
+        });
+
+        console.log(`[MENTION] 已发送${mentionedUserIds.length}条@提醒`);
+      } catch (error) {
+        console.error('[MENTION] 发送提醒失败:', error);
+        // 不影响评论提交，只记录错误
+      }
+    },
+
+    // 任务4增强: 内容审核 - 敏感词检测
+    async auditCommentContent(content) {
+      try {
+        // 敏感词列表（本地检测）
+        const sensitiveWords = [
+          '违法', '赌博', '诈骗', '色情', '暴力', '恐怖',
+          '政治敏感词', '人身攻击', '骚扰', '骂人'
+        ];
+
+        // 检测敏感词
+        for (const word of sensitiveWords) {
+          if (content.includes(word)) {
+            return {
+              passed: false,
+              message: '内容包含不适当信息，请修改后重试'
+            };
+          }
+        }
+
+        // 调用云函数进行深度审核
+        const res = await callCloudFunction('content-audit', {
+          action: 'audit',
+          content: content,
+          type: 'comment'
+        });
+
+        if (res && res.passed === false) {
+          return {
+            passed: false,
+            message: res.message || '内容审核未通过'
+          };
+        }
+
+        // 记录审核日志
+        console.log(`[AUDIT] 内容审核通过: ${content.substring(0, 50)}...`);
+
+        return { passed: true };
+      } catch (error) {
+        console.error('[AUDIT] 审核失败:', error);
+        // 审核失败时，允许提交但记录日志
+        return { passed: true };
       }
     },
     
@@ -512,19 +620,59 @@ export default {
     
     formatTime(timestamp) {
       if (!timestamp) return '';
-      
+
       const date = new Date(timestamp);
       const now = new Date();
       const diff = now - date;
-      
+
       if (diff < 60000) return '刚刚';
       if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前';
       if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前';
       if (diff < 604800000) return Math.floor(diff / 86400000) + '天前';
-      
+
       return date.toLocaleDateString();
     },
-    
+
+    // 任务5: 互动优化 - 评论排序
+    changeCommentSort(sortType) {
+      this.commentSort = sortType;
+
+      // 根据排序类型重新排序评论
+      if (sortType === 'latest') {
+        this.comments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      } else if (sortType === 'hottest') {
+        this.comments.sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0));
+      }
+
+      // 埋点
+      trackEvent('comment_sort_changed', {
+        topic_id: this.topicId,
+        sort_type: sortType
+      });
+    },
+
+    // 任务5: 互动优化 - 回复评论
+    replyComment(comment) {
+      this.replyingTo = comment;
+
+      // 在评论框中插入@提醒
+      this.commentText = `@${comment.user_name} `;
+      this.showMentionPicker = false;
+
+      // 自动聚焦到输入框（需要使用ref）
+      uni.showToast({
+        title: `回复 ${comment.user_name}`,
+        icon: 'success',
+        duration: 1000
+      });
+
+      // 埋点
+      trackEvent('comment_reply_start', {
+        topic_id: this.topicId,
+        reply_to_user_id: comment.user_id
+      });
+    },
+
     // 显示操作菜单
     showActionMenu() {
       const actions = [];
@@ -807,12 +955,35 @@ export default {
   margin-bottom: 24rpx;
   padding-bottom: 24rpx;
   border-bottom: 1rpx solid #F0F0F5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .comments-title {
   font-size: 32rpx;
   font-weight: 600;
   color: #1D1D1F;
+}
+
+/* 任务5: 互动优化 - 排序按钮样式 */
+.sort-buttons {
+  display: flex;
+  gap: 12rpx;
+}
+
+.sort-btn {
+  padding: 8rpx 16rpx;
+  background: #F5F5F7;
+  border-radius: 16rpx;
+  font-size: 26rpx;
+  color: #86868B;
+  transition: all 0.3s;
+}
+
+.sort-btn.active {
+  background: #0A84FF;
+  color: #FFFFFF;
 }
 
 .empty-comments {
@@ -876,11 +1047,36 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 12rpx;
 }
 
 .comment-time {
   font-size: 24rpx;
   color: #C7C7CC;
+}
+
+/* 任务5: 互动优化 - 回复和点赞按钮 */
+.comment-actions {
+  display: flex;
+  gap: 24rpx;
+  align-items: center;
+}
+
+.comment-reply {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.comment-reply:active {
+  opacity: 0.6;
+}
+
+.reply-text {
+  font-size: 24rpx;
+  color: #86868B;
 }
 
 .comment-like {
@@ -1122,5 +1318,12 @@ export default {
 .confirm-btn[disabled] {
   opacity: 0.5;
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>
 

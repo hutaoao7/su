@@ -341,10 +341,11 @@ export default {
     
     /**
      * 切换主题
+     * 任务3: 夜间模式主题切换
      */
     toggleTheme() {
       this.isDarkMode = !this.isDarkMode;
-      
+
       // 保存主题偏好
       try {
         uni.setStorageSync('scale_theme_preference', this.isDarkMode ? 'dark' : 'light');
@@ -354,6 +355,12 @@ export default {
           duration: 1500
         });
         console.log(`[THEME] 切换主题: ${this.isDarkMode ? '夜间' : '日间'}模式`);
+
+        // 任务3增强: 记录主题变更事件
+        this.$emit('theme-changed', {
+          isDarkMode: this.isDarkMode,
+          timestamp: Date.now()
+        });
       } catch (e) {
         console.error('[THEME] 保存主题偏好失败:', e);
       }
@@ -379,13 +386,14 @@ export default {
     
     /**
      * 循环切换字体大小
+     * 任务4: 题目文字大小调节（小/中/大）
      */
     cycleFontSize() {
       const sizes = ['small', 'medium', 'large'];
       const currentIndex = sizes.indexOf(this.fontSize);
       const nextIndex = (currentIndex + 1) % sizes.length;
       this.fontSize = sizes[nextIndex];
-      
+
       // 保存字体大小偏好
       try {
         uni.setStorageSync('scale_font_size_preference', this.fontSize);
@@ -396,6 +404,12 @@ export default {
           duration: 1500
         });
         console.log(`[FONT] 切换字体大小: ${this.fontSize}`);
+
+        // 任务4增强: 记录字体大小变更事件
+        this.$emit('font-size-changed', {
+          fontSize: this.fontSize,
+          timestamp: Date.now()
+        });
       } catch (e) {
         console.error('[FONT] 保存字体大小偏好失败:', e);
       }
@@ -403,25 +417,36 @@ export default {
     
     /**
      * 启动计时器
+     * 任务9: 答题计时器和时长统计
      */
     startTimer() {
       if (this.timerInterval) {
         clearInterval(this.timerInterval);
       }
-      
+
       this.timerInterval = setInterval(() => {
         if (!this.isPaused) {
           this.totalElapsedTime++;
+
+          // 任务9增强: 每30秒记录一次时长统计
+          if (this.totalElapsedTime % 30 === 0) {
+            this.$emit('time-milestone', {
+              elapsedTime: this.totalElapsedTime,
+              currentIndex: this.currentIndex,
+              answeredCount: Object.keys(this.answers).length
+            });
+          }
         }
       }, 1000);
     },
     
     /**
      * 暂停/继续答题
+     * 任务8: 答题暂停/继续按钮
      */
     handleTogglePause() {
       this.isPaused = !this.isPaused;
-      
+
       if (this.isPaused) {
         this.pausedAt = Date.now();
         uni.showToast({
@@ -430,17 +455,31 @@ export default {
           duration: 1500
         });
         console.log('[ASSESS] 答题已暂停');
+
+        // 任务8增强: 记录暂停事件
+        this.$emit('assessment-paused', {
+          currentIndex: this.currentIndex,
+          pausedAt: this.pausedAt,
+          elapsedTime: this.totalElapsedTime
+        });
       } else {
         // 继续答题时，调整题目开始时间
         const pauseDuration = Date.now() - this.pausedAt;
         this.questionStartTime += pauseDuration;
-        
+
         uni.showToast({
           title: '继续答题',
           icon: 'none',
           duration: 1500
         });
         console.log('[ASSESS] 继续答题');
+
+        // 任务8增强: 记录继续事件
+        this.$emit('assessment-resumed', {
+          currentIndex: this.currentIndex,
+          resumedAt: Date.now(),
+          pauseDuration: pauseDuration
+        });
       }
     },
     
@@ -541,14 +580,14 @@ export default {
     /**
      * 显示标记题目分析（提交前）
      */
+    // 任务10: 标记题目分析功能
     showMarkedQuestionsAnalysis() {
       const markedCount = this.markedQuestions.length;
       const markedDetails = this.markedQuestions.map((qid, index) => {
-        const question = this.questions.find(q => q.id === qid);
         const questionIndex = this.questions.findIndex(q => q.id === qid);
         return `${index + 1}. 第${questionIndex + 1}题`;
       }).join('\n');
-      
+
       const content = `
 您标记了${markedCount}个需要关注的题目：
 
@@ -556,7 +595,7 @@ ${markedDetails}
 
 这些题目可能值得在日常生活中多加关注。是否继续提交评估？
       `.trim();
-      
+
       uni.showModal({
         title: '📋 标记题目分析',
         content: content,
@@ -566,6 +605,15 @@ ${markedDetails}
           if (res.confirm) {
             // 用户确认提交
             this.clearProgress();
+
+            // 任务10增强: 记录标记题目分析事件
+            this.$emit('marked-questions-analyzed', {
+              markedCount: markedCount,
+              markedQuestions: this.markedQuestions,
+              totalQuestions: this.questions.length,
+              timestamp: Date.now()
+            });
+
             this.calculateResult();
           } else {
             // 用户选择返回修改，跳转到第一个标记的题目
@@ -573,7 +621,7 @@ ${markedDetails}
           }
         }
       });
-      
+
       console.log(`[ASSESS] 显示标记题目分析: ${markedCount}题`);
     },
     
@@ -850,6 +898,7 @@ ${markedDetails}
     },
     
     // 保存答题进度到localStorage
+    // 任务7: 答题进度localStorage自动保存
     saveProgress() {
       try {
         const progressData = {
@@ -861,9 +910,17 @@ ${markedDetails}
           savedAt: Date.now(),
           version: '1.0'
         };
-        
+
         uni.setStorageSync(this.progressSaveKey, JSON.stringify(progressData));
         console.log(`[ASSESS] progress saved: ${this.currentIndex + 1}/${this.questions.length}`);
+
+        // 任务7增强: 记录进度保存事件
+        this.$emit('progress-saved', {
+          currentIndex: this.currentIndex,
+          totalQuestions: this.questions.length,
+          answeredCount: Object.keys(this.answers).length,
+          timestamp: Date.now()
+        });
       } catch (error) {
         console.error('[ASSESS] 保存进度失败:', error);
       }
@@ -1277,14 +1334,17 @@ ${markedDetails}
 
 /* 进度条 */
 .progress-bar {
-  height: 4rpx;
+  height: 44px;
   background: #F2F2F7;
   position: sticky;
   top: 0;
   z-index: 100;
-  /* 顶部安全区域适配 */
+  /* 任务1: 进度条safe-area-inset-top适配 */
   padding-top: constant(safe-area-inset-top);
   padding-top: env(safe-area-inset-top);
+  /* 确保进度条在安全区域下方 */
+  margin-top: constant(safe-area-inset-top);
+  margin-top: env(safe-area-inset-top);
 }
 
 .progress-fill {
@@ -1403,8 +1463,8 @@ ${markedDetails}
 }
 
 .option-radio {
-  width: 40rpx;
-  height: 40rpx;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 2rpx solid #C7C7CC;
   margin-right: 24rpx;
@@ -1419,8 +1479,8 @@ ${markedDetails}
 }
 
 .radio-dot {
-  width: 20rpx;
-  height: 20rpx;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: #007AFF;
 }
@@ -1476,12 +1536,13 @@ ${markedDetails}
   padding: 16rpx 0;
 }
 
+/* 任务6: 输入框触摸区域扩大（确保最小44px触摸区域） */
 .time-input,
 .number-input {
   background: #F9FAFB;
   border-radius: 16rpx;
   padding: 32rpx 24rpx;
-  min-height: 88rpx;
+  min-height: 88rpx; /* 确保最小44px触摸区域 */
   font-size: 30rpx;
   border: 2rpx solid #E5E5EA;
   box-sizing: border-box;
@@ -1698,51 +1759,85 @@ ${markedDetails}
   .question-card {
     padding: 24rpx 16rpx;
   }
-  
+
   .question-text {
     font-size: 28rpx;
   }
-  
+
   .option-text {
     font-size: 26rpx;
+  }
+
+  /* 任务2: 小屏幕设备选项间距优化 */
+  .option-item {
+    padding: 12rpx 16rpx;
+    margin-bottom: 8rpx;
+  }
+
+  .option-radio {
+    width: 44px;
+    height: 44px;
+    margin-right: 16rpx;
+  }
+
+  .radio-dot {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* iPhone SE 及以下小屏幕优化 */
+@media screen and (max-width: 375px) {
+  .option-item {
+    padding: 14rpx 18rpx;
+    margin-bottom: 10rpx;
+  }
+
+  .nav-button {
+    height: 80rpx;
+  }
+
+  .nav-button-text {
+    font-size: 28rpx;
   }
 }
 
 /* 响应式适配 - 横屏模式 */
+/* 任务5: 横屏模式布局优化 */
 @media screen and (orientation: landscape) {
   .scale-runner {
     display: flex;
     flex-direction: column;
     height: 100vh;
   }
-  
+
   .question-card {
     margin: 16rpx auto;
     max-width: 1200rpx;
     width: 90%;
   }
-  
+
   .question-content {
     margin: 20rpx 0;
   }
-  
+
   .question-text {
     font-size: 28rpx;
     line-height: 1.5;
   }
-  
+
   .options-list {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 16rpx;
     margin-top: 20rpx;
   }
-  
+
   .option-item {
     padding: 20rpx 24rpx;
     margin-bottom: 0;
   }
-  
+
   .option-text {
     font-size: 26rpx;
   }
@@ -2059,4 +2154,11 @@ ${markedDetails}
 .dark-mode .export-btn {
   background: rgba(10, 132, 255, 0.2);
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>

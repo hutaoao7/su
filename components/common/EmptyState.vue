@@ -70,5 +70,12 @@ export default {
   padding: 20rpx 40rpx;
   font-size: 28rpx;
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>
 

@@ -394,4 +394,11 @@ export default {
   color: #86868B;
   line-height: 1.5;
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>

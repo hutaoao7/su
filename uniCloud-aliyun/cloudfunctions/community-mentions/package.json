@@ -1,0 +1,11 @@
+{
+  "name": "community-mentions",
+  "version": "1.0.0",
+  "description": "社区@用户提醒云函数",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "author": "CraneHeart Team",
+  "license": "MIT"
+}
+

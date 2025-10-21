@@ -1,0 +1,689 @@
+
+> liquid-glass-app@0.1.0-MVP check:ui-adapter
+> node tools/ui-adapter-checker.js
+
+馃殌 寮€濮嬫壂鎻廢I閫傞厤闂...
+
+馃搧 鎵弿鐩綍: pages
+馃搧 鎵弿鐩綍: pages-sub
+馃搧 鎵弿鐩綍: components
+
+================================================================================
+UI閫傞厤妫€娴嬫姤鍛?================================================================================
+鎵弿鏂囦欢鏁? 72/72
+鍙戠幇闂鏁? 227
+  - 閿欒 (error): 0
+  - 璀﹀憡 (warning): 51
+  - 鎻愮ず (info): 176
+================================================================================
+
+鈿狅笍 WARNING (51)
+--------------------------------------------------------------------------------
+1. pages\assess\result.vue
+   瑙勫垯: Safe Area閫傞厤
+   闂: 妫€娴嬪埌鍥哄畾瀹氫綅鎴栧簳閮╬adding锛屼絾缂哄皯safe-area-inset閫傞厤
+
+2. pages\assess\result.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+3. pages\cdk\redeem.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+4. pages\community\detail.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤杈冨ぇ鍥哄畾瀹藉害锛屽缓璁坊鍔爉ax-width绾︽潫; 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑? 浣跨敤Grid甯冨眬浣嗘湭閽堝骞虫澘/澶у睆璁惧閫傞厤
+
+5. pages\community\index.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+6. pages\community\publish.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑? 浣跨敤Grid甯冨眬浣嗘湭閽堝骞虫澘/澶у睆璁惧閫傞厤
+
+7. pages\features\features.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 瀹藉害width: 428px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 浣跨敤Grid甯冨眬浣嗘湭閽堝骞虫澘/澶у睆璁惧閫傞厤
+
+8. pages\feedback\feedback.vue
+   瑙勫垯: Safe Area閫傞厤
+   闂: 妫€娴嬪埌鍥哄畾瀹氫綅鎴栧簳閮╬adding锛屼絾缂哄皯safe-area-inset閫傞厤
+
+9. pages\feedback\feedback.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+10. pages\home\home.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+11. pages\intervene\chat.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 澶氫釜澶у昂瀵稿浐瀹氬€硷紙width: 500rpx, width: 500rpx, height: 600rpx锛夊彲鑳芥孩鍑? 浣跨敤Grid甯冨眬浣嗘湭閽堝骞虫澘/澶у睆璁惧閫傞厤
+
+12. pages\intervene\meditation.vue
+   瑙勫垯: Safe Area閫傞厤
+   闂: 妫€娴嬪埌鍥哄畾瀹氫綅鎴栧簳閮╬adding锛屼絾缂哄皯safe-area-inset閫傞厤
+
+13. pages\intervene\meditation.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+14. pages\login\login.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 澶氫釜澶у昂瀵稿浐瀹氬€硷紙width: 750rpx, height: 600px, width: 768px锛夊彲鑳芥孩鍑? 瀹藉害width: 375px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 瀹藉害width: 430px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 瀹藉害width: 750rpx鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(750rpx); 瀹藉害width: 768px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 楂樺害height: 600px鍗犵敤灞忓箷楂樺害杩囧ぇ锛屽缓璁娇鐢╩in-height鎴杕ax-height; 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+15. pages\music\index.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 瀹藉害width: 375px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 瀹藉害width: 768px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 瀹藉害width: 750rpx鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(750rpx)
+
+16. pages\music\player.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 澶氫釜澶у昂瀵稿浐瀹氬€硷紙width: 560rpx, height: 560rpx, width: 768px锛夊彲鑳芥孩鍑? 瀹藉害width: 375px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 瀹藉害width: 768px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 瀹藉害width: 750rpx鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(750rpx)
+
+17. pages\user\account-deletion.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+18. pages\user\audit-log.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+19. pages\user\data-deletion-confirm.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+20. pages\user\home.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 瀹藉害width: 375px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 瀹藉害width: 428px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 瀹藉害width: 768px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 瀹藉害width: 750rpx鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(750rpx)
+
+21. pages-sub\assess\result.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 澶氫釜澶у昂瀵稿浐瀹氬€硷紙height: 800rpx, width: 767px, width: 768px锛夊彲鑳芥孩鍑? 瀹藉害width: 375px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 瀹藉害width: 376px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 瀹藉害width: 414px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 瀹藉害width: 415px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 瀹藉害width: 767px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 瀹藉害width: 768px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 瀹藉害width: 750rpx鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(750rpx); 瀹藉害width: 750rpx鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(750rpx); 楂樺害height: 1334rpx鍗犵敤灞忓箷楂樺害杩囧ぇ锛屽缓璁娇鐢╩in-height鎴杕ax-height
+
+22. pages-sub\consent\consent.vue
+   瑙勫垯: Safe Area閫傞厤
+   闂: 妫€娴嬪埌鍥哄畾瀹氫綅鎴栧簳閮╬adding锛屼絾缂哄皯safe-area-inset閫傞厤
+
+23. pages-sub\consent\consent.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤杈冨ぇ鍥哄畾瀹藉害锛屽缓璁坊鍔爉ax-width绾︽潫; 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+24. pages-sub\consent\disclaimer.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+25. pages-sub\consent\privacy-policy.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+26. pages-sub\consent\revoke.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+27. pages-sub\consent\user-agreement.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+28. pages-sub\intervene\meditation.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+29. pages-sub\music\player.vue
+   瑙勫垯: Safe Area閫傞厤
+   闂: 妫€娴嬪埌鍥哄畾瀹氫綅鎴栧簳閮╬adding锛屼絾缂哄皯safe-area-inset閫傞厤
+
+30. pages-sub\other\data-export.vue
+   瑙勫垯: Safe Area閫傞厤
+   闂: 妫€娴嬪埌鍥哄畾瀹氫綅鎴栧簳閮╬adding锛屼絾缂哄皯safe-area-inset閫傞厤
+
+31. pages-sub\other\data-export.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+32. pages-sub\other\feedback.vue
+   瑙勫垯: Safe Area閫傞厤
+   闂: 妫€娴嬪埌鍥哄畾瀹氫綅鎴栧簳閮╬adding锛屼絾缂哄皯safe-area-inset閫傞厤
+
+33. pages-sub\other\feedback.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+34. pages-sub\other\profile.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 瀹藉害width: 800px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 楂樺害height: 800px鍗犵敤灞忓箷楂樺害杩囧ぇ锛屽缓璁娇鐢╩in-height鎴杕ax-height; 浣跨敤杈冨ぇ鍥哄畾瀹藉害锛屽缓璁坊鍔爉ax-width绾︽潫
+
+35. components\AiModule.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+36. components\CdkModule.vue
+   瑙勫垯: Safe Area閫傞厤
+   闂: 妫€娴嬪埌鍥哄畾瀹氫綅鎴栧簳閮╬adding锛屼絾缂哄皯safe-area-inset閫傞厤
+
+37. components\CdkModule.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 澶ч噺浣跨敤鍥哄畾瀹藉害锛屽缓璁娇鐢ㄧ浉瀵瑰崟浣嶏紙%銆乿h銆乿w锛夋彁鍗囧搷搴斿紡; 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+38. components\common\ConfirmDialog.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 澶ч噺浣跨敤鍥哄畾瀹藉害锛屽缓璁娇鐢ㄧ浉瀵瑰崟浣嶏紙%銆乿h銆乿w锛夋彁鍗囧搷搴斿紡; 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+39. components\common\EmptyState.vue
+   瑙勫垯: Safe Area閫傞厤
+   闂: 妫€娴嬪埌鍥哄畾瀹氫綅鎴栧簳閮╬adding锛屼絾缂哄皯safe-area-inset閫傞厤
+
+40. components\common\EmptyState.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 澶ч噺浣跨敤鍥哄畾瀹藉害锛屽缓璁娇鐢ㄧ浉瀵瑰崟浣嶏紙%銆乿h銆乿w锛夋彁鍗囧搷搴斿紡; 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+41. components\common\ErrorBoundary.vue
+   瑙勫垯: Safe Area閫傞厤
+   闂: 妫€娴嬪埌鍥哄畾瀹氫綅鎴栧簳閮╬adding锛屼絾缂哄皯safe-area-inset閫傞厤
+
+42. components\common\ErrorBoundary.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 瀹藉害width: 768px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+43. components\common\GlobalLoading.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+44. components\common\LoadingState.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 澶氫釜澶у昂瀵稿浐瀹氬€硷紙width: 600rpx, width: 500rpx, width: 750rpx锛夊彲鑳芥孩鍑? 瀹藉害width: 750rpx鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(750rpx)
+
+45. components\common\NavBar.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+46. components\common\TabBar.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑?
+47. components\custom-tabbar\custom-tabbar.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 瀹藉害width: 375px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px)
+
+48. components\custom-tabbar\custom-tabbar.vue
+   瑙勫垯: 瀛椾綋鍙闂€ф娴?   闂: 妫€娴嬪埌杩囧皬鐨勫瓧浣擄紙灏忎簬12px/24rpx锛夛紝鍙兘褰卞搷鍙鎬?   璇︽儏: font-size: 10px, font-size: 9px
+
+49. components\MusicModule.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 浣跨敤鍥哄畾灏哄浣嗘湭璁剧疆overflow锛屽唴瀹瑰彲鑳芥孩鍑? 浣跨敤Grid甯冨眬浣嗘湭閽堝骞虫澘/澶у睆璁惧閫傞厤
+
+50. components\scale\ScaleRunner.vue
+   瑙勫垯: 灞忓箷灏哄杈圭晫妫€娴?   闂: 灞忓箷灏哄杈圭晫闂
+   璇︽儏: 澶氫釜澶у昂瀵稿浐瀹氬€硷紙height: 667px, width: 1200rpx, width: 560rpx锛夊彲鑳芥孩鍑? 瀹藉害width: 375px鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(375px); 瀹藉害width: 1200rpx鎺ヨ繎鎴栬秴鍑篿Phone SE灞忓箷瀹藉害(750rpx); 楂樺害height: 667px鍗犵敤灞忓箷楂樺害杩囧ぇ锛屽缓璁娇鐢╩in-height鎴杕ax-height; 浣跨敤Grid甯冨眬浣嗘湭閽堝骞虫澘/澶у睆璁惧閫傞厤
+
+51. components\ScreeningModule.vue
+   瑙勫垯: Safe Area閫傞厤
+   闂: 妫€娴嬪埌鍥哄畾瀹氫綅鎴栧簳閮╬adding锛屼絾缂哄皯safe-area-inset閫傞厤
+
+鈩癸笍 INFO (176)
+--------------------------------------------------------------------------------
+1. pages\assess\academic\index.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+2. pages\assess\academic\index.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+3. pages\assess\academic\index.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+4. pages\assess\academic\index.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+5. pages\assess\result.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+6. pages\assess\result.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+7. pages\assess\result.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+8. pages\assess\result.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+9. pages\assess\sleep\index.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+10. pages\assess\sleep\index.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+11. pages\assess\sleep\index.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+12. pages\assess\sleep\index.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+13. pages\assess\social\index.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+14. pages\assess\social\index.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+15. pages\assess\social\index.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+16. pages\assess\social\index.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+17. pages\assess\stress\index.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+18. pages\assess\stress\index.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+19. pages\assess\stress\index.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+20. pages\assess\stress\index.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+21. pages\cdk\redeem.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+22. pages\cdk\redeem.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+23. pages\cdk\redeem.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+24. pages\cdk\redeem.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+25. pages\community\detail.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+26. pages\community\detail.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+27. pages\community\detail.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+28. pages\community\detail.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+29. pages\community\index.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+30. pages\community\index.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+31. pages\community\index.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+32. pages\community\index.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+33. pages\community\publish.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+34. pages\community\publish.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+35. pages\community\publish.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+36. pages\community\publish.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+37. pages\features\features.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+38. pages\features\features.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+39. pages\feedback\feedback.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+40. pages\feedback\feedback.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+41. pages\feedback\feedback.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+42. pages\home\home.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+43. pages\home\home.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+44. pages\home\home.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+45. pages\home\home.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+46. pages\index\index.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+47. pages\index\index.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+48. pages\index\index.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+49. pages\intervene\chat.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+50. pages\intervene\chat.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+51. pages\intervene\chat.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+52. pages\intervene\chat.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+53. pages\intervene\meditation.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+54. pages\intervene\meditation.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+55. pages\intervene\meditation.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+56. pages\login\login.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+57. pages\music\index.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+58. pages\music\index.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+59. pages\music\index.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+60. pages\music\player.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+61. pages\music\player.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+62. pages\user\account-deletion.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+63. pages\user\account-deletion.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+64. pages\user\account-deletion.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+65. pages\user\account-deletion.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+66. pages\user\audit-log.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+67. pages\user\audit-log.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+68. pages\user\audit-log.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+69. pages\user\audit-log.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+70. pages\user\data-deletion-confirm.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+71. pages\user\data-deletion-confirm.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+72. pages\user\data-deletion-confirm.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+73. pages\user\data-deletion-confirm.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+74. pages\user\home.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+75. pages\user\home.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+76. pages-sub\assess\academic\index.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+77. pages-sub\assess\academic\index.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+78. pages-sub\assess\academic\index.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+79. pages-sub\assess\academic\index.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+80. pages-sub\assess\result.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+81. pages-sub\assess\result.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+82. pages-sub\assess\sleep\index.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+83. pages-sub\assess\sleep\index.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+84. pages-sub\assess\sleep\index.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+85. pages-sub\assess\sleep\index.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+86. pages-sub\assess\social\index.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+87. pages-sub\assess\social\index.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+88. pages-sub\assess\social\index.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+89. pages-sub\assess\social\index.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+90. pages-sub\assess\stress\index.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+91. pages-sub\assess\stress\index.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+92. pages-sub\assess\stress\index.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+93. pages-sub\assess\stress\index.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+94. pages-sub\community\mentions.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+95. pages-sub\community\mentions.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+96. pages-sub\community\mentions.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+97. pages-sub\community\mentions.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+98. pages-sub\consent\consent.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+99. pages-sub\consent\consent.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+100. pages-sub\consent\consent.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+101. pages-sub\consent\consent.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+102. pages-sub\consent\disclaimer.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+103. pages-sub\consent\disclaimer.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+104. pages-sub\consent\disclaimer.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+105. pages-sub\consent\privacy-policy.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+106. pages-sub\consent\privacy-policy.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+107. pages-sub\consent\privacy-policy.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+108. pages-sub\consent\privacy-policy.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+109. pages-sub\consent\revoke.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+110. pages-sub\consent\revoke.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+111. pages-sub\consent\revoke.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+112. pages-sub\consent\revoke.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+113. pages-sub\consent\user-agreement.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+114. pages-sub\consent\user-agreement.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+115. pages-sub\consent\user-agreement.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+116. pages-sub\intervene\meditation.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+117. pages-sub\intervene\meditation.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+118. pages-sub\intervene\meditation.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+119. pages-sub\music\player.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+120. pages-sub\music\player.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+121. pages-sub\music\player.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+122. pages-sub\other\cdk\redeem.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+123. pages-sub\other\cdk\redeem.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+124. pages-sub\other\data-export.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+125. pages-sub\other\data-export.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+126. pages-sub\other\data-export.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+127. pages-sub\other\data-export.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+128. pages-sub\other\feedback.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+129. pages-sub\other\feedback.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+130. pages-sub\other\feedback.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+131. pages-sub\other\profile.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+132. pages-sub\other\profile.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+133. pages-sub\other\profile.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+134. pages-sub\other\profile.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+135. pages-sub\other\redeem.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+136. pages-sub\other\redeem.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+137. components\AiModule.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+138. components\AiModule.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+139. components\AiModule.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+140. components\AiModule.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+141. components\CdkModule.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+142. components\CdkModule.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+143. components\CdkModule.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+144. components\common\ConfirmDialog.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+145. components\common\ConfirmDialog.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+146. components\common\ConfirmDialog.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+147. components\common\ConfirmDialog.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+148. components\common\EmptyState.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+149. components\common\EmptyState.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+150. components\common\EmptyState.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+151. components\common\ErrorBoundary.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+152. components\common\GlobalLoading.vue
+   瑙勫垯: rpx鍗曚綅浣跨敤
+   闂: px浣跨敤杩囧锛坧x:2, rpx:7锛夛紝寤鸿浣跨敤rpx鍗曚綅
+
+153. components\common\GlobalLoading.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+154. components\common\GlobalLoading.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+155. components\common\GlobalLoading.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+156. components\common\LoadingState.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+157. components\common\NavBar.vue
+   瑙勫垯: rpx鍗曚綅浣跨敤
+   闂: px浣跨敤杩囧锛坧x:1, rpx:4锛夛紝寤鸿浣跨敤rpx鍗曚綅
+
+158. components\common\NavBar.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+159. components\common\NavBar.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+160. components\common\NavBar.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+161. components\common\TabBar.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+162. components\common\VirtualMessageList.vue
+   瑙勫垯: rpx鍗曚綅浣跨敤
+   闂: px浣跨敤杩囧锛坧x:2, rpx:4锛夛紝寤鸿浣跨敤rpx鍗曚綅
+
+163. components\common\VirtualMessageList.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+164. components\common\VirtualMessageList.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+165. components\common\VirtualMessageList.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+166. components\custom-tabbar\custom-tabbar.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+167. components\custom-tabbar\custom-tabbar.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+168. components\MusicModule.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+169. components\MusicModule.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+170. components\MusicModule.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+171. components\MusicModule.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+172. components\scale\ScaleRunner.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+173. components\ScreeningModule.vue
+   瑙勫垯: 鍝嶅簲寮忓竷灞€
+   闂: 澶嶆潅甯冨眬浣嗙己灏戝獟浣撴煡璇紝寤鸿娣诲姞鍝嶅簲寮忛€傞厤
+
+174. components\ScreeningModule.vue
+   瑙勫垯: 妯睆閫傞厤妫€娴?   闂: 澶嶆潅甯冨眬浣嗘湭妫€娴嬪埌妯睆閫傞厤锛屽缓璁坊鍔犳í灞忔ā寮忔牱寮?
+175. components\ScreeningModule.vue
+   瑙勫垯: 鏆楅粦妯″紡妫€娴?   闂: 妫€娴嬪埌纭紪鐮侀鑹插€硷紝寤鸿娣诲姞鏆楅粦妯″紡鏀寔
+
+176. components\ScreeningModule.vue
+   瑙勫垯: 棰滆壊瀵规瘮搴︽娴嬶紙WCAG锛?   闂: 鍙兘瀛樺湪娴呰壊鑳屾櫙閰嶆祬鑹叉枃瀛楋紝瀵规瘮搴︿笉瓒筹紙WCAG寤鸿鑷冲皯4.5:1锛?
+
+馃搫 HTML鎶ュ憡宸茬敓鎴? D:\鏂板缓鏂囦欢澶筡su\ui-adapter-report.html
+

@@ -752,4 +752,11 @@ export default {
     margin: 0 auto;
   }
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>

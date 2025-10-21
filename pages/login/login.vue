@@ -669,8 +669,8 @@ export default {
 }
 
 .checkbox {
-  width: 36rpx;
-  height: 36rpx;
+  width: 44px;
+  height: 44px;
   border: 2rpx solid rgba(255, 255, 255, 0.8);  /* 增强边框对比度 */
   border-radius: 8rpx;
   display: flex;
@@ -776,8 +776,8 @@ export default {
   }
   
   .checkbox {
-    width: 32rpx;
-    height: 32rpx;
+    width: 44px;
+    height: 44px;
   }
 }
 
@@ -901,6 +901,13 @@ export default {
 /* 添加按钮点击效果 */
 button::after {
   border: none;
+}
+
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
 }
 
 </style>

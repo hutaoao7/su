@@ -1,0 +1,101 @@
+name: UI适配检测
+
+on:
+  push:
+    branches: [ main, dev ]
+    paths:
+      - 'pages/**/*.vue'
+      - 'pages-sub/**/*.vue'
+      - 'components/**/*.vue'
+      - 'tools/ui-adapter-checker.js'
+  pull_request:
+    branches: [ main, dev ]
+    paths:
+      - 'pages/**/*.vue'
+      - 'pages-sub/**/*.vue'
+      - 'components/**/*.vue'
+      - 'tools/ui-adapter-checker.js'
+
+jobs:
+  ui-adapter-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: 设置Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+    
+    - name: 安装依赖
+      run: npm install
+    
+    - name: 运行UI适配检测
+      run: node tools/ui-adapter-checker.js
+      continue-on-error: true
+    
+    - name: 上传检测报告
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: ui-adapter-report
+        path: ui-adapter-report.html
+        retention-days: 30
+    
+    - name: 评论PR
+      if: github.event_name == 'pull_request' && always()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const reportPath = 'ui-adapter-report.html';
+          
+          if (fs.existsSync(reportPath)) {
+            const report = fs.readFileSync(reportPath, 'utf-8');
+            
+            // 提取统计信息
+            const errorMatch = report.match(/<div class="stat-value" style="color: #f56c6c;">(\d+)<\/div>/);
+            const warningMatch = report.match(/<div class="stat-value" style="color: #e6a23c;">(\d+)<\/div>/);
+            const infoMatch = report.match(/<div class="stat-value" style="color: #409eff;">(\d+)<\/div>/);
+            
+            const errors = errorMatch ? parseInt(errorMatch[1]) : 0;
+            const warnings = warningMatch ? parseInt(warningMatch[1]) : 0;
+            const infos = infoMatch ? parseInt(infoMatch[1]) : 0;
+            
+            let comment = '## 🔍 UI适配检测结果\n\n';
+            comment += `| 类型 | 数量 |\n`;
+            comment += `|------|------|\n`;
+            comment += `| ❌ 错误 | ${errors} |\n`;
+            comment += `| ⚠️ 警告 | ${warnings} |\n`;
+            comment += `| ℹ️ 提示 | ${infos} |\n\n`;
+            
+            if (errors === 0 && warnings === 0) {
+              comment += '✅ 恭喜！未发现UI适配问题。\n\n';
+            } else {
+              comment += '📄 详细报告已上传为工件，请查看。\n\n';
+            }
+            
+            comment += '> 💡 提示：请确保所有页面都适配了不同屏幕尺寸和安全区域。';
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          }
+    
+    - name: 检查错误
+      run: |
+        if [ -f ui-adapter-report.html ]; then
+          ERROR_COUNT=$(grep -o 'level-error' ui-adapter-report.html | wc -l)
+          if [ "$ERROR_COUNT" -gt 0 ]; then
+            echo "❌ 发现 $ERROR_COUNT 个UI适配错误"
+            exit 1
+          fi
+        fi
+

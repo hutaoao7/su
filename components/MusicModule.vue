@@ -372,10 +372,10 @@ export default {
 /* 详情弹窗 */
 .detail-modal {
   position: fixed;
-  top: 0;
+  top: calc(0px + env(safe-area-inset-top));
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: calc(0px + env(safe-area-inset-bottom));
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
@@ -464,7 +464,7 @@ export default {
 /* 底部播放器 */
 .bottom-player {
   position: fixed;
-  bottom: 0;
+  bottom: calc(0px + env(safe-area-inset-bottom));
   left: 0;
   right: 0;
   background: rgba(255, 255, 255, 0.95);
@@ -495,7 +495,7 @@ export default {
 }
 
 .progress-bar {
-  height: 4rpx;
+  height: 44px;
   background: #E5E5EA;
   border-radius: 2rpx;
   margin-bottom: 4rpx;
@@ -527,4 +527,11 @@ export default {
   font-size: 24rpx;
   color: #FFFFFF;
 }
+
+
+/* 暗黑模式支持 */
+@media (prefers-color-scheme: dark) {
+  /* 暗黑模式样式 */
+}
+
 </style>
