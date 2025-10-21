@@ -8,9 +8,5 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "response": "file:../common/response",
-    "validator": "file:../common/validator",
-    "ratelimit": "file:../common/ratelimit"
-  }
+  "dependencies": {}
 }
