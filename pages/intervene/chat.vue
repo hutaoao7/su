@@ -250,7 +250,7 @@ import { checkSensitiveWords, getCrisisWarning, getSensitiveWarning } from '@/ut
 import { 
   PersonalityType, 
   getAllPersonalities, 
-  getPersonalityConfig,
+  getPersonalityConfig as getPersonalityConfigUtil,
   savePersonalityPreference,
   getPersonalityPreference 
 } from '@/utils/ai-personality.js';
@@ -310,7 +310,7 @@ export default {
     
     // 如果没有历史消息，添加欢迎消息
     if (this.messages.length === 0) {
-      const personalityConfig = getPersonalityConfig(this.currentPersonality);
+      const personalityConfig = getPersonalityConfigUtil(this.currentPersonality);
       this.addAIMessage(`您好！我是您的心理支持AI（${personalityConfig.name}）。无论您遇到什么困扰，都可以和我倾诉。我会认真倾听，并尽我所能给予支持和建议。`);
     }
     
@@ -331,6 +331,13 @@ export default {
   },
   
   methods: {
+    /**
+     * 获取AI人格配置
+     */
+    getPersonalityConfig(type) {
+      return getPersonalityConfigUtil(type);
+    },
+    
     /**
      * 加载会话列表
      */
@@ -930,8 +937,8 @@ export default {
         return;
       }
       
-      const oldPersonality = getPersonalityConfig(this.currentPersonality);
-      const newPersonality = getPersonalityConfig(personalityId);
+      const oldPersonality = getPersonalityConfigUtil(this.currentPersonality);
+      const newPersonality = getPersonalityConfigUtil(personalityId);
       
       // 更新人格
       this.currentPersonality = personalityId;

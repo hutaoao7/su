@@ -459,9 +459,9 @@
 - [x] 实现评论点赞（已在detail.vue实现）
 - [x] 添加@用户提醒（mention-helper.js工具+detail.vue集成+API文档）
 - [x] 编辑/删除/举报操作菜单（detail.vue已实现）
-- [ ] 话题收藏功能
-- [ ] 话题分享功能
-- [ ] 热门话题推荐
+- [x] 话题收藏功能（community-favorites API + 数据库表 + 前端集成）✅ 2025-10-22
+- [x] 话题分享功能（community-shares API + 分享图片生成 + 多平台支持）✅ 2025-10-22
+- [x] 热门话题推荐（community-recommendations API + 混合推荐算法）✅ 2025-10-22
 
 **数据库和API（已完成7个）**
 - [x] 编写community_topics表迁移SQL（006_create_community_tables.sql）

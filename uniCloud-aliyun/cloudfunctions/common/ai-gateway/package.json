@@ -1,0 +1,10 @@
+{
+  "name": "ai-gateway",
+  "version": "1.0.0",
+  "description": "AI 网关公共模块（限流、内容安全、OpenAI 适配、降级模板）",
+  "main": "index.js",
+  "type": "commonjs",
+  "private": true
+}
+
+

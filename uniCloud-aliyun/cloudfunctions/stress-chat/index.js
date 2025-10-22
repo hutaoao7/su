@@ -1,7 +1,7 @@
 'use strict';
 
 // 导入所需模块
-const aiGateway = require('../common/ai-gateway');
+const aiGateway = require('./ai-gateway');
 const { 
   checkSensitiveWords, 
   getCrisisInterventionResponse, 
