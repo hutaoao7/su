@@ -1,393 +1,397 @@
-'use strict';
-
 /**
- * 离线数据同步云函数
+ * offline-sync 云函数
  * 
- * 功能：
- * 1. 接收离线期间产生的数据
- * 2. 数据冲突检测和处理
- * 3. 批量数据同步
- * 4. 同步状态跟踪
+ * 功能：处理客户端离线数据的同步
  * 
- * @param {object} event - 请求参数
- * @param {string} event.action - 操作类型（sync_single/sync_batch/check_conflict）
- * @param {string} event.storeType - 存储类型（scales/results/chats/user_data）
- * @param {string} event.key - 数据键
- * @param {any} event.data - 数据内容
- * @param {number} event.timestamp - 客户端时间戳
- * @param {array} event.items - 批量同步时的数据数组
+ * 支持的操作：
+ * 1. save_assessment - 保存评估结果
+ * 2. save_chat - 保存聊天记录  
+ * 3. update_profile - 更新用户资料
+ * 4. upload_feedback - 上传用户反馈
+ * 5. batch_sync - 批量同步多个操作
+ * 
+ * @author CraneHeart Team
+ * @date 2025-10-21
  */
+
+'use strict';
 
 const db = uniCloud.database();
 const dbCmd = db.command;
 
 exports.main = async (event, context) => {
-  const { action = 'sync_single', storeType, key, data, timestamp, items } = event;
-  const { uid: userId } = context;  // Token验证，获取用户ID
+  console.log('[offline-sync] 收到同步请求:', event);
   
-  // 验证登录
-  if (!userId) {
+  // 获取客户端信息
+  const clientIP = context.CLIENTIP;
+  const clientUA = context.CLIENTUA;
+  
+  // 验证Token
+  const token = event.token || event.uniIdToken;
+  if (!token) {
     return {
-      errCode: 401,
-      errMsg: '未登录，请先登录'
+      code: 401,
+      message: '未授权：缺少token'
     };
   }
   
+  // 验证用户身份
+  let userInfo;
   try {
+    const uniID = uniCloud.uniID({
+      clientInfo: context.CLIENTINFO
+    });
+    
+    const verifyResult = await uniID.checkToken(token);
+    if (verifyResult.code !== 0) {
+      return {
+        code: 401,
+        message: '未授权：token无效'
+      };
+    }
+    
+    userInfo = verifyResult.userInfo;
+  } catch (e) {
+    console.error('[offline-sync] Token验证失败:', e);
+    return {
+      code: 401,
+      message: 'Token验证失败'
+    };
+  }
+  
+  const userId = userInfo.uid;
+  const { action, data, batchItems } = event;
+  
+  // 记录同步日志
+  const syncLog = {
+    user_id: userId,
+    action,
+    client_ip: clientIP,
+    client_ua: clientUA,
+    sync_time: new Date(),
+    status: 'pending'
+  };
+  
+  try {
+    let result;
+    
+    // 根据操作类型分发处理
     switch (action) {
-      case 'sync_single':
-        // 同步单个数据项
-        return await syncSingleData(userId, storeType, key, data, timestamp);
+      case 'save_assessment':
+        result = await handleSaveAssessment(userId, data);
+        break;
         
-      case 'sync_batch':
-        // 批量同步
-        return await syncBatchData(userId, items);
+      case 'save_chat':
+        result = await handleSaveChat(userId, data);
+        break;
         
-      case 'check_conflict':
-        // 检查冲突
-        return await checkConflict(userId, storeType, key, timestamp);
+      case 'update_profile':
+        result = await handleUpdateProfile(userId, data);
+        break;
+        
+      case 'upload_feedback':
+        result = await handleUploadFeedback(userId, data, clientIP);
+        break;
+        
+      case 'batch_sync':
+        result = await handleBatchSync(userId, batchItems);
+        break;
         
       default:
         return {
-          errCode: 400,
-          errMsg: '未知操作类型'
+          code: 400,
+          message: `不支持的操作类型: ${action}`
         };
     }
-  } catch (error) {
-    console.error('[offline-sync] 错误:', error);
+    
+    // 更新同步日志
+    syncLog.status = 'success';
+    syncLog.result = result;
+    await saveSyncLog(syncLog);
+    
     return {
-      errCode: 500,
-      errMsg: '同步失败: ' + error.message
+      code: 0,
+      message: '同步成功',
+      data: result
+    };
+    
+  } catch (e) {
+    console.error('[offline-sync] 同步失败:', e);
+    
+    // 记录失败日志
+    syncLog.status = 'failed';
+    syncLog.error = e.message;
+    await saveSyncLog(syncLog);
+    
+    return {
+      code: 500,
+      message: '同步失败: ' + e.message
     };
   }
 };
 
 /**
- * 同步单个数据项
+ * 处理保存评估结果
  */
-async function syncSingleData(userId, storeType, key, data, timestamp) {
-  console.log(`[offline-sync] 同步数据: ${storeType}/${key}, userId=${userId}`);
+async function handleSaveAssessment(userId, data) {
+  const { scaleId, answers, score, level, completedAt } = data;
   
-  // 验证参数
-  if (!storeType || !key || !data) {
+  // 验证必填字段
+  if (!scaleId || !answers) {
+    throw new Error('缺少必填字段: scaleId, answers');
+  }
+  
+  // 检查是否已存在（防止重复提交）
+  const existing = await db.collection('assessment_results')
+    .where({
+      user_id: userId,
+      scale_id: scaleId,
+      completed_at: completedAt
+    })
+    .get();
+  
+  if (existing.data.length > 0) {
     return {
-      errCode: 400,
-      errMsg: '参数不完整'
+      id: existing.data[0]._id,
+      duplicate: true
     };
   }
   
-  // 根据不同的storeType调用不同的处理函数
-  switch (storeType) {
-    case 'results':
-      return await syncAssessmentResult(userId, key, data, timestamp);
-      
-    case 'chats':
-      return await syncChatMessage(userId, key, data, timestamp);
-      
-    case 'user_data':
-      return await syncUserData(userId, key, data, timestamp);
-      
-    case 'scales':
-      // 量表数据不需要同步到服务器（只读数据）
-      return {
-        errCode: 0,
-        errMsg: 'success',
-        needSync: false
-      };
-      
-    default:
-      return {
-        errCode: 400,
-        errMsg: '不支持的数据类型: ' + storeType
-      };
+  // 保存评估结果
+  const result = await db.collection('assessment_results').add({
+    user_id: userId,
+    scale_id: scaleId,
+    score: score || 0,
+    level: level || '',
+    completed_at: completedAt || new Date(),
+    created_at: new Date(),
+    source: 'offline_sync'
+  });
+  
+  // 保存答案详情
+  const answerRecords = answers.map((answer, index) => ({
+    result_id: result.id,
+    user_id: userId,
+    question_id: answer.questionId || index + 1,
+    answer_value: answer.value,
+    created_at: new Date()
+  }));
+  
+  if (answerRecords.length > 0) {
+    await db.collection('assessment_answers').add(answerRecords);
   }
+  
+  return {
+    id: result.id,
+    saved: true
+  };
 }
 
 /**
- * 批量同步数据
+ * 处理保存聊天记录
  */
-async function syncBatchData(userId, items) {
-  if (!Array.isArray(items) || items.length === 0) {
-    return {
-      errCode: 400,
-      errMsg: '批量数据为空'
-    };
+async function handleSaveChat(userId, data) {
+  const { sessionId, messages } = data;
+  
+  if (!sessionId || !messages || !Array.isArray(messages)) {
+    throw new Error('缺少必填字段: sessionId, messages');
   }
   
-  console.log(`[offline-sync] 批量同步: ${items.length}条数据`);
+  // 确保会话存在
+  const session = await db.collection('chat_sessions')
+    .where({ _id: sessionId, user_id: userId })
+    .get();
   
-  const results = {
-    success: 0,
-    failed: 0,
-    conflicts: 0,
-    items: []
+  if (session.data.length === 0) {
+    // 创建新会话
+    await db.collection('chat_sessions').add({
+      _id: sessionId,
+      user_id: userId,
+      title: '离线会话',
+      created_at: new Date(),
+      updated_at: new Date()
+    });
+  }
+  
+  // 批量保存消息
+  const messageRecords = messages.map(msg => ({
+    session_id: sessionId,
+    user_id: userId,
+    role: msg.role || 'user',
+    content: msg.content,
+    timestamp: msg.timestamp || new Date(),
+    created_at: new Date(),
+    source: 'offline_sync'
+  }));
+  
+  // 检查重复（根据timestamp去重）
+  const existingMessages = await db.collection('chat_messages')
+    .where({
+      session_id: sessionId,
+      user_id: userId
+    })
+    .field({ timestamp: true })
+    .get();
+  
+  const existingTimestamps = new Set(
+    existingMessages.data.map(m => new Date(m.timestamp).getTime())
+  );
+  
+  const newMessages = messageRecords.filter(
+    msg => !existingTimestamps.has(new Date(msg.timestamp).getTime())
+  );
+  
+  if (newMessages.length > 0) {
+    await db.collection('chat_messages').add(newMessages);
+  }
+  
+  return {
+    saved: newMessages.length,
+    duplicate: messageRecords.length - newMessages.length
+  };
+}
+
+/**
+ * 处理更新用户资料
+ */
+async function handleUpdateProfile(userId, data) {
+  const { nickname, avatar, gender, birthDate, bio } = data;
+  
+  // 构建更新数据
+  const updateData = {
+    updated_at: new Date()
   };
   
-  // 逐个同步
-  for (const item of items) {
+  if (nickname !== undefined) updateData.nickname = nickname;
+  if (avatar !== undefined) updateData.avatar_url = avatar;
+  if (gender !== undefined) updateData.gender = gender;
+  if (birthDate !== undefined) updateData.birth_date = birthDate;
+  if (bio !== undefined) updateData.bio = bio;
+  
+  // 更新用户资料
+  const result = await db.collection('user_profiles')
+    .where({ user_id: userId })
+    .update(updateData);
+  
+  if (result.updated === 0) {
+    // 如果没有更新记录，可能是首次创建
+    await db.collection('user_profiles').add({
+      user_id: userId,
+      ...updateData,
+      created_at: new Date()
+    });
+  }
+  
+  return {
+    updated: true
+  };
+}
+
+/**
+ * 处理上传反馈
+ */
+async function handleUploadFeedback(userId, data, clientIP) {
+  const { type, content, contact, attachments } = data;
+  
+  if (!type || !content) {
+    throw new Error('缺少必填字段: type, content');
+  }
+  
+  // 保存反馈
+  const result = await db.collection('user_feedbacks').add({
+    user_id: userId,
+    type,
+    content,
+    contact: contact || '',
+    attachments: attachments || [],
+    client_ip: clientIP,
+    status: 'pending',
+    created_at: new Date()
+  });
+  
+  return {
+    id: result.id,
+    submitted: true
+  };
+}
+
+/**
+ * 处理批量同步
+ */
+async function handleBatchSync(userId, batchItems) {
+  if (!Array.isArray(batchItems) || batchItems.length === 0) {
+    throw new Error('批量同步项为空');
+  }
+  
+  const results = [];
+  const errors = [];
+  
+  for (let i = 0; i < batchItems.length; i++) {
+    const item = batchItems[i];
+    
     try {
-      const result = await syncSingleData(
-        userId,
-        item.storeType,
-        item.key,
-        item.data,
-        item.timestamp
-      );
+      let result;
       
-      if (result.errCode === 0) {
-        results.success++;
-      } else if (result.errCode === 409) {
-        results.conflicts++;
-      } else {
-        results.failed++;
+      switch (item.action) {
+        case 'save_assessment':
+          result = await handleSaveAssessment(userId, item.data);
+          break;
+          
+        case 'save_chat':
+          result = await handleSaveChat(userId, item.data);
+          break;
+          
+        case 'update_profile':
+          result = await handleUpdateProfile(userId, item.data);
+          break;
+          
+        case 'upload_feedback':
+          result = await handleUploadFeedback(userId, item.data, '');
+          break;
+          
+        default:
+          throw new Error(`不支持的操作: ${item.action}`);
       }
       
-      results.items.push({
-        storeType: item.storeType,
-        key: item.key,
-        status: result.errCode === 0 ? 'success' : 'failed',
-        errMsg: result.errMsg
+      results.push({
+        index: i,
+        itemId: item.id,
+        action: item.action,
+        success: true,
+        result
       });
       
-    } catch (error) {
-      console.error(`[offline-sync] 批量同步失败:`, error);
-      results.failed++;
-      results.items.push({
-        storeType: item.storeType,
-        key: item.key,
-        status: 'failed',
-        errMsg: error.message
+    } catch (e) {
+      console.error(`[offline-sync] 批量同步第${i}项失败:`, e);
+      
+      errors.push({
+        index: i,
+        itemId: item.id,
+        action: item.action,
+        success: false,
+        error: e.message
       });
     }
   }
   
   return {
-    errCode: 0,
-    errMsg: 'success',
-    results
+    total: batchItems.length,
+    success: results.length,
+    failed: errors.length,
+    results,
+    errors
   };
 }
 
 /**
- * 检查数据冲突
+ * 保存同步日志
  */
-async function checkConflict(userId, storeType, key, clientTimestamp) {
-  console.log(`[offline-sync] 检查冲突: ${storeType}/${key}`);
-  
-  // 根据storeType查询服务器端最新数据
-  let collection = null;
-  let queryField = null;
-  
-  switch (storeType) {
-    case 'results':
-      collection = 'assessment_results';
-      queryField = 'result_id';
-      break;
-      
-    case 'chats':
-      collection = 'chat_messages';
-      queryField = 'message_id';
-      break;
-      
-    case 'user_data':
-      collection = 'users';
-      queryField = 'user_id';
-      break;
-      
-    default:
-      return {
-        errCode: 400,
-        errMsg: '不支持的数据类型'
-      };
-  }
-  
+async function saveSyncLog(logData) {
   try {
-    const result = await db.collection(collection)
-      .where({
-        [queryField]: key,
-        user_id: userId
-      })
-      .field('updated_at')
-      .get();
-    
-    if (result.data && result.data.length > 0) {
-      const serverTimestamp = new Date(result.data[0].updated_at).getTime();
-      
-      // 服务器数据更新，存在冲突
-      if (serverTimestamp > clientTimestamp) {
-        return {
-          errCode: 409,
-          errMsg: 'conflict',
-          conflict: true,
-          serverTimestamp,
-          clientTimestamp
-        };
-      }
-    }
-    
-    // 无冲突
-    return {
-      errCode: 0,
-      errMsg: 'no conflict',
-      conflict: false
-    };
-    
-  } catch (error) {
-    console.error('[offline-sync] 冲突检查失败:', error);
-    return {
-      errCode: 500,
-      errMsg: '冲突检查失败: ' + error.message
-    };
-  }
-}
-
-/**
- * 同步评估结果
- */
-async function syncAssessmentResult(userId, resultId, data, timestamp) {
-  try {
-    // 检查是否已存在
-    const existing = await db.collection('assessment_results')
-      .where({
-        result_id: resultId,
-        user_id: userId
-      })
-      .get();
-    
-    const now = new Date();
-    
-    if (existing.data && existing.data.length > 0) {
-      // 已存在，检查冲突
-      const serverTimestamp = new Date(existing.data[0].updated_at).getTime();
-      
-      if (serverTimestamp > timestamp) {
-        // 服务器数据更新，返回冲突
-        return {
-          errCode: 409,
-          errMsg: 'conflict',
-          serverData: existing.data[0]
-        };
-      }
-      
-      // 客户端数据更新，执行更新
-      await db.collection('assessment_results')
-        .where({
-          result_id: resultId,
-          user_id: userId
-        })
-        .update({
-          ...data,
-          updated_at: now,
-          synced_at: now
-        });
-        
-    } else {
-      // 不存在，插入新记录
-      await db.collection('assessment_results').add({
-        result_id: resultId,
-        user_id: userId,
-        ...data,
-        created_at: timestamp ? new Date(timestamp) : now,
-        updated_at: now,
-        synced_at: now
-      });
-    }
-    
-    return {
-      errCode: 0,
-      errMsg: 'success'
-    };
-    
-  } catch (error) {
-    console.error('[offline-sync] 同步评估结果失败:', error);
-    return {
-      errCode: 500,
-      errMsg: '同步失败: ' + error.message
-    };
-  }
-}
-
-/**
- * 同步聊天消息
- */
-async function syncChatMessage(userId, messageId, data, timestamp) {
-  try {
-    // 检查消息是否已存在
-    const existing = await db.collection('chat_messages')
-      .where({
-        message_id: messageId,
-        user_id: userId
-      })
-      .get();
-    
-    if (existing.data && existing.data.length > 0) {
-      // 消息已存在，不需要重复同步
-      return {
-        errCode: 0,
-        errMsg: 'message already exists',
-        skipped: true
-      };
-    }
-    
-    // 插入新消息
-    await db.collection('chat_messages').add({
-      message_id: messageId,
-      user_id: userId,
-      ...data,
-      created_at: timestamp ? new Date(timestamp) : new Date(),
-      synced_at: new Date()
-    });
-    
-    return {
-      errCode: 0,
-      errMsg: 'success'
-    };
-    
-  } catch (error) {
-    console.error('[offline-sync] 同步聊天消息失败:', error);
-    return {
-      errCode: 500,
-      errMsg: '同步失败: ' + error.message
-    };
-  }
-}
-
-/**
- * 同步用户数据
- */
-async function syncUserData(userId, key, data, timestamp) {
-  try {
-    // 根据key类型更新不同的字段
-    const updateData = {};
-    
-    // 支持的用户数据类型
-    const allowedFields = ['nickname', 'avatar', 'gender', 'birthday', 'bio'];
-    
-    if (allowedFields.includes(key)) {
-      updateData[key] = data;
-      updateData.updated_at = new Date();
-      
-      await db.collection('users')
-        .doc(userId)
-        .update(updateData);
-        
-      return {
-        errCode: 0,
-        errMsg: 'success'
-      };
-    } else {
-      return {
-        errCode: 400,
-        errMsg: '不支持的用户数据字段: ' + key
-      };
-    }
-    
-  } catch (error) {
-    console.error('[offline-sync] 同步用户数据失败:', error);
-    return {
-      errCode: 500,
-      errMsg: '同步失败: ' + error.message
-    };
+    await db.collection('sync_logs').add(logData);
+  } catch (e) {
+    console.error('[offline-sync] 保存同步日志失败:', e);
+    // 日志保存失败不影响主流程
   }
 }
 

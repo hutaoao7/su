@@ -145,6 +145,7 @@ import {
 } from '@/utils/auth.js';
 import { authAPI, subscribeAPI } from '@/utils/request.js';
 import tabBarManager from '@/utils/tabbar-manager.js';
+import { trackPageView, trackClick, trackEvent } from '@/utils/analytics.js';
 
 export default {
   data() {
@@ -205,6 +206,17 @@ export default {
   
   onShow() {
     console.log('[PROFILE] 页面显示，刷新用户数据');
+    
+    // 页面浏览埋点
+    trackPageView(
+      '/pages/user/home',
+      '用户中心',
+      {
+        is_logged_in: this.authed,
+        user_name: this.name
+      }
+    );
+    
     this.refreshProfile();
     // 通知导航栏更新状态
     tabBarManager.setCurrentIndexByPath('/pages/user/home');
@@ -292,6 +304,12 @@ export default {
     // 处理登录
     handleLogin() {
       console.log('[PROFILE] 跳转登录页');
+      
+      // 埋点：点击登录按钮
+      trackClick('profile_login_button', {
+        from_page: '/pages/user/home'
+      });
+      
       uni.navigateTo({
         url: '/pages/login/login?from=' + encodeURIComponent('/pages/user/home')
       });
@@ -300,6 +318,11 @@ export default {
     // 处理退出登录
     async handleLogout() {
       try {
+        // 埋点：点击退出登录
+        trackClick('profile_logout_button', {
+          uid: this.uid
+        });
+        
         uni.showLoading({
           title: '退出中...'
         });
@@ -313,6 +336,11 @@ export default {
         this.refreshProfile();
         
         uni.hideLoading();
+        
+        // 埋点：退出登录成功
+        trackEvent('logout_success', {
+          from_page: '/pages/user/home'
+        });
         
         uni.showToast({
           title: '已退出登录',

@@ -70,6 +70,7 @@
 
 <script>
 import tabBarManager from '@/utils/tabbar-manager.js';
+import { trackPageView, trackClick } from '@/utils/analytics.js';
 
 export default {
 	data() {
@@ -132,6 +133,16 @@ export default {
 	},
 	
 	onShow() {
+		// 页面浏览埋点
+		trackPageView(
+			'/pages/features/features',
+			'功能列表',
+			{
+				intervention_count: this.interventionCards.length,
+				assessment_count: this.assessmentCards.length
+			}
+		);
+		
 		// 通知导航栏更新状态
 		tabBarManager.setCurrentIndexByPath('/pages/features/features');
 	},
@@ -156,6 +167,14 @@ export default {
 		handleIntCardTap(index) {
 			const card = this.interventionCards[index];
 			console.log(`[INTERVENE] nav ${card.title}`)
+			
+			// 埋点：点击心理干预卡片
+			trackClick('intervention_card_click', {
+				card_title: card.title,
+				card_index: index,
+				route: card.route
+			});
+			
 			uni.navigateTo({
 				url: card.route
 			});
@@ -165,6 +184,14 @@ export default {
 		handleAssessCardTap(index) {
 			const card = this.assessmentCards[index];
 			console.log(`[ASSESS] nav ${card.title}`)
+			
+			// 埋点：点击评估卡片
+			trackClick('assessment_card_click', {
+				card_title: card.title,
+				card_index: index,
+				route: card.route
+			});
+			
 			uni.navigateTo({
 				url: card.route
 			});

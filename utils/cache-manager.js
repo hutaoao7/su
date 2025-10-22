@@ -1,824 +1,890 @@
 /**
- * 通用缓存管理器
+ * 离线缓存管理器
  * 
  * 功能：
- * 1. 统一的IndexedDB/localStorage封装
- * 2. 网络状态检测
- * 3. 离线数据自动同步
- * 4. 多类型数据缓存（量表/结果/聊天/用户数据）
- * 5. 缓存清理策略
- * 6. 同步冲突处理
+ * 1. 统一管理离线数据缓存（IndexedDB + localStorage）
+ * 2. LRU淘汰策略，容量限制
+ * 3. 数据过期管理
+ * 4. 离线队列管理
+ * 5. 自动同步机制
  * 
- * 使用示例：
- * ```javascript
- * import { CacheManager } from '@/utils/cache-manager.js';
- * 
- * // 初始化
- * await CacheManager.init();
- * 
- * // 保存数据
- * await CacheManager.set('scales', 'pss10', scaleData);
- * 
- * // 读取数据
- * const data = await CacheManager.get('scales', 'pss10');
- * 
- * // 检查网络状态
- * const isOnline = CacheManager.isOnline();
- * 
- * // 同步离线数据
- * await CacheManager.syncOfflineData();
- * ```
- * 
- * @module cache-manager
  * @author CraneHeart Team
- * @date 2025-10-20
+ * @date 2025-10-21
  */
 
-// ==================== 配置常量 ====================
-
-const CONFIG = {
-  // IndexedDB配置
-  DB_NAME: 'CraneHeartCacheDB',
-  DB_VERSION: 2,
+// 缓存配置
+const CACHE_CONFIG = {
+  // 数据库名称
+  DB_NAME: 'CraneHeartCache',
+  DB_VERSION: 1,
   
-  // 对象存储配置
+  // 存储对象名称
   STORES: {
     SCALES: 'scales',           // 量表数据
     RESULTS: 'results',         // 评估结果
-    CHATS: 'chats',             // 聊天记录
-    USER_DATA: 'user_data',     // 用户数据
-    SYNC_QUEUE: 'sync_queue'    // 待同步队列
+    CHATS: 'chats',            // 聊天记录
+    MUSIC: 'music',            // 音乐数据
+    GENERAL: 'general'         // 通用缓存
   },
   
-  // 缓存策略
-  EXPIRE_DAYS: {
-    SCALES: 7,        // 量表缓存7天
-    RESULTS: 90,      // 结果保留90天
-    CHATS: 30,        // 聊天记录30天
-    USER_DATA: 30,    // 用户数据30天
-    SYNC_QUEUE: 7     // 同步队列7天
+  // 容量限制（MB）
+  MAX_SIZE: {
+    SCALES: 10,
+    RESULTS: 20,
+    CHATS: 50,
+    MUSIC: 100,
+    GENERAL: 30
   },
   
-  // localStorage键前缀
-  STORAGE_PREFIX: 'crane_cache_',
+  // 默认过期时间（毫秒）
+  DEFAULT_TTL: 7 * 24 * 60 * 60 * 1000, // 7天
   
-  // 同步配置
-  SYNC_INTERVAL: 60000,  // 同步间隔（60秒）
-  MAX_RETRY: 3,          // 最大重试次数
-  
-  // 网络检测配置
-  NETWORK_CHECK_INTERVAL: 10000,  // 网络检测间隔（10秒）
-  NETWORK_CHECK_URL: 'https://www.baidu.com/favicon.ico',  // 网络检测URL
-  NETWORK_TIMEOUT: 3000  // 网络检测超时（3秒）
+  // LRU缓存大小
+  LRU_SIZE: 100
 };
 
-// ==================== 工具函数 ====================
-
 /**
- * 生成唯一ID
+ * IndexedDB封装类
  */
-function generateId() {
-  return `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-}
-
-/**
- * 检查数据是否过期
- * @param {number} timestamp - 时间戳
- * @param {number} expireDays - 过期天数
- */
-function isExpired(timestamp, expireDays) {
-  if (!timestamp || !expireDays) return false;
-  const now = Date.now();
-  const expireTime = expireDays * 24 * 60 * 60 * 1000;
-  return (now - timestamp) > expireTime;
-}
-
-/**
- * 压缩数据（简单JSON字符串化）
- * @param {any} data - 要压缩的数据
- */
-function compressData(data) {
-  try {
-    return JSON.stringify(data);
-  } catch (error) {
-    console.error('[CacheManager] 数据压缩失败:', error);
-    return null;
-  }
-}
-
-/**
- * 解压数据
- * @param {string} compressedData - 压缩的数据
- */
-function decompressData(compressedData) {
-  try {
-    return JSON.parse(compressedData);
-  } catch (error) {
-    console.error('[CacheManager] 数据解压失败:', error);
-    return null;
-  }
-}
-
-// ==================== 主类 ====================
-
-/**
- * 缓存管理器类
- */
-class CacheManagerClass {
+class IndexedDBHelper {
   constructor() {
     this.db = null;
-    this.isH5 = false;
-    this.isReady = false;
-    this.isOnlineStatus = true;
-    this.networkCheckTimer = null;
-    this.syncTimer = null;
-    this.syncQueue = [];
-    this.listeners = {
-      online: [],
-      offline: [],
-      sync: []
-    };
-    
-    // 检测环境
+    this.isSupported = this.checkSupport();
+  }
+  
+  /**
+   * 检查IndexedDB支持
+   */
+  checkSupport() {
     // #ifdef H5
-    this.isH5 = true;
+    return typeof indexedDB !== 'undefined';
+    // #endif
+    
+    // #ifndef H5
+    return false;
     // #endif
   }
   
   /**
-   * 初始化缓存管理器
+   * 初始化数据库
    */
   async init() {
-    if (this.isReady) {
-      return true;
-    }
-    
-    console.log('[CacheManager] 开始初始化...');
-    
-    try {
-      // 初始化IndexedDB（H5端）
-      if (this.isH5) {
-        await this.initIndexedDB();
-      }
-      
-      // 加载同步队列
-      await this.loadSyncQueue();
-      
-      // 启动网络监听
-      this.startNetworkMonitoring();
-      
-      // 启动自动同步
-      this.startAutoSync();
-      
-      this.isReady = true;
-      console.log('[CacheManager] 初始化成功');
-      return true;
-      
-    } catch (error) {
-      console.error('[CacheManager] 初始化失败:', error);
-      this.isReady = false;
+    if (!this.isSupported) {
+      console.log('[CacheManager] IndexedDB不支持，使用localStorage降级');
       return false;
     }
-  }
-  
-  /**
-   * 初始化IndexedDB
-   */
-  initIndexedDB() {
+    
+    // #ifdef H5
     return new Promise((resolve, reject) => {
-      // #ifdef H5
-      if (!window.indexedDB) {
-        console.warn('[CacheManager] 浏览器不支持IndexedDB，将使用localStorage降级');
-        resolve();
-        return;
-      }
-      
-      const request = indexedDB.open(CONFIG.DB_NAME, CONFIG.DB_VERSION);
+      const request = indexedDB.open(CACHE_CONFIG.DB_NAME, CACHE_CONFIG.DB_VERSION);
       
       request.onerror = () => {
-        console.error('[CacheManager] IndexedDB打开失败');
+        console.error('[CacheManager] 数据库打开失败:', request.error);
         reject(request.error);
       };
       
-      request.onsuccess = (event) => {
-        this.db = event.target.result;
-        console.log('[CacheManager] IndexedDB初始化成功');
-        resolve();
+      request.onsuccess = () => {
+        this.db = request.result;
+        console.log('[CacheManager] 数据库打开成功');
+        resolve(true);
       };
       
       request.onupgradeneeded = (event) => {
         const db = event.target.result;
         
-        // 创建所有对象存储
-        Object.values(CONFIG.STORES).forEach(storeName => {
+        // 创建存储对象
+        Object.values(CACHE_CONFIG.STORES).forEach(storeName => {
           if (!db.objectStoreNames.contains(storeName)) {
-            const objectStore = db.createObjectStore(storeName, {
-              keyPath: 'id'
-            });
-            
-            // 创建通用索引
-            objectStore.createIndex('key', 'key', { unique: false });
-            objectStore.createIndex('timestamp', 'timestamp', { unique: false });
-            objectStore.createIndex('userId', 'userId', { unique: false });
-            
-            console.log(`[CacheManager] 创建对象存储: ${storeName}`);
+            const store = db.createObjectStore(storeName, { keyPath: 'key' });
+            store.createIndex('timestamp', 'timestamp', { unique: false });
+            store.createIndex('expireAt', 'expireAt', { unique: false });
+            store.createIndex('size', 'size', { unique: false });
+            console.log(`[CacheManager] 创建存储对象: ${storeName}`);
           }
         });
       };
-      // #endif
-      
-      // #ifndef H5
-      console.log('[CacheManager] 非H5环境，跳过IndexedDB初始化');
-      resolve();
-      // #endif
     });
+    // #endif
+    
+    // #ifndef H5
+    return false;
+    // #endif
   }
   
   /**
-   * 保存数据到缓存
-   * @param {string} storeType - 存储类型（scales/results/chats/user_data）
-   * @param {string} key - 数据键
-   * @param {any} data - 要保存的数据
-   * @param {object} options - 选项 {userId, needSync}
+   * 获取数据
    */
-  async set(storeType, key, data, options = {}) {
-    if (!this.isReady) {
-      await this.init();
+  async get(storeName, key) {
+    if (!this.isSupported || !this.db) {
+      return this.getFromLocalStorage(storeName, key);
     }
     
-    const { userId = '', needSync = false } = options;
-    
-    const cacheData = {
-      id: generateId(),
-      key,
-      data,
-      userId,
-      timestamp: Date.now(),
-      synced: !needSync,  // 是否需要同步
-      storeType
-    };
-    
-    try {
-      // H5端使用IndexedDB
-      if (this.isH5 && this.db) {
-        await this.setIndexedDB(storeType, cacheData);
-      } else {
-        // 降级使用localStorage
-        this.setLocalStorage(storeType, key, cacheData);
-      }
+    // #ifdef H5
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([storeName], 'readonly');
+      const store = transaction.objectStore(storeName);
+      const request = store.get(key);
       
-      // 如果需要同步且当前离线，加入同步队列
-      if (needSync && !this.isOnlineStatus) {
-        await this.addToSyncQueue(cacheData);
-      }
-      
-      console.log(`[CacheManager] 保存成功: ${storeType}/${key}`);
-      return true;
-      
-    } catch (error) {
-      console.error('[CacheManager] 保存失败:', error);
-      return false;
-    }
-  }
-  
-  /**
-   * 从缓存读取数据
-   * @param {string} storeType - 存储类型
-   * @param {string} key - 数据键
-   */
-  async get(storeType, key) {
-    if (!this.isReady) {
-      await this.init();
-    }
-    
-    try {
-      let cacheData = null;
-      
-      // H5端使用IndexedDB
-      if (this.isH5 && this.db) {
-        cacheData = await this.getIndexedDB(storeType, key);
-      } else {
-        // 降级使用localStorage
-        cacheData = this.getLocalStorage(storeType, key);
-      }
-      
-      // 检查是否过期
-      if (cacheData) {
-        const expireDays = CONFIG.EXPIRE_DAYS[storeType.toUpperCase()] || 30;
-        if (isExpired(cacheData.timestamp, expireDays)) {
-          console.log(`[CacheManager] 数据已过期: ${storeType}/${key}`);
-          await this.remove(storeType, key);
-          return null;
+      request.onsuccess = () => {
+        const record = request.result;
+        
+        if (!record) {
+          resolve(null);
+          return;
         }
         
-        return cacheData.data;
+        // 检查是否过期
+        if (record.expireAt && Date.now() > record.expireAt) {
+          this.delete(storeName, key); // 异步删除过期数据
+          resolve(null);
+          return;
+        }
+        
+        // 更新访问时间（LRU）
+        record.lastAccess = Date.now();
+        this.put(storeName, key, record.value, record.expireAt - Date.now());
+        
+        resolve(record.value);
+      };
+      
+      request.onerror = () => {
+        console.error('[CacheManager] 读取失败:', request.error);
+        reject(request.error);
+      };
+    });
+    // #endif
+    
+    // #ifndef H5
+    return this.getFromLocalStorage(storeName, key);
+    // #endif
+  }
+  
+  /**
+   * 存储数据
+   */
+  async put(storeName, key, value, ttl = CACHE_CONFIG.DEFAULT_TTL) {
+    if (!this.isSupported || !this.db) {
+      return this.putToLocalStorage(storeName, key, value, ttl);
+    }
+    
+    // #ifdef H5
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([storeName], 'readwrite');
+      const store = transaction.objectStore(storeName);
+      
+      const record = {
+        key,
+        value,
+        timestamp: Date.now(),
+        lastAccess: Date.now(),
+        expireAt: ttl > 0 ? Date.now() + ttl : null,
+        size: this.calculateSize(value)
+      };
+      
+      const request = store.put(record);
+      
+      request.onsuccess = () => {
+        resolve(true);
+      };
+      
+      request.onerror = () => {
+        console.error('[CacheManager] 存储失败:', request.error);
+        reject(request.error);
+      };
+    });
+    // #endif
+    
+    // #ifndef H5
+    return this.putToLocalStorage(storeName, key, value, ttl);
+    // #endif
+  }
+  
+  /**
+   * 删除数据
+   */
+  async delete(storeName, key) {
+    if (!this.isSupported || !this.db) {
+      return this.deleteFromLocalStorage(storeName, key);
+    }
+    
+    // #ifdef H5
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([storeName], 'readwrite');
+      const store = transaction.objectStore(storeName);
+      const request = store.delete(key);
+      
+      request.onsuccess = () => {
+        resolve(true);
+      };
+      
+      request.onerror = () => {
+        console.error('[CacheManager] 删除失败:', request.error);
+        reject(request.error);
+      };
+    });
+    // #endif
+    
+    // #ifndef H5
+    return this.deleteFromLocalStorage(storeName, key);
+    // #endif
+  }
+  
+  /**
+   * 清空存储对象
+   */
+  async clear(storeName) {
+    if (!this.isSupported || !this.db) {
+      return this.clearLocalStorage(storeName);
+    }
+    
+    // #ifdef H5
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([storeName], 'readwrite');
+      const store = transaction.objectStore(storeName);
+      const request = store.clear();
+      
+      request.onsuccess = () => {
+        console.log(`[CacheManager] 清空存储: ${storeName}`);
+        resolve(true);
+      };
+      
+      request.onerror = () => {
+        console.error('[CacheManager] 清空失败:', request.error);
+        reject(request.error);
+      };
+    });
+    // #endif
+    
+    // #ifndef H5
+    return this.clearLocalStorage(storeName);
+    // #endif
+  }
+  
+  /**
+   * 获取所有键
+   */
+  async getAllKeys(storeName) {
+    if (!this.isSupported || !this.db) {
+      return this.getAllKeysFromLocalStorage(storeName);
+    }
+    
+    // #ifdef H5
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([storeName], 'readonly');
+      const store = transaction.objectStore(storeName);
+      const request = store.getAllKeys();
+      
+      request.onsuccess = () => {
+        resolve(request.result);
+      };
+      
+      request.onerror = () => {
+        console.error('[CacheManager] 获取键列表失败:', request.error);
+        reject(request.error);
+      };
+    });
+    // #endif
+    
+    // #ifndef H5
+    return this.getAllKeysFromLocalStorage(storeName);
+    // #endif
+  }
+  
+  /**
+   * 获取存储大小
+   */
+  async getStoreSize(storeName) {
+    if (!this.isSupported || !this.db) {
+      return this.getLocalStorageSize(storeName);
+    }
+    
+    // #ifdef H5
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([storeName], 'readonly');
+      const store = transaction.objectStore(storeName);
+      const request = store.getAll();
+      
+      request.onsuccess = () => {
+        const records = request.result;
+        const totalSize = records.reduce((sum, record) => sum + (record.size || 0), 0);
+        resolve(totalSize);
+      };
+      
+      request.onerror = () => {
+        console.error('[CacheManager] 获取存储大小失败:', request.error);
+        reject(request.error);
+      };
+    });
+    // #endif
+    
+    // #ifndef H5
+    return this.getLocalStorageSize(storeName);
+    // #endif
+  }
+  
+  /**
+   * LRU淘汰
+   */
+  async evictLRU(storeName, targetSize) {
+    if (!this.isSupported || !this.db) {
+      return;
+    }
+    
+    // #ifdef H5
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([storeName], 'readwrite');
+      const store = transaction.objectStore(storeName);
+      const request = store.getAll();
+      
+      request.onsuccess = () => {
+        const records = request.result;
+        
+        // 按最后访问时间排序
+        records.sort((a, b) => a.lastAccess - b.lastAccess);
+        
+        let currentSize = records.reduce((sum, r) => sum + (r.size || 0), 0);
+        const itemsToDelete = [];
+        
+        // 删除最少使用的记录，直到低于目标大小
+        for (const record of records) {
+          if (currentSize <= targetSize) break;
+          
+          itemsToDelete.push(record.key);
+          currentSize -= (record.size || 0);
+        }
+        
+        // 执行删除
+        const deletePromises = itemsToDelete.map(key => this.delete(storeName, key));
+        Promise.all(deletePromises).then(() => {
+          console.log(`[CacheManager] LRU淘汰完成，删除${itemsToDelete.length}项`);
+          resolve(itemsToDelete.length);
+        });
+      };
+      
+      request.onerror = () => {
+        console.error('[CacheManager] LRU淘汰失败:', request.error);
+        reject(request.error);
+      };
+    });
+    // #endif
+  }
+  
+  /**
+   * 计算数据大小（字节）
+   */
+  calculateSize(data) {
+    try {
+      const str = JSON.stringify(data);
+      return new Blob([str]).size;
+    } catch (e) {
+      return 0;
+    }
+  }
+  
+  // ==================== localStorage降级方法 ====================
+  
+  /**
+   * 从localStorage获取
+   */
+  getFromLocalStorage(storeName, key) {
+    try {
+      const fullKey = `${CACHE_CONFIG.DB_NAME}_${storeName}_${key}`;
+      const recordStr = uni.getStorageSync(fullKey);
+      
+      if (!recordStr) return null;
+      
+      const record = JSON.parse(recordStr);
+      
+      // 检查过期
+      if (record.expireAt && Date.now() > record.expireAt) {
+        uni.removeStorageSync(fullKey);
+        return null;
       }
       
-      return null;
-      
-    } catch (error) {
-      console.error('[CacheManager] 读取失败:', error);
+      return record.value;
+    } catch (e) {
+      console.error('[CacheManager] localStorage读取失败:', e);
       return null;
     }
   }
   
   /**
-   * 删除缓存数据
-   * @param {string} storeType - 存储类型
-   * @param {string} key - 数据键
+   * 存储到localStorage
    */
-  async remove(storeType, key) {
-    if (!this.isReady) {
-      await this.init();
-    }
-    
+  putToLocalStorage(storeName, key, value, ttl) {
     try {
-      if (this.isH5 && this.db) {
-        await this.removeIndexedDB(storeType, key);
-      } else {
-        this.removeLocalStorage(storeType, key);
-      }
+      const fullKey = `${CACHE_CONFIG.DB_NAME}_${storeName}_${key}`;
+      const record = {
+        key,
+        value,
+        timestamp: Date.now(),
+        expireAt: ttl > 0 ? Date.now() + ttl : null
+      };
       
-      console.log(`[CacheManager] 删除成功: ${storeType}/${key}`);
+      uni.setStorageSync(fullKey, JSON.stringify(record));
       return true;
-      
-    } catch (error) {
-      console.error('[CacheManager] 删除失败:', error);
+    } catch (e) {
+      console.error('[CacheManager] localStorage存储失败:', e);
       return false;
     }
   }
   
   /**
-   * 清空指定类型的缓存
-   * @param {string} storeType - 存储类型
+   * 从localStorage删除
    */
-  async clear(storeType) {
-    if (!this.isReady) {
-      await this.init();
-    }
-    
+  deleteFromLocalStorage(storeName, key) {
     try {
-      if (this.isH5 && this.db) {
-        await this.clearIndexedDB(storeType);
-      } else {
-        this.clearLocalStorage(storeType);
-      }
-      
-      console.log(`[CacheManager] 清空成功: ${storeType}`);
+      const fullKey = `${CACHE_CONFIG.DB_NAME}_${storeName}_${key}`;
+      uni.removeStorageSync(fullKey);
       return true;
-      
-    } catch (error) {
-      console.error('[CacheManager] 清空失败:', error);
+    } catch (e) {
+      console.error('[CacheManager] localStorage删除失败:', e);
       return false;
     }
   }
   
-  // ==================== IndexedDB操作 ====================
-  
   /**
-   * IndexedDB保存数据
+   * 清空localStorage中的存储对象
    */
-  setIndexedDB(storeType, data) {
-    return new Promise((resolve, reject) => {
-      try {
-        const transaction = this.db.transaction([storeType], 'readwrite');
-        const objectStore = transaction.objectStore(storeType);
-        const request = objectStore.put(data);
-        
-        request.onsuccess = () => resolve();
-        request.onerror = () => reject(request.error);
-        
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
-  
-  /**
-   * IndexedDB读取数据
-   */
-  getIndexedDB(storeType, key) {
-    return new Promise((resolve, reject) => {
-      try {
-        const transaction = this.db.transaction([storeType], 'readonly');
-        const objectStore = transaction.objectStore(storeType);
-        const index = objectStore.index('key');
-        const request = index.get(key);
-        
-        request.onsuccess = () => resolve(request.result || null);
-        request.onerror = () => reject(request.error);
-        
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
-  
-  /**
-   * IndexedDB删除数据
-   */
-  removeIndexedDB(storeType, key) {
-    return new Promise((resolve, reject) => {
-      try {
-        const transaction = this.db.transaction([storeType], 'readwrite');
-        const objectStore = transaction.objectStore(storeType);
-        const index = objectStore.index('key');
-        const request = index.openCursor(key);
-        
-        request.onsuccess = (event) => {
-          const cursor = event.target.result;
-          if (cursor) {
-            cursor.delete();
-            resolve();
-          } else {
-            resolve();
-          }
-        };
-        
-        request.onerror = () => reject(request.error);
-        
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
-  
-  /**
-   * IndexedDB清空存储
-   */
-  clearIndexedDB(storeType) {
-    return new Promise((resolve, reject) => {
-      try {
-        const transaction = this.db.transaction([storeType], 'readwrite');
-        const objectStore = transaction.objectStore(storeType);
-        const request = objectStore.clear();
-        
-        request.onsuccess = () => resolve();
-        request.onerror = () => reject(request.error);
-        
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
-  
-  // ==================== localStorage操作 ====================
-  
-  /**
-   * localStorage保存数据
-   */
-  setLocalStorage(storeType, key, data) {
+  clearLocalStorage(storeName) {
     try {
-      const storageKey = `${CONFIG.STORAGE_PREFIX}${storeType}_${key}`;
-      const compressed = compressData(data);
-      if (compressed) {
-        uni.setStorageSync(storageKey, compressed);
-      }
-    } catch (error) {
-      console.error('[CacheManager] localStorage保存失败:', error);
-    }
-  }
-  
-  /**
-   * localStorage读取数据
-   */
-  getLocalStorage(storeType, key) {
-    try {
-      const storageKey = `${CONFIG.STORAGE_PREFIX}${storeType}_${key}`;
-      const compressed = uni.getStorageSync(storageKey);
-      if (compressed) {
-        return decompressData(compressed);
-      }
-      return null;
-    } catch (error) {
-      console.error('[CacheManager] localStorage读取失败:', error);
-      return null;
-    }
-  }
-  
-  /**
-   * localStorage删除数据
-   */
-  removeLocalStorage(storeType, key) {
-    try {
-      const storageKey = `${CONFIG.STORAGE_PREFIX}${storeType}_${key}`;
-      uni.removeStorageSync(storageKey);
-    } catch (error) {
-      console.error('[CacheManager] localStorage删除失败:', error);
-    }
-  }
-  
-  /**
-   * localStorage清空存储
-   */
-  clearLocalStorage(storeType) {
-    try {
-      const prefix = `${CONFIG.STORAGE_PREFIX}${storeType}_`;
       const info = uni.getStorageInfoSync();
+      const prefix = `${CACHE_CONFIG.DB_NAME}_${storeName}_`;
+      
       info.keys.forEach(key => {
         if (key.startsWith(prefix)) {
           uni.removeStorageSync(key);
         }
       });
-    } catch (error) {
-      console.error('[CacheManager] localStorage清空失败:', error);
-    }
-  }
-  
-  // ==================== 网络状态监听 ====================
-  
-  /**
-   * 启动网络监听
-   */
-  startNetworkMonitoring() {
-    // uni-app网络状态变化监听
-    uni.onNetworkStatusChange((res) => {
-      const wasOnline = this.isOnlineStatus;
-      this.isOnlineStatus = res.isConnected;
       
-      console.log(`[CacheManager] 网络状态变化: ${this.isOnlineStatus ? '在线' : '离线'}`);
+      return true;
+    } catch (e) {
+      console.error('[CacheManager] localStorage清空失败:', e);
+      return false;
+    }
+  }
+  
+  /**
+   * 获取localStorage中的所有键
+   */
+  getAllKeysFromLocalStorage(storeName) {
+    try {
+      const info = uni.getStorageInfoSync();
+      const prefix = `${CACHE_CONFIG.DB_NAME}_${storeName}_`;
       
-      // 触发事件
-      if (!wasOnline && this.isOnlineStatus) {
-        this.emit('online');
-        // 网络恢复，自动同步
-        this.syncOfflineData();
-      } else if (wasOnline && !this.isOnlineStatus) {
-        this.emit('offline');
-      }
-    });
+      return info.keys
+        .filter(key => key.startsWith(prefix))
+        .map(key => key.replace(prefix, ''));
+    } catch (e) {
+      console.error('[CacheManager] localStorage获取键列表失败:', e);
+      return [];
+    }
+  }
+  
+  /**
+   * 获取localStorage存储大小
+   */
+  getLocalStorageSize(storeName) {
+    try {
+      const keys = this.getAllKeysFromLocalStorage(storeName);
+      let totalSize = 0;
+      
+      keys.forEach(key => {
+        const fullKey = `${CACHE_CONFIG.DB_NAME}_${storeName}_${key}`;
+        const value = uni.getStorageSync(fullKey);
+        if (value) {
+          totalSize += new Blob([value]).size;
+        }
+      });
+      
+      return totalSize;
+    } catch (e) {
+      console.error('[CacheManager] localStorage获取大小失败:', e);
+      return 0;
+    }
+  }
+}
+
+/**
+ * 缓存管理器类
+ */
+class CacheManager {
+  constructor() {
+    this.db = new IndexedDBHelper();
+    this.initialized = false;
+    this.offlineQueue = []; // 离线队列
+    this.syncInProgress = false;
+  }
+  
+  /**
+   * 初始化
+   */
+  async init() {
+    if (this.initialized) return;
     
-    // 初始检测网络状态
-    this.checkNetworkStatus();
+    try {
+      await this.db.init();
+      this.initialized = true;
+      console.log('[CacheManager] 初始化完成');
+      
+      // 启动清理任务
+      this.startCleanupTask();
+      
+      // 监听网络状态
+      this.setupNetworkListener();
+    } catch (e) {
+      console.error('[CacheManager] 初始化失败:', e);
+      this.initialized = true; // 即使失败也标记为已初始化，使用localStorage降级
+    }
+  }
+  
+  /**
+   * 缓存量表数据
+   */
+  async cacheScale(scaleId, scaleData) {
+    await this.ensureInitialized();
     
-    // 定期检测（备用）
-    this.networkCheckTimer = setInterval(() => {
-      this.checkNetworkStatus();
-    }, CONFIG.NETWORK_CHECK_INTERVAL);
-  }
-  
-  /**
-   * 检查网络状态
-   */
-  async checkNetworkStatus() {
     try {
-      const networkInfo = await uni.getNetworkType();
-      this.isOnlineStatus = networkInfo.networkType !== 'none';
-    } catch (error) {
-      console.error('[CacheManager] 网络状态检查失败:', error);
+      await this.db.put(CACHE_CONFIG.STORES.SCALES, scaleId, scaleData);
+      console.log(`[CacheManager] 量表缓存成功: ${scaleId}`);
+      
+      // 检查容量
+      await this.checkAndEvict(CACHE_CONFIG.STORES.SCALES);
+      
+      return true;
+    } catch (e) {
+      console.error(`[CacheManager] 量表缓存失败: ${scaleId}`, e);
+      return false;
     }
   }
   
   /**
-   * 获取当前网络状态
+   * 获取缓存的量表
    */
-  isOnline() {
-    return this.isOnlineStatus;
-  }
-  
-  // ==================== 自动同步 ====================
-  
-  /**
-   * 启动自动同步
-   */
-  startAutoSync() {
-    this.syncTimer = setInterval(() => {
-      if (this.isOnlineStatus) {
-        this.syncOfflineData();
+  async getScale(scaleId) {
+    await this.ensureInitialized();
+    
+    try {
+      const scaleData = await this.db.get(CACHE_CONFIG.STORES.SCALES, scaleId);
+      
+      if (scaleData) {
+        console.log(`[CacheManager] 量表命中缓存: ${scaleId}`);
       }
-    }, CONFIG.SYNC_INTERVAL);
-  }
-  
-  /**
-   * 加载同步队列
-   */
-  async loadSyncQueue() {
-    try {
-      const queue = await this.get(CONFIG.STORES.SYNC_QUEUE, 'queue');
-      this.syncQueue = queue || [];
-      console.log(`[CacheManager] 加载同步队列: ${this.syncQueue.length}条`);
-    } catch (error) {
-      console.error('[CacheManager] 加载同步队列失败:', error);
-      this.syncQueue = [];
+      
+      return scaleData;
+    } catch (e) {
+      console.error(`[CacheManager] 获取量表失败: ${scaleId}`, e);
+      return null;
     }
   }
   
   /**
-   * 保存同步队列
+   * 缓存评估结果
    */
-  async saveSyncQueue() {
+  async cacheResult(resultId, resultData) {
+    await this.ensureInitialized();
+    
     try {
-      await this.set(CONFIG.STORES.SYNC_QUEUE, 'queue', this.syncQueue, { needSync: false });
-    } catch (error) {
-      console.error('[CacheManager] 保存同步队列失败:', error);
+      await this.db.put(CACHE_CONFIG.STORES.RESULTS, resultId, resultData);
+      console.log(`[CacheManager] 结果缓存成功: ${resultId}`);
+      
+      await this.checkAndEvict(CACHE_CONFIG.STORES.RESULTS);
+      
+      return true;
+    } catch (e) {
+      console.error(`[CacheManager] 结果缓存失败: ${resultId}`, e);
+      return false;
     }
   }
   
   /**
-   * 添加到同步队列
+   * 获取缓存的结果
    */
-  async addToSyncQueue(data) {
-    this.syncQueue.push({
-      ...data,
-      addedAt: Date.now(),
+  async getResult(resultId) {
+    await this.ensureInitialized();
+    
+    try {
+      return await this.db.get(CACHE_CONFIG.STORES.RESULTS, resultId);
+    } catch (e) {
+      console.error(`[CacheManager] 获取结果失败: ${resultId}`, e);
+      return null;
+    }
+  }
+  
+  /**
+   * 添加到离线队列
+   */
+  async addToOfflineQueue(action, data) {
+    await this.ensureInitialized();
+    
+    const queueItem = {
+      id: `offline_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      action,
+      data,
+      timestamp: Date.now(),
       retryCount: 0
-    });
-    await this.saveSyncQueue();
-    console.log(`[CacheManager] 加入同步队列: ${data.storeType}/${data.key}`);
+    };
+    
+    this.offlineQueue.push(queueItem);
+    
+    // 持久化队列
+    await this.saveOfflineQueue();
+    
+    console.log(`[CacheManager] 添加到离线队列: ${action}`, queueItem.id);
+    
+    return queueItem.id;
   }
   
   /**
-   * 同步离线数据
+   * 保存离线队列
    */
-  async syncOfflineData() {
-    if (!this.isOnlineStatus || this.syncQueue.length === 0) {
+  async saveOfflineQueue() {
+    try {
+      await this.db.put(CACHE_CONFIG.STORES.GENERAL, 'offline_queue', this.offlineQueue, 0);
+    } catch (e) {
+      console.error('[CacheManager] 保存离线队列失败:', e);
+    }
+  }
+  
+  /**
+   * 加载离线队列
+   */
+  async loadOfflineQueue() {
+    try {
+      const queue = await this.db.get(CACHE_CONFIG.STORES.GENERAL, 'offline_queue');
+      this.offlineQueue = queue || [];
+      console.log(`[CacheManager] 加载离线队列: ${this.offlineQueue.length}项`);
+    } catch (e) {
+      console.error('[CacheManager] 加载离线队列失败:', e);
+      this.offlineQueue = [];
+    }
+  }
+  
+  /**
+   * 同步离线队列
+   */
+  async syncOfflineQueue() {
+    if (this.syncInProgress || this.offlineQueue.length === 0) {
       return;
     }
     
-    console.log(`[CacheManager] 开始同步: ${this.syncQueue.length}条数据`);
+    this.syncInProgress = true;
+    console.log(`[CacheManager] 开始同步离线队列: ${this.offlineQueue.length}项`);
     
-    const syncResults = {
-      success: 0,
-      failed: 0,
-      total: this.syncQueue.length
-    };
+    const successIds = [];
+    const failedItems = [];
     
-    // 遍历同步队列
-    for (let i = this.syncQueue.length - 1; i >= 0; i--) {
-      const item = this.syncQueue[i];
-      
+    for (const item of this.offlineQueue) {
       try {
-        // 调用同步函数（需要外部实现）
-        const success = await this.syncSingleItem(item);
+        // 根据action类型执行同步
+        const success = await this.syncQueueItem(item);
         
         if (success) {
-          // 同步成功，从队列移除
-          this.syncQueue.splice(i, 1);
-          syncResults.success++;
+          successIds.push(item.id);
         } else {
-          // 同步失败，增加重试次数
-          item.retryCount = (item.retryCount || 0) + 1;
-          
-          // 超过最大重试次数，移除
-          if (item.retryCount >= CONFIG.MAX_RETRY) {
-            console.warn(`[CacheManager] 同步失败超过最大重试次数: ${item.storeType}/${item.key}`);
-            this.syncQueue.splice(i, 1);
+          item.retryCount++;
+          if (item.retryCount < 3) {
+            failedItems.push(item);
           }
-          
-          syncResults.failed++;
         }
-        
-      } catch (error) {
-        console.error(`[CacheManager] 同步出错: ${item.storeType}/${item.key}`, error);
-        syncResults.failed++;
+      } catch (e) {
+        console.error('[CacheManager] 同步队列项失败:', item.id, e);
+        item.retryCount++;
+        if (item.retryCount < 3) {
+          failedItems.push(item);
+        }
       }
     }
     
-    // 保存更新后的队列
-    await this.saveSyncQueue();
+    // 更新队列
+    this.offlineQueue = failedItems;
+    await this.saveOfflineQueue();
     
-    // 触发同步完成事件
-    this.emit('sync', syncResults);
+    console.log(`[CacheManager] 同步完成: 成功${successIds.length}项, 失败${failedItems.length}项`);
     
-    console.log(`[CacheManager] 同步完成: 成功${syncResults.success}条, 失败${syncResults.failed}条`);
+    this.syncInProgress = false;
+    
+    return {
+      success: successIds.length,
+      failed: failedItems.length
+    };
   }
   
   /**
-   * 同步单个数据项（需要外部实现）
-   * @param {object} item - 要同步的数据项
-   * @returns {Promise<boolean>} 是否同步成功
+   * 同步单个队列项
    */
-  async syncSingleItem(item) {
-    // TODO: 根据不同的storeType调用不同的云函数
-    // 这里需要外部注册同步处理函数
+  async syncQueueItem(item) {
+    // 这里需要根据具体的action类型调用相应的API
+    // 预留接口，由业务层实现具体逻辑
     
-    console.log(`[CacheManager] 同步数据: ${item.storeType}/${item.key}`);
-    
-    // 示例：调用云函数同步
-    // const result = await callCloudFunction('data-sync', {
-    //   storeType: item.storeType,
-    //   key: item.key,
-    //   data: item.data
-    // });
-    // 
-    // return result && result.errCode === 0;
-    
-    // 临时返回true表示成功
+    switch (item.action) {
+      case 'save_assessment':
+        // 调用保存评估结果的API
+        return await this.syncAssessment(item.data);
+        
+      case 'save_chat':
+        // 调用保存聊天记录的API
+        return await this.syncChat(item.data);
+        
+      default:
+        console.warn('[CacheManager] 未知的同步操作:', item.action);
+        return false;
+    }
+  }
+  
+  /**
+   * 同步评估结果（预留接口）
+   */
+  async syncAssessment(data) {
+    // 由业务层实现
+    console.log('[CacheManager] 同步评估结果（预留）:', data);
     return true;
   }
   
-  // ==================== 事件系统 ====================
-  
   /**
-   * 监听事件
-   * @param {string} event - 事件名（online/offline/sync）
-   * @param {Function} callback - 回调函数
+   * 同步聊天记录（预留接口）
    */
-  on(event, callback) {
-    if (this.listeners[event]) {
-      this.listeners[event].push(callback);
-    }
+  async syncChat(data) {
+    // 由业务层实现
+    console.log('[CacheManager] 同步聊天记录（预留）:', data);
+    return true;
   }
   
   /**
-   * 移除事件监听
-   * @param {string} event - 事件名
-   * @param {Function} callback - 回调函数
+   * 检查容量并淘汰
    */
-  off(event, callback) {
-    if (this.listeners[event]) {
-      const index = this.listeners[event].indexOf(callback);
-      if (index > -1) {
-        this.listeners[event].splice(index, 1);
+  async checkAndEvict(storeName) {
+    try {
+      const currentSize = await this.db.getStoreSize(storeName);
+      const maxSize = (CACHE_CONFIG.MAX_SIZE[storeName.toUpperCase()] || 30) * 1024 * 1024; // MB转字节
+      
+      if (currentSize > maxSize) {
+        const targetSize = maxSize * 0.8; // 淘汰到80%
+        await this.db.evictLRU(storeName, targetSize);
+        console.log(`[CacheManager] 容量超限，执行LRU淘汰: ${storeName}`);
       }
+    } catch (e) {
+      console.error(`[CacheManager] 检查容量失败: ${storeName}`, e);
     }
   }
   
   /**
-   * 触发事件
-   * @param {string} event - 事件名
-   * @param {any} data - 事件数据
+   * 启动清理任务
    */
-  emit(event, data) {
-    if (this.listeners[event]) {
-      this.listeners[event].forEach(callback => {
-        try {
-          callback(data);
-        } catch (error) {
-          console.error(`[CacheManager] 事件回调错误: ${event}`, error);
-        }
-      });
-    }
+  startCleanupTask() {
+    // 每小时清理一次过期数据
+    setInterval(() => {
+      this.cleanupExpired();
+    }, 60 * 60 * 1000);
+    
+    // 立即执行一次
+    this.cleanupExpired();
   }
-  
-  // ==================== 清理和销毁 ====================
   
   /**
    * 清理过期数据
    */
-  async cleanExpiredData() {
-    console.log('[CacheManager] 开始清理过期数据...');
+  async cleanupExpired() {
+    console.log('[CacheManager] 开始清理过期数据');
     
-    const storeTypes = Object.values(CONFIG.STORES);
-    let cleanedCount = 0;
-    
-    for (const storeType of storeTypes) {
+    for (const storeName of Object.values(CACHE_CONFIG.STORES)) {
       try {
-        // TODO: 实现清理逻辑
-        // 遍历存储，检查timestamp，删除过期数据
+        const keys = await this.db.getAllKeys(storeName);
         
-      } catch (error) {
-        console.error(`[CacheManager] 清理失败: ${storeType}`, error);
+        for (const key of keys) {
+          // get方法会自动检查过期并删除
+          await this.db.get(storeName, key);
+        }
+      } catch (e) {
+        console.error(`[CacheManager] 清理失败: ${storeName}`, e);
       }
     }
     
-    console.log(`[CacheManager] 清理完成: 删除${cleanedCount}条过期数据`);
+    console.log('[CacheManager] 过期数据清理完成');
   }
   
   /**
-   * 销毁缓存管理器
+   * 监听网络状态
    */
-  destroy() {
-    console.log('[CacheManager] 销毁中...');
+  setupNetworkListener() {
+    uni.onNetworkStatusChange((res) => {
+      console.log('[CacheManager] 网络状态变化:', res.isConnected ? '在线' : '离线');
+      
+      if (res.isConnected) {
+        // 网络恢复，尝试同步
+        this.loadOfflineQueue().then(() => {
+          this.syncOfflineQueue();
+        });
+      }
+    });
+  }
+  
+  /**
+   * 获取缓存统计
+   */
+  async getStats() {
+    await this.ensureInitialized();
     
-    // 停止定时器
-    if (this.networkCheckTimer) {
-      clearInterval(this.networkCheckTimer);
-      this.networkCheckTimer = null;
+    const stats = {};
+    
+    for (const [name, storeName] of Object.entries(CACHE_CONFIG.STORES)) {
+      try {
+        const keys = await this.db.getAllKeys(storeName);
+        const size = await this.db.getStoreSize(storeName);
+        
+        stats[name] = {
+          count: keys.length,
+          size: size,
+          sizeFormatted: this.formatSize(size)
+        };
+      } catch (e) {
+        stats[name] = { count: 0, size: 0, sizeFormatted: '0 B' };
+      }
     }
     
-    if (this.syncTimer) {
-      clearInterval(this.syncTimer);
-      this.syncTimer = null;
+    stats.offlineQueue = this.offlineQueue.length;
+    
+    return stats;
+  }
+  
+  /**
+   * 格式化大小
+   */
+  formatSize(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
+    return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+  }
+  
+  /**
+   * 清空所有缓存
+   */
+  async clearAll() {
+    await this.ensureInitialized();
+    
+    for (const storeName of Object.values(CACHE_CONFIG.STORES)) {
+      await this.db.clear(storeName);
     }
     
-    // 关闭数据库
-    if (this.db) {
-      this.db.close();
-      this.db = null;
+    this.offlineQueue = [];
+    await this.saveOfflineQueue();
+    
+    console.log('[CacheManager] 所有缓存已清空');
+  }
+  
+  /**
+   * 确保已初始化
+   */
+  async ensureInitialized() {
+    if (!this.initialized) {
+      await this.init();
     }
-    
-    // 清空监听器
-    this.listeners = {
-      online: [],
-      offline: [],
-      sync: []
-    };
-    
-    this.isReady = false;
-    console.log('[CacheManager] 已销毁');
   }
 }
 
-// ==================== 导出 ====================
+// 导出单例
+const cacheManager = new CacheManager();
 
-// 创建单例
-const CacheManager = new CacheManagerClass();
-
-export {
-  CacheManager,
-  CONFIG as CACHE_CONFIG
-};
-
-export default CacheManager;
+export default cacheManager;
+export { CACHE_CONFIG };
 

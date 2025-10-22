@@ -47,6 +47,7 @@
 
 <script>
 import ScaleRunner from '@/components/scale/ScaleRunner.vue'
+import { trackPageView } from '@/utils/analytics.js';
 
 const PAGE_PATH = '/pages/assess/stress/index'
 
@@ -81,6 +82,16 @@ export default {
   },
   onShow() {
     console.log(`[ASSESS] onShow view=${this.view}`)
+    
+    // 页面浏览埋点
+    trackPageView(
+      '/pages/assess/stress/index',
+      '一般压力评估',
+      {
+        scale_id: 'pss10',
+        view: this.view
+      }
+    );
   },
   methods: {
     handleBack() {
