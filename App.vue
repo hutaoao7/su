@@ -16,6 +16,7 @@ import { initRouteGuard } from '@/utils/route-guard.js';
 import errorTracker from '@/utils/error-tracker.js';
 import cacheManager from '@/utils/cache-manager.js';
 import networkMonitor from '@/utils/network-monitor.js';
+import preloader from '@/utils/preloader.js';
 
 export default {
   onLaunch() {
@@ -30,6 +31,9 @@ export default {
       
       // 初始化网络监测
       this.initNetworkMonitor();
+      
+      // 初始化智能预加载
+      this.initPreloader();
       
       // 初始化路由守卫
       initRouteGuard();
@@ -123,6 +127,25 @@ export default {
     },
     
     /**
+     * 初始化智能预加载
+     */
+    initPreloader() {
+      try {
+        // 启用预加载
+        preloader.setEnabled(true);
+        console.log('[APP] 智能预加载已启用');
+        
+        // 记录操作轨迹
+        errorTracker.addBreadcrumb('system', 'Preloader initialized');
+      } catch (error) {
+        console.error('[APP] 智能预加载初始化失败:', error);
+        errorTracker.logError('Preloader initialization failed', {
+          error: error.message
+        });
+      }
+    },
+    
+    /**
      * 检查同意状态
      */
     checkConsentStatus() {
@@ -167,6 +190,20 @@ export default {
     try {
       // 记录应用显示
       errorTracker.addBreadcrumb('lifecycle', 'App shown');
+      
+      // 智能预加载当前页面的关联页面
+      try {
+        const pages = getCurrentPages();
+        if (pages.length > 0) {
+          const currentPage = pages[pages.length - 1];
+          const route = currentPage.route || currentPage.$page?.fullPath || '';
+          if (route) {
+            preloader.smartPreload(route);
+          }
+        }
+      } catch (preloadError) {
+        console.warn('[APP] 智能预加载失败:', preloadError);
+      }
       
       // 检查并同步离线数据
       if (networkMonitor.isOnline() && cacheManager.offlineQueue.length > 0) {
