@@ -83,7 +83,9 @@
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "翎心",
     "navigationBarBackgroundColor": "#F8F8F8",
-    "backgroundColor": "#F0F0F5"
+    "backgroundColor": "#F0F0F5",
+    "animationType": "pop-in",
+    "animationDuration": 300
   },
   "tabBar": {
     "custom": false,

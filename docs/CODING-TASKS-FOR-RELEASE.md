@@ -585,9 +585,23 @@ module.exports = {
 
 ---
 
-#### Task-007-013: UX优化（7个任务） ⏱️ 3天
+#### Task-007-009: UX优化（页面动画+骨架屏） ⏱️ 1天 ✅ 已完成
 
-**Task-007**: 页面切换动画
+**状态**: ✅ 已完成  
+**完成时间**: 2025-11-04  
+**文件**: `pages.json`, `components/common/SkeletonScreen.vue`, `components/common/SKELETON-USAGE.md`, `pages/home/home.vue`, `pages/community/index.vue`
+
+**实现说明**:
+- ✅ Task-007: 添加页面切换动画（pop-in，300ms）
+- ✅ Task-008-009: 创建通用骨架屏组件
+  * 支持5种类型（default、list、card、form、detail）
+  * 流畅的shimmer动画效果
+  * 支持暗黑模式
+  * 响应式设计
+  * 已集成到2个主要页面（首页、社区列表）
+- ✅ 创建详细的使用文档和集成指南
+
+**Task-007**: 页面切换动画（已完成）
 
 `pages.json`:
 ```json
@@ -601,7 +615,7 @@ module.exports = {
 }
 ```
 
-**Task-008-009**: 全页面骨架屏（创建通用组件）
+**Task-008-009**: 全页面骨架屏（已完成）
 
 `components/common/SkeletonScreen.vue`:
 ```vue

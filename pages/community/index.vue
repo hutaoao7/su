@@ -29,13 +29,7 @@
       :scroll-with-animation="true"
     >
       <!-- 骨架屏加载 -->
-      <view v-if="loading && page === 1" class="skeleton-loading">
-        <view v-for="n in 3" :key="n" class="skeleton-topic-item">
-          <view class="skeleton-title"></view>
-          <view class="skeleton-content"></view>
-          <view class="skeleton-footer"></view>
-        </view>
-      </view>
+      <skeleton-screen v-if="loading && page === 1" :rows="5" type="list" :avatar="true" />
       
       <!-- 空状态 -->
       <view v-else-if="!loading && topics.length === 0" class="empty-state">
@@ -115,8 +109,12 @@
 import { getTopicList, likeTopic as likeTopicApi } from '@/api/community.js';
 import tabBarManager from '@/utils/tabbar-manager.js';
 import { trackPageView, trackClick, trackEvent } from '@/utils/analytics.js';
+import SkeletonScreen from '@/components/common/SkeletonScreen.vue';
 
 export default {
+  components: {
+    SkeletonScreen
+  },
   data() {
     return {
       categories: [

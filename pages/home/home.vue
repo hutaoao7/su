@@ -1,62 +1,66 @@
 <template>
   <view class="page">
-    <!-- 欢迎区 -->
-    <view class="card welcome-card">
-      <view class="welcome-header">
-        <text class="welcome-title">{{ welcomeText }}</text>
-        <text class="welcome-subtitle">翎心 · 心理健康助手</text>
-      </view>
-      <view class="user-status">
-        <text v-if="isLoggedIn" class="user-greeting">{{ userGreeting }}</text>
-        <text v-else class="login-prompt" @tap="goToAuth">点击登录获取完整服务</text>
-      </view>
-    </view>
-
-    <!-- 三大入口 -->
-    <view class="main-features">
-      <view class="card feature-card main-card" @tap="navigateToMusic">
-        <view class="feature-icon">🎵</view>
-        <text class="feature-title">冥想音乐</text>
-        <text class="feature-desc">舒缓心灵的音乐疗愈</text>
+    <!-- 骨架屏 -->
+    <skeleton-screen v-if="loading" :rows="4" type="card" />
+    
+    <!-- 实际内容 -->
+    <view v-else>
+      <!-- 欢迎区 -->
+      <view class="card welcome-card">
+        <view class="welcome-header">
+          <text class="welcome-title">{{ welcomeText }}</text>
+          <text class="welcome-subtitle">翎心 · 心理健康助手</text>
+        </view>
+        <view class="user-status">
+          <text v-if="isLoggedIn" class="user-greeting">{{ userGreeting }}</text>
+          <text v-else class="login-prompt" @tap="goToAuth">点击登录获取完整服务</text>
+        </view>
       </view>
 
-      <view class="card feature-card main-card" @tap="navigateToScreening">
-        <view class="feature-icon">🧠</view>
-        <text class="feature-title">轻量筛查</text>
-        <text class="feature-desc">快速评估心理状态</text>
+      <!-- 三大入口 -->
+      <view class="main-features">
+        <view class="card feature-card main-card" @tap="navigateToMusic">
+          <view class="feature-icon">🎵</view>
+          <text class="feature-title">冥想音乐</text>
+          <text class="feature-desc">舒缓心灵的音乐疗愈</text>
+        </view>
+
+        <view class="card feature-card main-card" @tap="navigateToScreening">
+          <view class="feature-icon">🧠</view>
+          <text class="feature-title">轻量筛查</text>
+          <text class="feature-desc">快速评估心理状态</text>
+        </view>
+
+        <view class="card feature-card main-card" @tap="navigateToAI">
+          <view class="feature-icon">🤖</view>
+          <text class="feature-title">AI 干预</text>
+          <text class="feature-desc">智能心理疏导陪伴</text>
+        </view>
       </view>
 
-      <view class="card feature-card main-card" @tap="navigateToAI">
-        <view class="feature-icon">🤖</view>
-        <text class="feature-title">AI 干预</text>
-        <text class="feature-desc">智能心理疏导陪伴</text>
-      </view>
-    </view>
-
-    <!-- 今日推荐 -->
-    <view class="card recommend-card">
-      <view class="recommend-header">
-        <text class="recommend-title">今日推荐</text>
-        <text class="recommend-more" @tap="navigateToMusic">查看更多</text>
-      </view>
-      <view class="recommend-list">
-        <view 
-          v-for="item in recommendList" 
-          :key="item._id"
-          class="recommend-item"
-          @tap="playMusic(item)"
-        >
-          <image :src="item.cover" class="recommend-cover" mode="aspectFill" />
-          <view class="recommend-info">
-            <text class="recommend-name">{{ item.title }}</text>
-            <text class="recommend-duration">{{ formatDuration(item.duration) }}</text>
+      <!-- 今日推荐 -->
+      <view class="card recommend-card">
+        <view class="recommend-header">
+          <text class="recommend-title">今日推荐</text>
+          <text class="recommend-more" @tap="navigateToMusic">查看更多</text>
+        </view>
+        <view class="recommend-list">
+          <view 
+            v-for="item in recommendList" 
+            :key="item._id"
+            class="recommend-item"
+            @tap="playMusic(item)"
+          >
+            <image :src="item.cover" class="recommend-cover" mode="aspectFill" />
+            <view class="recommend-info">
+              <text class="recommend-name">{{ item.title }}</text>
+              <text class="recommend-duration">{{ formatDuration(item.duration) }}</text>
+            </view>
+            <view v-if="item.locked" class="lock-icon">🔒</view>
           </view>
-          <view v-if="item.locked" class="lock-icon">🔒</view>
         </view>
       </view>
     </view>
-    
-    
   </view>
 </template>
 
@@ -65,10 +69,15 @@ import { musicAPI } from '@/utils/request.js';
 import { isAuthed, getUid, getUserInfo } from '@/utils/auth.js';
 import tabBarManager from '@/utils/tabbar-manager.js';
 import { trackPageView, trackClick } from '@/utils/analytics.js';
+import SkeletonScreen from '@/components/common/SkeletonScreen.vue';
 
 export default {
+	components: {
+		SkeletonScreen
+	},
 	data() {
 		return {
+			loading: true,
 			recommendList: []
 		}
 	},
@@ -113,6 +122,7 @@ export default {
 		// 加载今日推荐音乐（带错误处理）
 		async loadRecommendMusic() {
 			try {
+				this.loading = true;
 				console.log('[HOME] 加载推荐音乐');
 				
 				// 获取第一个分类
@@ -139,6 +149,8 @@ export default {
 				console.error('[HOME] 加载推荐音乐失败:', error);
 				// 使用降级数据
 				this.setFallbackRecommendList();
+			} finally {
+				this.loading = false;
 			}
 		},
 		
