@@ -1,0 +1,12 @@
+{
+  "name": "content-moderation",
+  "version": "1.0.0",
+  "description": "内容审核云函数 (Mock版本)",
+  "main": "index.js",
+  "dependencies": {},
+  "cloudfunction-config": {
+    "timeout": 10,
+    "memorySize": 256
+  }
+}
+

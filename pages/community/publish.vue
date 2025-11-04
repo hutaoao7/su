@@ -196,8 +196,15 @@ export default {
           sourceType: ['album', 'camera']
         });
         
-        // 上传图片
+        // 显示上传提示
+        uni.showLoading({ 
+          title: '上传中...',
+          mask: true
+        });
+        
+        // 上传图片并审核
         for (const tempPath of res.tempFilePaths) {
+          // 1. 先上传到云存储
           const cloudPath = `community/${Date.now()}_${Math.random().toString(36).substr(2)}.jpg`;
           
           const uploadRes = await uniCloud.uploadFile({
@@ -205,12 +212,83 @@ export default {
             cloudPath: cloudPath
           });
           
-          this.formData.images.push(uploadRes.fileID || uploadRes.tempFileURL);
+          const fileURL = uploadRes.fileID || uploadRes.tempFileURL;
+          
+          // 2. 调用图片审核（Mock版本）
+          const moderationResult = await this.moderateImage(fileURL);
+          
+          if (!moderationResult.pass) {
+            // 审核不通过：提示用户并跳过该图片
+            uni.showToast({
+              title: `图片不合规: ${moderationResult.reason}`,
+              icon: 'none',
+              duration: 3000
+            });
+            
+            // 删除已上传的不合规图片（可选）
+            try {
+              await uniCloud.deleteFile({
+                fileList: [fileURL]
+              });
+            } catch (deleteError) {
+              console.error('[PUBLISH] 删除不合规图片失败:', deleteError);
+            }
+            
+            continue; // 跳过此图片，继续处理下一张
+          }
+          
+          // 审核通过：添加到图片列表
+          this.formData.images.push(fileURL);
+        }
+        
+        uni.hideLoading();
+        
+        // 提示成功
+        if (this.formData.images.length > 0) {
+          uni.showToast({
+            title: '图片上传成功',
+            icon: 'success'
+          });
         }
         
         this.saveDraft();
       } catch (error) {
         console.error('[PUBLISH] 选择图片失败:', error);
+        uni.hideLoading();
+        uni.showToast({
+          title: '图片上传失败',
+          icon: 'none'
+        });
+      }
+    },
+    
+    /**
+     * 图片审核方法（Mock版本）
+     * @param {String} imagePath - 图片路径或URL
+     * @returns {Object} { pass: Boolean, reason: String, confidence: Number }
+     */
+    async moderateImage(imagePath) {
+      try {
+        // 调用content-moderation云函数
+        const { result } = await uniCloud.callFunction({
+          name: 'content-moderation',
+          data: {
+            type: 'image',
+            content: imagePath
+          }
+        });
+        
+        return result || { pass: true, reason: '', confidence: 1.0 };
+      } catch (error) {
+        console.error('[PUBLISH] 图片审核失败:', error);
+        
+        // 降级策略：审核接口失败时允许发布
+        console.warn('[PUBLISH] 图片审核降级，允许发布');
+        return { 
+          pass: true, 
+          reason: '审核服务暂不可用', 
+          confidence: 0 
+        };
       }
     },
     
