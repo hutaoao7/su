@@ -74,7 +74,7 @@ function Backup-Database {
             exit 1
         }
         
-        Write-Log "数据库连接配置: $pgUser@$pgHost:$pgPort/$pgDatabase"
+        Write-Log "数据库连接配置: $pgUser@$pgHost`:$pgPort/$pgDatabase"
         
         # 3. 生成备份文件名
         $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
