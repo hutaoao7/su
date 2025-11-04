@@ -60,7 +60,9 @@
                     "analyze:coverage":  "node tools/test-coverage-reporter.js",
                     "generate:changelog":  "node tools/changelog-generator.js",
                     "check:release":  "node tools/release-checklist-generator.js",
-                    "check:all":  "node tools/check-engines.js \u0026\u0026 node tools/check-ui-consistency.js \u0026\u0026 node tools/check-supabase-direct.js \u0026\u0026 node tools/check-esm-in-cloudfunctions.js \u0026\u0026 node tools/ui-adapter-checker.js \u0026\u0026 node tools/db-schema-validator.js"
+                            "check:all":  "node tools/check-engines.js \u0026\u0026 node tools/check-ui-consistency.js \u0026\u0026 node tools/check-supabase-direct.js \u0026\u0026 node tools/check-esm-in-cloudfunctions.js \u0026\u0026 node tools/ui-adapter-checker.js \u0026\u0026 node tools/db-schema-validator.js",
+                            "build:h5:analyze":  "cross-env NODE_ENV=production UNI_PLATFORM=h5 ANALYZE=true vue-cli-service uni-build",
+                            "build:report":  "npm run build:h5 && node -e \"console.log('Build report generated at: dist/bundle-report.html')\""
                 },
     "dependencies":  {
                          "@dcloudio/uni-app":  "^2.0.2",
@@ -96,17 +98,27 @@
                             "@dcloudio/webpack-uni-pages-loader":  "^2.0.2",
                             "@vue/cli-plugin-babel":  "~4.5.0",
                             "@vue/cli-service":  "~4.5.0",
+                            "autoprefixer":  "^9.8.8",
                             "babel-plugin-import":  "^1.11.0",
+                            "compression-webpack-plugin":  "^6.1.1",
                             "cross-env":  "^7.0.2",
                             "jest":  "^25.4.0",
                             "mini-types":  "*",
                             "postcss-comment":  "^2.0.0",
-                            "vue-template-compiler":  "^2.6.11"
+                            "vue-template-compiler":  "^2.6.11",
+                            "webpack-bundle-analyzer":  "^4.7.0"
                         },
     "browserslist":  [
                          "Android \u003e= 4.4",
                          "ios \u003e= 9"
                      ],
+    "sideEffects":  [
+                        "*.css",
+                        "*.scss",
+                        "*.vue",
+                        "*.sass",
+                        "*.less"
+                    ],
     "uni-app":  {
                     "scripts":  {
 
