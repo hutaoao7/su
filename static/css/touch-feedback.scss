@@ -1,0 +1,299 @@
+/**
+ * 触摸反馈全局样式
+ * 提供统一的触摸视觉反馈效果
+ * 
+ * @author CraneHeart Team
+ * @version 1.0.0
+ * @date 2025-11-04
+ */
+
+/* ==================== 触摸激活状态 ==================== */
+
+/**
+ * 通用触摸激活样式
+ * 适用于按钮、列表项等可点击元素
+ */
+.touch-active {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+/**
+ * 按钮触摸激活
+ * 带有轻微缩放效果
+ */
+.button-touch-active {
+  opacity: 0.7;
+  transform: scale(0.98);
+  transition: all 0.15s ease;
+}
+
+/**
+ * 列表项触摸激活
+ * 背景色变化
+ */
+.list-item-touch-active {
+  background-color: #f5f5f5;
+  transition: background-color 0.2s ease;
+}
+
+/* 暗黑模式下的列表项激活 */
+.dark-mode .list-item-touch-active {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/**
+ * 卡片触摸激活
+ * 阴影和缩放效果
+ */
+.card-touch-active {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: scale(0.99);
+  transition: all 0.2s ease;
+}
+
+/**
+ * 图标按钮触摸激活
+ * 轻微缩放和透明度
+ */
+.icon-touch-active {
+  opacity: 0.5;
+  transform: scale(0.95);
+  transition: all 0.15s ease;
+}
+
+/* ==================== 长按效果 ==================== */
+
+/**
+ * 长按激活状态
+ * 用于长按删除、编辑等场景
+ */
+.long-press-active {
+  animation: longPressShake 0.3s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes longPressShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+/**
+ * 长按提示动画
+ */
+.long-press-hint {
+  animation: longPressHint 1.5s ease-in-out infinite;
+}
+
+@keyframes longPressHint {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* ==================== 涟漪效果（可选） ==================== */
+
+/**
+ * 点击涟漪容器
+ * 需要配合JS动态创建涟漪元素
+ */
+.ripple-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.6);
+  transform: scale(0);
+  animation: ripple 0.6s ease-out;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ==================== 禁用状态 ==================== */
+
+/**
+ * 禁用触摸反馈
+ * 用于不可点击的元素
+ */
+.touch-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/**
+ * 加载中状态
+ */
+.touch-loading {
+  opacity: 0.6;
+  pointer-events: none;
+  position: relative;
+}
+
+.touch-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  margin-left: -10px;
+  border: 2px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: touchLoading 0.8s linear infinite;
+}
+
+@keyframes touchLoading {
+  to { transform: rotate(360deg); }
+}
+
+/* ==================== 特殊场景 ==================== */
+
+/**
+ * 可拖拽元素触摸
+ */
+.draggable-touch-active {
+  cursor: grabbing;
+  opacity: 0.8;
+  z-index: 999;
+}
+
+/**
+ * 可滑动删除的列表项
+ */
+.swipe-delete-active {
+  transform: translateX(-80px);
+  transition: transform 0.3s ease;
+}
+
+/**
+ * 开关按钮触摸
+ */
+.switch-touch-active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
+}
+
+/**
+ * 标签页切换触摸
+ */
+.tab-touch-active {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+/* 暗黑模式 */
+.dark-mode .tab-touch-active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ==================== 平台适配 ==================== */
+
+/* 小程序平台 */
+/* #ifdef MP-WEIXIN */
+.touch-active {
+  /* 小程序可能需要更明显的反馈 */
+  opacity: 0.5;
+}
+/* #endif */
+
+/* H5平台 */
+/* #ifdef H5 */
+.touch-active {
+  cursor: pointer;
+}
+
+/* H5支持hover效果 */
+.touch-feedback:hover {
+  opacity: 0.8;
+}
+/* #endif */
+
+/* App平台 */
+/* #ifdef APP-PLUS */
+.touch-active {
+  /* App可以有更流畅的动画 */
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* #endif */
+
+/* ==================== 辅助类 ==================== */
+
+/**
+ * 快速点击防抖
+ */
+.touch-debounce {
+  pointer-events: none;
+}
+
+/**
+ * 触摸区域扩大（用于小按钮）
+ */
+.touch-area-expand {
+  position: relative;
+}
+
+.touch-area-expand::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+}
+
+/**
+ * 触摸高亮（用于选中状态）
+ */
+.touch-highlight {
+  background-color: rgba(25, 137, 250, 0.1);
+  border: 1px solid rgba(25, 137, 250, 0.3);
+}
+
+/* 暗黑模式 */
+.dark-mode .touch-highlight {
+  background-color: rgba(25, 137, 250, 0.15);
+  border-color: rgba(25, 137, 250, 0.4);
+}
+
+/* ==================== 性能优化 ==================== */
+
+/**
+ * GPU加速
+ * 对需要频繁触摸的元素启用硬件加速
+ */
+.touch-gpu-accelerate {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/**
+ * 禁用用户选择（避免长按选中文本）
+ */
+.touch-no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/**
+ * 禁用长按默认行为（如保存图片）
+ */
+.touch-no-callout {
+  -webkit-touch-callout: none;
+}
+

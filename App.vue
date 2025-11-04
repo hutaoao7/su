@@ -253,6 +253,7 @@ export default {
 
 <style lang="scss">
 @import '@/uni_modules/uview-ui/index.scss';
+@import '@/static/css/touch-feedback.scss';
 
 html, body, #app, page { 
   background: #fff !important; 
